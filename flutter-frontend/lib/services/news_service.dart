@@ -15,12 +15,13 @@ class NewsService {
         // create a list of NewsCard models
         final jsonResponse = jsonDecode(response.body) as List;
         final newsModals = jsonResponse.map((obj) {
+          // print("-------------------------------------------");
+          // print((obj['description']));
           return NewsCard(
               id: obj['_id'],
               title: obj['title'],
-              description: obj['description']
-              // imageUrl: obj['imageUrl']
-              );
+              description: obj['description'],
+              imageUrl: obj['imageUrl']);
         }).toList();
         return newsModals;
       } else {

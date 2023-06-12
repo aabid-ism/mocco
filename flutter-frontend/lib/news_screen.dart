@@ -22,15 +22,21 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       await Provider.of<NewsProvider>(context, listen: false)
           .fetchNewsFromService();
-      newsList =
-          Provider.of<NewsProvider>(context, listen: false).newsModelsList;
+      // newsList =
+      //     Provider.of<NewsProvider>(context, listen: false).newsModelsList;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    //  subscribing to the nearest newsprovider in widget tree
     var appState = context.watch<NewsProvider>();
+
+    // get a reference to the newsCards inside the provider
+
     var newsCards = appState.newsModelsList;
+    // controller for debugging purposes
+
     var controller = Controller();
     return Scaffold(
       body: TikTokStyleFullPageScroller(

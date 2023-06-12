@@ -58,14 +58,17 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     SizedBox(
-                      height: MediaQuery.of(context).size.height /
-                          3, // Set height to one-third of the screen height
-                      width: double.infinity, // Use full width
-                      child: CachedNetworkImage(
-                        placeholder: (context, url) =>
-                            const CircularProgressIndicator(),
-                        imageUrl: newsCards[index].imageUrl.toString(),
-                        fit: BoxFit.cover,
+                      height: MediaQuery.of(context).size.height / 3,
+                      width: double.infinity,
+                      child: AspectRatio(
+                        aspectRatio: 16 / 9,
+                        child: CachedNetworkImage(
+                          placeholder: (context, url) => const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                          imageUrl: newsCards[index].imageUrl.toString(),
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                     Text(

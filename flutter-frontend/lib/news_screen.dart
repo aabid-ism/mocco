@@ -57,10 +57,17 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    CachedNetworkImage(
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height /
+                          3, // Set height to one-third of the screen height
+                      width: double.infinity, // Use full width
+                      child: CachedNetworkImage(
                         placeholder: (context, url) =>
                             const CircularProgressIndicator(),
-                        imageUrl: newsCards[index].imageUrl.toString()),
+                        imageUrl: newsCards[index].imageUrl.toString(),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                     Text(
                       '${newsCards[index].title}',
                       key: Key('$index-title'),

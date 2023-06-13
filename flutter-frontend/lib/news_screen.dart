@@ -57,7 +57,7 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
         // ^ registering our own function to listen to page changes
         builder: (BuildContext context, int index) {
           return Container(
-            color: Colors.grey,
+            color: Colors.white,
             child: Stack(children: [
               SafeArea(
                 child: Column(
@@ -80,12 +80,13 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
                     Text(
                       '${newsCards[index].title}',
                       key: Key('$index-title'),
-                      style: const TextStyle(fontSize: 22, color: Colors.white),
+                      style: const TextStyle(fontSize: 22, color: Colors.black),
                     ),
                     Text(
                       '${newsCards[index].description}',
                       key: Key('$index-description'),
-                      style: const TextStyle(fontSize: 18, color: Colors.white),
+                      style:
+                          const TextStyle(fontSize: 18, color: Colors.black87),
                     ),
                   ],
                 ),

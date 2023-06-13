@@ -4,6 +4,7 @@ import "package:mocco/models/news_card.dart";
 import "package:mocco/news_provider_state.dart";
 import "package:provider/provider.dart";
 import "package:tiktoklikescroller/tiktoklikescroller.dart";
+import 'package:url_launcher/url_launcher.dart';
 
 class NewsScreenContainer extends StatefulWidget {
   const NewsScreenContainer({super.key});
@@ -98,11 +99,11 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
                         color: const Color(0xFFD9D9D9),
                         borderRadius: BorderRadius.circular(37.0),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Column(
+                          const Column(
                             children: [
                               IconButton(
                                   onPressed: null,
@@ -113,17 +114,30 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
                                       fontWeight: FontWeight.w600)),
                             ],
                           ),
-                          Column(
-                            children: [
-                              IconButton(
-                                  onPressed: null,
-                                  icon: Icon(Icons.info_outline,
-                                      color: Colors.black)),
-                              Text("Source",
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                            ],
+                          GestureDetector(
+                            onTap: () async {
+                              !await _launchUrl(
+                                      newsCards[index].sourceUrl ?? "")
+                                  ? ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content:
+                                            Text('Could not open the source'),
+                                      ),
+                                    )
+                                  : null;
+                            },
+                            child: const Column(
+                              children: [
+                                IconButton(
+                                    onPressed: null,
+                                    icon: Icon(Icons.info_outline,
+                                        color: Colors.black)),
+                                Text("Source",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600)),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -192,4 +206,16 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
       ),
     );
   } // build
+}
+
+Future<bool> _launchUrl(String sourceString) async {
+  try {
+    Uri url = Uri.parse(sourceString);
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      return false;
+    }
+    return true;
+  } catch (e) {
+    return false;
+  }
 }

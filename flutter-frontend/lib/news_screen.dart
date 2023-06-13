@@ -1,10 +1,15 @@
+import "dart:io";
+
 import "package:cached_network_image/cached_network_image.dart";
 import "package:flutter/material.dart";
 import "package:mocco/models/news_card.dart";
 import "package:mocco/news_provider_state.dart";
 import "package:provider/provider.dart";
+import "package:share_plus/share_plus.dart";
 import "package:tiktoklikescroller/tiktoklikescroller.dart";
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 class NewsScreenContainer extends StatefulWidget {
   const NewsScreenContainer({super.key});
@@ -103,16 +108,37 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Column(
-                            children: [
-                              IconButton(
-                                  onPressed: null,
-                                  icon: Icon(Icons.share, color: Colors.black)),
-                              Text("Share",
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600)),
-                            ],
+                          GestureDetector(
+                            onTap: () async {
+                              final newsImgUrl = newsCards[index].imageUrl;
+                              final url = Uri.parse(newsImgUrl ?? "");
+                              final respose = await http.get(url);
+                              final bytes = respose.bodyBytes;
+
+                              final temp = await getTemporaryDirectory();
+                              final shareTempFilePath =
+                                  '${temp.path}/mocosharetempimg.jpg';
+                              File(shareTempFilePath).writeAsBytesSync(bytes);
+
+                              await Share.shareXFiles(
+                                [XFile(shareTempFilePath)],
+                                subject: newsCards[index].title,
+                                text:
+                                    "${newsCards[index].title}\n\n${newsCards[index].description}\n\nAuthor - ${newsCards[index].author}",
+                              );
+                            },
+                            child: const Column(
+                              children: [
+                                IconButton(
+                                    onPressed: null,
+                                    icon:
+                                        Icon(Icons.share, color: Colors.black)),
+                                Text("Share",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600)),
+                              ],
+                            ),
                           ),
                           GestureDetector(
                             onTap: () async {

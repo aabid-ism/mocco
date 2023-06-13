@@ -39,6 +39,7 @@ dependencies:
   tiktoklikescroller: ^0.2.4
   flutter_cache_manager: ^3.3.0
   cached_network_image: ^3.2.3
+  url_launcher: ^6.1.11
 
 dev_dependencies:
   flutter_test:

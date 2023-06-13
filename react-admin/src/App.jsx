@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import PublishNews from "./pages/PublishNews";
 import ManageNewsHistory from "./pages/ManageNewsHistory";
@@ -10,7 +11,7 @@ function App() {
   const Layout = () => {
     return (
       <>
-        <Sidebar open={open} setOpen={setOpen} />
+        <Navbar open={open} setOpen={setOpen} />
         <Outlet />
       </>
     );

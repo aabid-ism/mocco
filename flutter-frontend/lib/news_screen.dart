@@ -88,6 +88,53 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
                 bottom: 30,
                 left: 0,
                 right: 0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Container(
+                      height: 74,
+                      width: 200,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD9D9D9),
+                        borderRadius: BorderRadius.circular(37.0),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Column(
+                            children: [
+                              IconButton(
+                                  onPressed: null,
+                                  icon: Icon(Icons.share, color: Colors.black)),
+                              Text("Share",
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              IconButton(
+                                  onPressed: null,
+                                  icon: Icon(Icons.info_outline,
+                                      color: Colors.black)),
+                              Text("Source",
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )
+              /* Positioned(
+                bottom: 30,
+                left: 0,
+                right: 0,
                 child: Container(
                   padding: EdgeInsets.only(top: 8, bottom: 8),
                   color: Colors.white.withAlpha(125),
@@ -138,7 +185,7 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
                     ],
                   ),
                 ),
-              ),
+              ), */
             ]),
           );
         },

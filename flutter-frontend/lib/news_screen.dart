@@ -5,11 +5,12 @@ import "package:flutter/material.dart";
 import "package:mocco/models/news_card.dart";
 import "package:mocco/news_provider_state.dart";
 import "package:provider/provider.dart";
-import "package:share_plus/share_plus.dart";
 import "package:tiktoklikescroller/tiktoklikescroller.dart";
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+
+import "widgets/share_bottom_sheet.dart";
 
 class NewsScreenContainer extends StatefulWidget {
   const NewsScreenContainer({super.key});
@@ -99,47 +100,62 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Container(
-                      height: 74,
-                      width: 200,
+                      height: 66,
+                      width: 160,
                       decoration: BoxDecoration(
                         color: const Color(0xFFD9D9D9),
-                        borderRadius: BorderRadius.circular(37.0),
+                        borderRadius: BorderRadius.circular(33.0),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        mainAxisSize: MainAxisSize.min,
                         children: [
                           GestureDetector(
                             onTap: () async {
-                              final newsImgUrl = newsCards[index].imageUrl;
-                              final url = Uri.parse(newsImgUrl ?? "");
-                              final respose = await http.get(url);
-                              final bytes = respose.bodyBytes;
+                              final newsImgUrl =
+                                  newsCards[index].imageUrl ?? "";
+                              //final textMsg = "${newsCards[index].title}\n\n${newsCards[index].description}\n\nAuthor - ${newsCards[index].author}";
+                              // final url = Uri.parse(newsImgUrl ?? "");
+                              // final respose = await http.get(url);
+                              // final bytes = respose.bodyBytes;
 
-                              final temp = await getTemporaryDirectory();
-                              final shareTempFilePath =
-                                  '${temp.path}/mocosharetempimg.jpg';
-                              File(shareTempFilePath).writeAsBytesSync(bytes);
-
-                              await Share.shareXFiles(
-                                [XFile(shareTempFilePath)],
-                                subject: newsCards[index].title,
-                                text:
-                                    "${newsCards[index].title}\n\n${newsCards[index].description}\n\nAuthor - ${newsCards[index].author}",
+                              // final temp = await getTemporaryDirectory();
+                              // final shareTempFilePath =
+                              //     '${temp.path}/mocosharetempimg.jpg';
+                              // File(shareTempFilePath).writeAsBytesSync(bytes);
+                              // await Share.shareXFiles(
+                              //   [XFile(shareTempFilePath)],
+                              //   subject: newsCards[index].title,
+                              //   text:
+                              //       "${newsCards[index].title}\n\n${newsCards[index].description}\n\nAuthor - ${newsCards[index].author}",
+                              // );
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return ShareBottomSheet(
+                                    imageURL: newsImgUrl,
+                                    heading: newsCards[index].title ?? "",
+                                  );
+                                },
                               );
                             },
-                            child: const Column(
-                              children: [
-                                IconButton(
-                                    onPressed: null,
-                                    icon:
-                                        Icon(Icons.share, color: Colors.black)),
-                                Text("Share",
+                            child: const Column(children: [
+                              IconButton(
+                                onPressed: null,
+                                icon: Column(children: [
+                                  Icon(Icons.share, color: Colors.black),
+                                  SizedBox(
+                                    height: 6,
+                                  ),
+                                  Text(
+                                    "Share",
                                     style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600)),
-                              ],
-                            ),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ]),
+                              ),
+                            ]),
                           ),
                           GestureDetector(
                             onTap: () async {
@@ -156,13 +172,19 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
                             child: const Column(
                               children: [
                                 IconButton(
-                                    onPressed: null,
-                                    icon: Icon(Icons.info_outline,
-                                        color: Colors.black)),
-                                Text("Source",
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600)),
+                                  onPressed: null,
+                                  icon: Column(children: [
+                                    Icon(Icons.info_outline,
+                                        color: Colors.black),
+                                    SizedBox(height: 6),
+                                    Text(
+                                      "Source",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  ]),
+                                ),
                               ],
                             ),
                           ),

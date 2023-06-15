@@ -59,11 +59,15 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
         builder: (BuildContext context, int index) {
           return Container(
             color: Colors.white,
+            // A stack is used to place the bottombar on top of the news screen
             child: Stack(children: [
+              // The safe area encloses the news card contents to avoid image
+              // overflowing to the top
               SafeArea(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+                    // The Sizedbox holds the image of the newscard
                     SizedBox(
                       height: MediaQuery.of(context).size.height / 3,
                       width: double.infinity,
@@ -78,11 +82,13 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
                         ),
                       ),
                     ),
+                    // News Title
                     Text(
                       '${newsCards[index].title}',
                       key: Key('$index-title'),
                       style: const TextStyle(fontSize: 22, color: Colors.black),
                     ),
+                    // News Description
                     Text(
                       '${newsCards[index].description}',
                       key: Key('$index-description'),
@@ -92,15 +98,16 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
                   ],
                 ),
               ),
+              // Positioned widget holds the Bottom Bar
               Positioned(
-                bottom: 30,
+                bottom: 60,
                 left: 0,
                 right: 0,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Container(
-                      height: 66,
+                      height: 70,
                       width: 160,
                       decoration: BoxDecoration(
                         color: const Color(0xFFD9D9D9),
@@ -109,6 +116,7 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
+                          // Share Button
                           GestureDetector(
                             onTap: () async {
                               final newsImgUrl =
@@ -139,6 +147,7 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
                               );
                             },
                             child: const Column(children: [
+                              // Share Icon
                               IconButton(
                                 onPressed: null,
                                 icon: Column(children: [
@@ -157,6 +166,7 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
                               ),
                             ]),
                           ),
+                          // Source Button
                           GestureDetector(
                             onTap: () async {
                               !await _launchUrl(

@@ -1,4 +1,17 @@
 PODS:
+  - appinio_social_share (0.0.1):
+    - FBSDKCoreKit (= 15.1.0)
+    - FBSDKShareKit (= 15.1.0)
+    - Flutter
+    - TikTokOpenSDK (= 5.0.14)
+  - FBAEMKit (15.1.0):
+    - FBSDKCoreKit_Basics (= 15.1.0)
+  - FBSDKCoreKit (15.1.0):
+    - FBAEMKit (= 15.1.0)
+    - FBSDKCoreKit_Basics (= 15.1.0)
+  - FBSDKCoreKit_Basics (15.1.0)
+  - FBSDKShareKit (15.1.0):
+    - FBSDKCoreKit (= 15.1.0)
   - Flutter (1.0.0)
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
@@ -9,30 +22,51 @@ PODS:
   - sqflite (0.0.3):
     - Flutter
     - FMDB (>= 2.7.5)
+  - TikTokOpenSDK (5.0.14)
+  - url_launcher_ios (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
+  - appinio_social_share (from `.symlinks/plugins/appinio_social_share/ios`)
   - Flutter (from `Flutter`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
+  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 SPEC REPOS:
   trunk:
+    - FBAEMKit
+    - FBSDKCoreKit
+    - FBSDKCoreKit_Basics
+    - FBSDKShareKit
     - FMDB
+    - TikTokOpenSDK
 
 EXTERNAL SOURCES:
+  appinio_social_share:
+    :path: ".symlinks/plugins/appinio_social_share/ios"
   Flutter:
     :path: Flutter
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
   sqflite:
     :path: ".symlinks/plugins/sqflite/ios"
+  url_launcher_ios:
+    :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
+  appinio_social_share: 813392f94886d6ee998d26fb6debac482c429d95
+  FBAEMKit: c7f82b5145d446bcbbcd50485c032689032fc6a2
+  FBSDKCoreKit: 7542746fc63a2a38dd6a865eeb54268341f37b83
+  FBSDKCoreKit_Basics: 92d6b26c0bed30ab09bbdd96dccaa26e6c9978d1
+  FBSDKShareKit: 18e8ba99d38e3e92c631120cdcf162c45b661e0f
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   path_provider_foundation: eaf5b3e458fc0e5fbb9940fb09980e853fe058b8
   sqflite: 31f7eba61e3074736dff8807a9b41581e4f7f15a
+  TikTokOpenSDK: 28f5244497b87cbaebb36d7ad468374ad2c2e8e2
+  url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
 
-PODFILE CHECKSUM: 70d9d25280d0dd177a5f637cdb0f0b0b12c6a189
+PODFILE CHECKSUM: 6b9eb94e9f98a329f2ef624b852a6e42d090af2b
 
 COCOAPODS: 1.12.1

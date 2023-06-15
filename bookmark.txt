@@ -1,0 +1,57 @@
+//Tiktok scroll testing widget -- start 
+/* Positioned(
+bottom: 30,
+left: 0,
+right: 0,
+child: Container(
+    padding: EdgeInsets.only(top: 8, bottom: 8),
+    color: Colors.white.withAlpha(125),
+    child: Column(
+    children: [
+        Text("--- Buttons For Testing Controller Functions ---"),
+        SizedBox(
+        height: 8,
+        ),
+        Text("Jump To:"),
+        Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+            ...Iterable<int>.generate(newsCards.length)
+                .toList()
+                .map(
+                    (e) => MaterialButton(
+                    color: Colors.white.withAlpha(125),
+                    child: Text(
+                        "$e",
+                        key: Key('$e-jump'),
+                    ),
+                    onPressed: () =>
+                        controller.jumpToPosition(e),
+                    ),
+                )
+                .toList(),
+            ]),
+        Text("Animate To:"),
+        Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+            ...Iterable<int>.generate(newsCards.length)
+                .toList()
+                .map(
+                    (e) => MaterialButton(
+                    color: Colors.white.withAlpha(125),
+                    child: Text(
+                        "$e",
+                        key: Key('$e-animate'),
+                    ),
+                    onPressed: () =>
+                        controller.animateToPosition(e),
+                    ),
+                )
+                .toList(),
+            ]),
+    ],
+    ),
+),
+), */
+//Tiktok scroll testing widget -- end

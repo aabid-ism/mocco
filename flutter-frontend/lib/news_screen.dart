@@ -17,28 +17,18 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
   List<NewsCard> newsList = [];
 
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      await Provider.of<NewsProvider>(context, listen: false)
-          .fetchNewsFromService();
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     var appState = context.watch<NewsProvider>();
     var newsCards = appState.newsModelsList;
 
     return Scaffold(
-      body: PageView.builder(
+      body: PageView.builder(// Build pages lazily for better performance 
         scrollDirection: Axis.vertical,
         controller: _controller,
         itemCount: newsCards.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Container(
-            height: MediaQuery.of(context).size.height,
-            color: Colors.white,
+        itemBuilder: (BuildContext context, int index) {// Build page items 
+          return SizedBox( // full page container
+            height: MediaQuery.of(context).size.height, 
             child: Stack(
               children: [
                 SafeArea(

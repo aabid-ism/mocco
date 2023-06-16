@@ -17,7 +17,7 @@ class ShareBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width -
           20, // Leave small space in sides of the container
       height: 340,

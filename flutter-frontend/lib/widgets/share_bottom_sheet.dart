@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:appinio_social_share/appinio_social_share.dart';
 
 class ShareBottomSheet extends StatelessWidget {
@@ -19,11 +18,14 @@ class ShareBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width - 20,
+      width: MediaQuery.of(context).size.width -
+          20, // Leave small space in sides of the container
       height: 340,
       child: Padding(
+        //Add Pading from top and bottom to avoid compact UI
         padding: const EdgeInsets.fromLTRB(0, 15, 0, 15),
         child: Column(
+          //Arange widets top to bottom
           children: [
             const Center(
               child: Text(
@@ -35,6 +37,7 @@ class ShareBottomSheet extends StatelessWidget {
               height: 10,
             ),
             FutureBuilder<Uint8List?>(
+              // Load sharing image with better UX using Progress Indicator
               future: _getImageFromUrl(imageURL),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done &&
@@ -49,7 +52,7 @@ class ShareBottomSheet extends StatelessWidget {
                     height: 150,
                     width: 150,
                     child: Padding(
-                      padding: const EdgeInsets.all(60.0),
+                      padding: EdgeInsets.all(60.0),
                       child: CircularProgressIndicator(
                         color: Colors.black87,
                       ),
@@ -63,8 +66,10 @@ class ShareBottomSheet extends StatelessWidget {
               child: Text(heading),
             ),
             Row(
+              //Arange share apllication button widgets left to right with smae space
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+                //Whatsapp Icon Button
                 IconButton(
                   onPressed: () => {},
                   icon: const Column(
@@ -81,6 +86,7 @@ class ShareBottomSheet extends StatelessWidget {
                     ],
                   ),
                 ),
+                //Instagram Icon Button
                 IconButton(
                   onPressed: () => {},
                   icon: const Column(
@@ -97,6 +103,7 @@ class ShareBottomSheet extends StatelessWidget {
                     ],
                   ),
                 ),
+                //Facebook Icon Button
                 IconButton(
                   onPressed: () => {},
                   icon: const Column(
@@ -122,6 +129,7 @@ class ShareBottomSheet extends StatelessWidget {
   }
 }
 
+//Get Image from web
 Future<Uint8List> _getImageFromUrl(String imageUrl) async {
   final response = await http.get(Uri.parse(imageUrl));
   if (response.statusCode == 200) {
@@ -129,17 +137,5 @@ Future<Uint8List> _getImageFromUrl(String imageUrl) async {
   } else {
     throw HttpException(
         'Failed to load image: ${response.statusCode} ${imageUrl}');
-  }
-}
-
-Future<bool> _launchUrl(String sourceString) async {
-  try {
-    Uri url = Uri.parse(sourceString);
-    if (!await launchUrl(url, mode: LaunchMode.externalNonBrowserApplication)) {
-      return false;
-    }
-    return true;
-  } catch (e) {
-    return false;
   }
 }

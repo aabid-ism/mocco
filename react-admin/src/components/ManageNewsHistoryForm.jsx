@@ -1,35 +1,117 @@
-import * as React from "react";
+import { useState, useEffect, forwardRef, cloneElement } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { MenuItem, TextareaAutosize } from "@mui/material";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import Axios from "../utils/axios.js";
+import Backdrop from "@mui/material/Backdrop";
+import { useSpring, animated } from "@react-spring/web";
+import Modal from "@mui/material/Modal";
 
-const ManageNewsHistoryForm = () => {
-  const initialValues = {
-    name: "",
-    textarea: "",
-    file: "",
-    dropdown1: "",
-    dropdown2: "",
-  };
-
-  const handleSubmit = (values) => {
-    console.log(values);
-  };
+const Fade = forwardRef(function Fade(props, ref) {
+  const {
+    children,
+    in: open,
+    onClick,
+    onEnter,
+    onExited,
+    ownerState,
+    ...other
+  } = props;
+  const style = useSpring({
+    from: { opacity: 0 },
+    to: { opacity: open ? 1 : 0 },
+    onStart: () => {
+      if (open && onEnter) {
+        onEnter(null, true);
+      }
+    },
+    onRest: () => {
+      if (!open && onExited) {
+        onExited(null, true);
+      }
+    },
+  });
 
   return (
-    <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+    <animated.div ref={ref} style={style} {...other}>
+      {cloneElement(children, { onClick })}
+    </animated.div>
+  );
+});
+
+const ManageNewsHistoryForm = ({ selectedNews }) => {
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
+  console.log(selectedNews);
+
+  const initialValues = {
+    title: "",
+    description: "",
+    imageUrl: "",
+    sourceName: "",
+    sourceUrl: "",
+    author: "",
+    mainTag: "",
+    secondaryTags: "",
+    locality: "",
+  };
+
+  const handleEdit = async (values) => {
+    try {
+      // const response = await Axios.post("/update-news", values);
+      // console.log(response);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async (values) => {
+    try {
+      // const response = await Axios.post("/delete-news", values);
+      // console.log(response);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const isValidationPassed = (values) => {
+    try {
+      validationSchema.validateSync(values);
+      setValid(true);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const validationSchema = Yup.object({
+    title: Yup.string().required("News Headline is required"),
+    description: Yup.string().required("News Description is required"),
+    // imageUrl: Yup.string().required("Image URL is required"),
+    sourceName: Yup.string().required("Source Name is required"),
+    sourceUrl: Yup.string().required("Source URL is required"),
+    author: Yup.string().required("Author is required"),
+    mainTag: Yup.string().required("Tags are required"),
+    locality: Yup.string().required("Locality is required"),
+  });
+
+  return (
+    <Formik initialValues={initialValues} onSubmit={handleEdit}>
       <Form>
         <Box sx={{ marginBottom: "2%" }}>
-          <label htmlFor="name">
-            <Typography fontWeight="bold">Name</Typography>
+          <label htmlFor="title">
+            <Typography fontWeight="bold">News Headline</Typography>
           </label>
           <Field
             as={TextField}
-            id="name"
-            name="name"
+            id="title"
+            name="title"
+            value={selectedNews ? selectedNews.title : ""}
             variant="outlined"
             fullWidth
             inputProps={{
@@ -38,17 +120,18 @@ const ManageNewsHistoryForm = () => {
               },
             }}
           />
-          <ErrorMessage name="name" component="div" />
+          <ErrorMessage name="title" component="div" />
         </Box>
 
         <Box sx={{ marginBottom: "2%" }}>
-          <label htmlFor="textarea">
+          <label htmlFor="description">
             <Typography fontWeight="bold">News Description</Typography>
           </label>
           <Field
             as={TextareaAutosize}
-            id="textarea"
-            name="textarea"
+            id="description"
+            name="description"
+            value={selectedNews ? selectedNews.description : ""}
             minRows={3}
             maxRows={5}
             placeholder="Enter text here..."
@@ -59,65 +142,178 @@ const ManageNewsHistoryForm = () => {
               border: "1px solid #ccc",
             }}
           />
-          <ErrorMessage name="textarea" component="div" />
+          <ErrorMessage name="description" component="div" />
         </Box>
 
         <Box sx={{ marginBottom: "2%" }}>
-          <label htmlFor="file">
-            <Typography fontWeight="bold">File Upload (JPG or PNG)</Typography>
+          <label htmlFor="imageUrl">
+            <Typography fontWeight="bold">Choose Image (JPG or PNG)</Typography>
           </label>
           <Field
             as={TextField}
-            id="file"
-            name="file"
+            id="imageUrl"
+            name="imageUrl"
             type="file"
             variant="outlined"
             fullWidth
-            accept="image/jpeg, image/png"
+            accept="imageUrl/jpeg, imageUrl/png"
             inputLabelProps={{
               shrink: true,
             }}
           />
-          <ErrorMessage name="file" component="div" />
+          <ErrorMessage name="imageUrl" component="div" />
+        </Box>
+
+        <Box sx={{ marginBottom: "2%" }}>
+          <label htmlFor="sourceName">
+            <Typography fontWeight="bold">Source Name</Typography>
+          </label>
+          <Field
+            as={TextField}
+            id="sourceName"
+            name="sourceName"
+            value={selectedNews ? selectedNews.sourceName : ""}
+            variant="outlined"
+            fullWidth
+            inputProps={{
+              style: {
+                padding: "10px",
+              },
+            }}
+          />
+          <ErrorMessage name="sourceName" component="div" />
+        </Box>
+
+        <Box sx={{ marginBottom: "2%" }}>
+          <label htmlFor="sourceUrl">
+            <Typography fontWeight="bold">Source URL</Typography>
+          </label>
+          <Field
+            as={TextField}
+            id="sourceUrl"
+            name="sourceUrl"
+            value={selectedNews ? selectedNews.sourceUrl : ""}
+            variant="outlined"
+            fullWidth
+            inputProps={{
+              style: {
+                padding: "10px",
+              },
+            }}
+          />
+          <ErrorMessage name="sourceUrl" component="div" />
         </Box>
 
         <Box sx={{ display: "flex" }}>
           <Box sx={{ marginRight: "10px", width: "25%" }}>
-            <label htmlFor="dropdown1">
+            <label htmlFor="author">
               <Typography fontWeight="bold">Author</Typography>
             </label>
             <Field
               as={TextField}
-              id="dropdown1"
-              name="dropdown1"
+              id="author"
+              name="author"
+              value={selectedNews ? selectedNews.author : ""}
               select
               variant="outlined"
               fullWidth
             >
-              <MenuItem value="option1">Option 1</MenuItem>
-              <MenuItem value="option2">Option 2</MenuItem>
-              <MenuItem value="option3">Option 3</MenuItem>
+              <MenuItem value={selectedNews ? selectedNews.author : ""}>
+                {selectedNews ? selectedNews.author : ""}
+              </MenuItem>
+              <MenuItem value="Sarah Johnson">Sarah Johnson</MenuItem>
+              <MenuItem value="Michael Thompson">Michael Thompson</MenuItem>
+              <MenuItem value="optEmily Davision3">Emily Davis</MenuItem>
             </Field>
-            <ErrorMessage name="dropdown1" component="div" />
+            <ErrorMessage name="author" component="div" />
           </Box>
 
-          <Box sx={{ marginBottom: "10px", width: "25%" }}>
-            <label htmlFor="dropdown2">
-              <Typography fontWeight="bold">News Tag</Typography>
+          <Box sx={{ marginRight: "10px", width: "25%" }}>
+            <label htmlFor="mainTag">
+              <Typography fontWeight="bold">Main News Tags</Typography>
             </label>
             <Field
               as={TextField}
-              id="dropdown2"
-              name="dropdown2"
+              id="mainTag"
+              name="mainTag"
+              value={selectedNews ? selectedNews.author : ""}
               select
               variant="outlined"
               fullWidth
             >
-              <MenuItem value="option1">Option 1</MenuItem>
-              <MenuItem value="option2">Option 2</MenuItem>
-              <MenuItem value="option3">Option 3</MenuItem>
+              <MenuItem value="Sports">Sports</MenuItem>
+              <MenuItem value="Politics">Politics</MenuItem>
+              <MenuItem value="Science and Technology">
+                Science and Technology
+              </MenuItem>
             </Field>
-            <ErrorMessage name="dropdown2" component="div" />
+            <ErrorMessage
+              name="mainTag"
+              component="div"
+              style={{
+                color: "red",
+                fontSize: "0.8rem",
+              }}
+            />
+          </Box>
+
+          <Box sx={{ marginRight: "10px", width: "25%" }}>
+            <label htmlFor="secondaryTags">
+              <Typography fontWeight="bold" sx={{ fontSize: "0.9rem" }}>
+                Secondary News Tags
+              </Typography>
+            </label>
+            <Field
+              as={TextField}
+              id="secondaryTags"
+              name="secondaryTags"
+              value={selectedNews ? selectedNews.secondaryTags : ""}
+              select
+              variant="outlined"
+              fullWidth
+            >
+              <MenuItem value="Sports">Sports</MenuItem>
+              <MenuItem value="Politics">Politics</MenuItem>
+              <MenuItem value="Science and Technology">
+                Science and Technology
+              </MenuItem>
+            </Field>
+            <ErrorMessage
+              name="secondaryTags"
+              component="div"
+              style={{
+                color: "red",
+                fontSize: "0.8rem",
+              }}
+            />
+          </Box>
+
+          <Box sx={{ marginBottom: "10px", width: "25%" }}>
+            <label htmlFor="locality">
+              <Typography fontWeight="bold" sx={{ fontSize: "0.9rem" }}>
+                Local or International
+              </Typography>
+            </label>
+            <Field
+              as={TextField}
+              id="locality"
+              name="locality"
+              value={selectedNews ? selectedNews.locality : ""}
+              select
+              variant="outlined"
+              fullWidth
+            >
+              <MenuItem value="Local">Local</MenuItem>
+              <MenuItem value="International">International</MenuItem>
+            </Field>
+            <ErrorMessage
+              name="locality"
+              component="div"
+              style={{
+                color: "red",
+                fontSize: "0.8rem",
+              }}
+            />
           </Box>
         </Box>
 
@@ -128,17 +324,118 @@ const ManageNewsHistoryForm = () => {
             gap: 2,
           }}
         >
-          <Button variant="contained" type="submit">
+          <Button
+            variant="contained"
+            type="submit"
+            onClick={() => {
+              setEditOpen(true);
+            }}
+          >
             Edit
           </Button>
           <Button
             variant="contained"
             type="submit"
-            sx={{ backgroundColor: "red" }}
+            sx={{
+              backgroundColor: "red",
+              "&:hover": {
+                backgroundColor: "red",
+              },
+            }}
+            onClick={() => {
+              setDeleteOpen(true);
+            }}
           >
             Delete
           </Button>
         </Box>
+        {editOpen ? (
+          <Modal
+            aria-labelledby="spring-modal-title"
+            aria-describedby="spring-modal-description"
+            open={open}
+            onClose={() => setEditOpen(false)}
+            closeAfterTransition
+            slots={{ backdrop: Backdrop }}
+            slotProps={{
+              backdrop: {
+                TransitionComponent: Fade,
+              },
+            }}
+          >
+            <Fade in={open}>
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: 400,
+                  bgcolor: "background.paper",
+                  border: "2px solid #000",
+                  boxShadow: 24,
+                  p: 4,
+                  textAlign: "center",
+                }}
+              >
+                <Typography id="spring-modal-description" sx={{ mt: 2 }}>
+                  Are you sure you want to edit this article?
+                </Typography>
+                <Button
+                  sx={{ mt: 2, mx: "auto" }}
+                  variant="contained"
+                  onClick={() => handleConfirm(true)}
+                >
+                  Yes
+                </Button>
+              </Box>
+            </Fade>
+          </Modal>
+        ) : (
+          deleteOpen && (
+            <Modal
+              aria-labelledby="spring-modal-title"
+              aria-describedby="spring-modal-description"
+              open={open}
+              onClose={() => setDeleteOpen(false)}
+              closeAfterTransition
+              slots={{ backdrop: Backdrop }}
+              slotProps={{
+                backdrop: {
+                  TransitionComponent: Fade,
+                },
+              }}
+            >
+              <Fade in={open}>
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    width: 400,
+                    bgcolor: "background.paper",
+                    border: "2px solid #000",
+                    boxShadow: 24,
+                    p: 4,
+                    textAlign: "center",
+                  }}
+                >
+                  <Typography id="spring-modal-description" sx={{ mt: 2 }}>
+                    Are you sure you want to delete this article?
+                  </Typography>
+                  <Button
+                    sx={{ mt: 2, mx: "auto" }}
+                    variant="contained"
+                    onClick={() => handleConfirm(true)}
+                  >
+                    Yes
+                  </Button>
+                </Box>
+              </Fade>
+            </Modal>
+          )
+        )}
       </Form>
     </Formik>
   );

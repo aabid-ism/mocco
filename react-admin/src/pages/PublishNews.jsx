@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiAppBar from "@mui/material/AppBar";
@@ -8,6 +8,8 @@ import Button from "@mui/material/Button";
 import { Grid } from "@mui/material";
 import PublishForm from "../components/PublishForm";
 import Sidebar from "../components/Sidebar";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const drawerWidth = 240;
 
@@ -23,6 +25,15 @@ const AppBar = styled(MuiAppBar, {
   height: "100%",
   backgroundColor: "#f3f4f6",
   boxShadow: "none",
+  overflowY: "scroll",
+  "&::-webkit-scrollbar": {
+    width: "0.4em",
+    backgroundColor: "transparent",
+  },
+  "&::-webkit-scrollbar-thumb": {
+    backgroundColor: "transparent",
+  },
+  paddingBottom: "5%",
   ...(open && {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: `${drawerWidth}px`,
@@ -34,6 +45,14 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 const PublishNews = ({ open }) => {
+  const [notif, setNotif] = useState(false);
+
+  useEffect(() => {
+    if (notif) {
+      toast.success("Successfully Published Article!", { theme: "dark" });
+    }
+  }, [notif]);
+
   const sideBarContent = (
     <>
       <h2>Publish News Sidebar Content...</h2>
@@ -52,7 +71,7 @@ const PublishNews = ({ open }) => {
           >
             <Card>
               <CardContent>
-                <PublishForm />
+                <PublishForm setNotif={setNotif} />
               </CardContent>
             </Card>
           </Box>
@@ -61,6 +80,7 @@ const PublishNews = ({ open }) => {
           <Sidebar>{sideBarContent}</Sidebar>
         </Grid>
       </Grid>
+      <ToastContainer />
     </AppBar>
   );
 };

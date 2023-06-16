@@ -40,7 +40,7 @@ class _ScreensHolderState extends State<ScreensHolder> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       await Provider.of<NewsProvider>(context, listen: false)
-          .fetchNewsFromService();
+          .fetchNewsFromService(context);
     });
   }
 

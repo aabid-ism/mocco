@@ -25,7 +25,7 @@ class NewsService {
             sourceUrl: obj['sourceUrl'],
             author: obj['author'],
             sourceName: obj['sourceName'],
-            tags: List<String?>.from(obj['tags']),
+            // tags: List<String?>.from(obj['tags']),
           );
         }).toList();
         return newsModals;

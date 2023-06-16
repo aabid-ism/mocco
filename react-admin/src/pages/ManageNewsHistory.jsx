@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiAppBar from "@mui/material/AppBar";
@@ -12,7 +12,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Chip from "@mui/material/Chip";
 import { Stack } from "@mui/material";
-import "../App.css";
+import Axios from "../utils/axios.js";
 
 const drawerWidth = 240;
 
@@ -28,6 +28,15 @@ const AppBar = styled(MuiAppBar, {
   height: "100%",
   backgroundColor: "#f3f4f6",
   boxShadow: "none",
+  overflowY: "scroll",
+  "&::-webkit-scrollbar": {
+    width: "0.4em",
+    backgroundColor: "transparent",
+  },
+  "&::-webkit-scrollbar-thumb": {
+    backgroundColor: "transparent",
+  },
+  paddingBottom: "5%",
   ...(open && {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: `${drawerWidth}px`,
@@ -40,6 +49,25 @@ const AppBar = styled(MuiAppBar, {
 
 const ManageNewsHistory = ({ open }) => {
   const [startDate, setStartDate] = useState(new Date());
+  const [newsList, setNewsList] = useState([]);
+  const [selectedNews, setSelectedNews] = useState([]);
+
+  useEffect(() => {
+    async function getHeadlines() {
+      try {
+        const date = new Date(startDate);
+        const formattedDate = date.toISOString().split("T")[0];
+        const response = await Axios.post("/get-news-by-date", {
+          date: formattedDate,
+        });
+        setNewsList(response.data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    getHeadlines();
+  }, [startDate]);
 
   const data = [
     {
@@ -84,6 +112,10 @@ const ManageNewsHistory = ({ open }) => {
     },
   ];
 
+  function handleChipClick(item) {
+    setSelectedNews(item);
+  }
+
   const sideBarContent = (
     <Stack
       sx={{
@@ -93,6 +125,7 @@ const ManageNewsHistory = ({ open }) => {
       }}
     >
       <Box sx={{ marginBottom: 3 }}>
+        <label htmlFor="datepicker">Select a date:</label>
         <DatePicker
           selected={startDate}
           onChange={(date) => setStartDate(date)}
@@ -136,13 +169,14 @@ const ManageNewsHistory = ({ open }) => {
             },
           }}
         >
-          {data.map((item) => (
+          {newsList.map((item) => (
             <Chip
-              key={item.id}
-              label={item.text}
+              key={item._id}
+              label={item.title}
               variant="outlined"
-              title={item.text}
+              title={item.title}
               sx={{ marginBottom: "6px", width: "100%" }}
+              onClick={() => handleChipClick(item)}
             />
           ))}
         </Box>
@@ -163,7 +197,7 @@ const ManageNewsHistory = ({ open }) => {
           >
             <Card>
               <CardContent>
-                <ManageNewsHistoryForm />
+                <ManageNewsHistoryForm selectedNews={selectedNews} />
               </CardContent>
             </Card>
           </Box>

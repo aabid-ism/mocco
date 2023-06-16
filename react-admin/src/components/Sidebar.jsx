@@ -4,7 +4,7 @@ import CardContent from "@mui/material/CardContent";
 
 const Sidebar = ({ children }) => {
   return (
-    <Box sx={{ padding: "2%" }}>
+    <Box sx={{ padding: "4%" }}>
       <Card>
         <CardContent>{children}</CardContent>
       </Card>

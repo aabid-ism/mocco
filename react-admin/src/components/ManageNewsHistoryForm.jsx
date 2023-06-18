@@ -46,36 +46,69 @@ const Fade = forwardRef(function Fade(props, ref) {
 const ManageNewsHistoryForm = ({ selectedNews }) => {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [valid, setValid] = useState(false);
+  const [data, setData] = useState([]);
+  const [dropDownList, setDropDownList] = useState();
 
-  console.log(selectedNews);
+  useEffect(() => {
+    async function getDropDowns() {
+      try {
+        const response = await Axios.post("/get-drop-downs");
+        console.log(response);
+        setDropDownList(response.data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    getDropDowns();
+  }, []);
 
   const initialValues = {
-    title: "",
-    description: "",
-    imageUrl: "",
-    sourceName: "",
-    sourceUrl: "",
+    id: selectedNews ? selectedNews._id : "",
+    title: selectedNews ? selectedNews.title : "",
+    description: selectedNews ? selectedNews.description : "",
+    // imageUrl: selectedNews ? selectedNews.imageUrl : "",
+    sourceName: selectedNews ? selectedNews.sourceName : "",
+    sourceUrl: selectedNews ? selectedNews.sourceUrl : "",
     author: "",
-    mainTag: "",
+    mainTags: "",
     secondaryTags: "",
-    locality: "",
+    locality: selectedNews ? selectedNews.locality : "",
   };
 
-  const handleEdit = async (values) => {
+  const handleSubmit = async (values) => {
+    console.log(values);
     try {
-      // const response = await Axios.post("/update-news", values);
-      // console.log(response);
-    } catch (err) {
-      console.error(err);
+      setData(values);
+      // resetForm({ values: initialValues });
+      setValid(false);
+    } catch (error) {
+      console.error(error);
     }
   };
 
-  const handleDelete = async (values) => {
-    try {
-      // const response = await Axios.post("/delete-news", values);
-      // console.log(response);
-    } catch (err) {
-      console.error(err);
+  const handleEditConfirm = async (confirmed) => {
+    if (confirmed) {
+      try {
+        await Axios.post("/edit-news", data);
+        setEditOpen(false);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
+  const handleDeleteConfirm = async (confirmed) => {
+    if (confirmed) {
+      try {
+        console.log(data.id);
+        const response = await Axios.post("/delete-news", data);
+        setDeleteOpen(false);
+        console.log(response);
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
@@ -96,12 +129,18 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
     sourceName: Yup.string().required("Source Name is required"),
     sourceUrl: Yup.string().required("Source URL is required"),
     author: Yup.string().required("Author is required"),
-    mainTag: Yup.string().required("Tags are required"),
+    mainTags: Yup.string().required("Main News Tags are required"),
     locality: Yup.string().required("Locality is required"),
   });
 
   return (
-    <Formik initialValues={initialValues} onSubmit={handleEdit}>
+    <Formik
+      initialValues={initialValues}
+      onSubmit={handleSubmit}
+      validationSchema={validationSchema}
+      validate={isValidationPassed}
+      enableReinitialize={true}
+    >
       <Form>
         <Box sx={{ marginBottom: "2%" }}>
           <label htmlFor="title">
@@ -111,7 +150,6 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
             as={TextField}
             id="title"
             name="title"
-            value={selectedNews ? selectedNews.title : ""}
             variant="outlined"
             fullWidth
             inputProps={{
@@ -120,7 +158,14 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
               },
             }}
           />
-          <ErrorMessage name="title" component="div" />
+          <ErrorMessage
+            name="title"
+            component="div"
+            style={{
+              color: "red",
+              fontSize: "0.8rem",
+            }}
+          />
         </Box>
 
         <Box sx={{ marginBottom: "2%" }}>
@@ -131,7 +176,6 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
             as={TextareaAutosize}
             id="description"
             name="description"
-            value={selectedNews ? selectedNews.description : ""}
             minRows={3}
             maxRows={5}
             placeholder="Enter text here..."
@@ -142,7 +186,14 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
               border: "1px solid #ccc",
             }}
           />
-          <ErrorMessage name="description" component="div" />
+          <ErrorMessage
+            name="description"
+            component="div"
+            style={{
+              color: "red",
+              fontSize: "0.8rem",
+            }}
+          />
         </Box>
 
         <Box sx={{ marginBottom: "2%" }}>
@@ -161,7 +212,14 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
               shrink: true,
             }}
           />
-          <ErrorMessage name="imageUrl" component="div" />
+          <ErrorMessage
+            name="imageUrl"
+            component="div"
+            style={{
+              color: "red",
+              fontSize: "0.8rem",
+            }}
+          />
         </Box>
 
         <Box sx={{ marginBottom: "2%" }}>
@@ -172,7 +230,6 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
             as={TextField}
             id="sourceName"
             name="sourceName"
-            value={selectedNews ? selectedNews.sourceName : ""}
             variant="outlined"
             fullWidth
             inputProps={{
@@ -181,7 +238,14 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
               },
             }}
           />
-          <ErrorMessage name="sourceName" component="div" />
+          <ErrorMessage
+            name="sourceName"
+            component="div"
+            style={{
+              color: "red",
+              fontSize: "0.8rem",
+            }}
+          />
         </Box>
 
         <Box sx={{ marginBottom: "2%" }}>
@@ -192,7 +256,6 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
             as={TextField}
             id="sourceUrl"
             name="sourceUrl"
-            value={selectedNews ? selectedNews.sourceUrl : ""}
             variant="outlined"
             fullWidth
             inputProps={{
@@ -201,7 +264,14 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
               },
             }}
           />
-          <ErrorMessage name="sourceUrl" component="div" />
+          <ErrorMessage
+            name="sourceUrl"
+            component="div"
+            style={{
+              color: "red",
+              fontSize: "0.8rem",
+            }}
+          />
         </Box>
 
         <Box sx={{ display: "flex" }}>
@@ -213,42 +283,46 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
               as={TextField}
               id="author"
               name="author"
-              value={selectedNews ? selectedNews.author : ""}
               select
               variant="outlined"
               fullWidth
             >
-              <MenuItem value={selectedNews ? selectedNews.author : ""}>
-                {selectedNews ? selectedNews.author : ""}
-              </MenuItem>
-              <MenuItem value="Sarah Johnson">Sarah Johnson</MenuItem>
-              <MenuItem value="Michael Thompson">Michael Thompson</MenuItem>
-              <MenuItem value="optEmily Davision3">Emily Davis</MenuItem>
+              {dropDownList
+                ? dropDownList.authors.map((item) => (
+                    <MenuItem value={item.name}>{item.name}</MenuItem>
+                  ))
+                : ""}
             </Field>
-            <ErrorMessage name="author" component="div" />
+            <ErrorMessage
+              name="author"
+              component="div"
+              style={{
+                color: "red",
+                fontSize: "0.8rem",
+              }}
+            />
           </Box>
 
           <Box sx={{ marginRight: "10px", width: "25%" }}>
-            <label htmlFor="mainTag">
+            <label htmlFor="mainTags">
               <Typography fontWeight="bold">Main News Tags</Typography>
             </label>
             <Field
               as={TextField}
-              id="mainTag"
-              name="mainTag"
-              value={selectedNews ? selectedNews.author : ""}
+              id="mainTags"
+              name="mainTags"
               select
               variant="outlined"
               fullWidth
             >
-              <MenuItem value="Sports">Sports</MenuItem>
-              <MenuItem value="Politics">Politics</MenuItem>
-              <MenuItem value="Science and Technology">
-                Science and Technology
-              </MenuItem>
+              {dropDownList
+                ? dropDownList.mainTags.map((item) => (
+                    <MenuItem value={item.topic}>{item.topic}</MenuItem>
+                  ))
+                : ""}
             </Field>
             <ErrorMessage
-              name="mainTag"
+              name="mainTags"
               component="div"
               style={{
                 color: "red",
@@ -267,16 +341,16 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
               as={TextField}
               id="secondaryTags"
               name="secondaryTags"
-              value={selectedNews ? selectedNews.secondaryTags : ""}
               select
               variant="outlined"
               fullWidth
+              multiple
             >
-              <MenuItem value="Sports">Sports</MenuItem>
-              <MenuItem value="Politics">Politics</MenuItem>
-              <MenuItem value="Science and Technology">
-                Science and Technology
-              </MenuItem>
+              {dropDownList
+                ? dropDownList.secondaryTags.map((item) => (
+                    <MenuItem value={item.topic}>{item.topic}</MenuItem>
+                  ))
+                : ""}
             </Field>
             <ErrorMessage
               name="secondaryTags"
@@ -298,7 +372,6 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
               as={TextField}
               id="locality"
               name="locality"
-              value={selectedNews ? selectedNews.locality : ""}
               select
               variant="outlined"
               fullWidth
@@ -328,7 +401,7 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
             variant="contained"
             type="submit"
             onClick={() => {
-              setEditOpen(true);
+              valid && setEditOpen(true);
             }}
           >
             Edit
@@ -343,7 +416,7 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
               },
             }}
             onClick={() => {
-              setDeleteOpen(true);
+              valid && setDeleteOpen(true);
             }}
           >
             Delete
@@ -384,7 +457,7 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
                 <Button
                   sx={{ mt: 2, mx: "auto" }}
                   variant="contained"
-                  onClick={() => handleConfirm(true)}
+                  onClick={() => handleEditConfirm(true)}
                 >
                   Yes
                 </Button>
@@ -427,7 +500,7 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
                   <Button
                     sx={{ mt: 2, mx: "auto" }}
                     variant="contained"
-                    onClick={() => handleConfirm(true)}
+                    onClick={() => handleDeleteConfirm(true)}
                   >
                     Yes
                   </Button>

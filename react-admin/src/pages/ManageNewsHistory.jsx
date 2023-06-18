@@ -69,49 +69,6 @@ const ManageNewsHistory = ({ open }) => {
     getHeadlines();
   }, [startDate]);
 
-  const data = [
-    {
-      id: 1,
-      text: "New Study Shows Benefits of Exercise for Mental Health",
-    },
-    {
-      id: 2,
-      text: "Global Stock Market Reaches All-Time High",
-    },
-    {
-      id: 3,
-      text: "Scientists Discover Potential Treatment for Alzheimer's",
-    },
-    {
-      id: 4,
-      text: "Record-Breaking Heatwave Sweeps Across Europe",
-    },
-    {
-      id: 5,
-      text: "Government Announces Plan to Reduce Carbon Emissions",
-    },
-    {
-      id: 6,
-      text: "Major Tech Company Unveils Groundbreaking Innovation",
-    },
-    {
-      id: 7,
-      text: "World Leaders Gather for Climate Change Summit",
-    },
-    {
-      id: 8,
-      text: "COVID-19 Vaccination Efforts Expand Globally",
-    },
-    {
-      id: 9,
-      text: "Breaking News: Earthquake Strikes Coastal Region",
-    },
-    {
-      id: 10,
-      text: "Local Hero Saves Child from Burning Building",
-    },
-  ];
-
   function handleChipClick(item) {
     setSelectedNews(item);
   }

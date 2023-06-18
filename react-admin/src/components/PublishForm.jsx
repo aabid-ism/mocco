@@ -43,10 +43,24 @@ const Fade = forwardRef(function Fade(props, ref) {
   );
 });
 
-const PublishForm = ({ setNotif }) => {
+const PublishForm = ({ handleSubmitFunc }) => {
   const [open, setOpen] = useState(false);
   const [valid, setValid] = useState(false);
   const [data, setData] = useState({});
+  const [dropDownList, setDropDownList] = useState();
+
+  useEffect(() => {
+    async function getDropDowns() {
+      try {
+        const response = await Axios.post("/get-drop-downs");
+        setDropDownList(response.data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    getDropDowns();
+  }, []);
 
   const initialValues = {
     title: "",
@@ -60,7 +74,7 @@ const PublishForm = ({ setNotif }) => {
     locality: "",
   };
 
-  const handleSubmit = async (values, { resetForm }) => {
+  const handleSubmit = async (values) => {
     try {
       setData(values);
       // resetForm({ values: initialValues });
@@ -75,9 +89,7 @@ const PublishForm = ({ setNotif }) => {
       if (confirmed) {
         await Axios.post("/publish-news", data);
         setOpen(false);
-        setNotif(true);
-      } else {
-        console.log("sorry");
+        handleSubmitFunc();
       }
     } catch (err) {
       console.log(err);
@@ -258,9 +270,11 @@ const PublishForm = ({ setNotif }) => {
               variant="outlined"
               fullWidth
             >
-              <MenuItem value="Sarah Johnson">Sarah Johnson</MenuItem>
-              <MenuItem value="Michael Thompson">Michael Thompson</MenuItem>
-              <MenuItem value="Emily Davis">Emily Davis</MenuItem>
+              {dropDownList
+                ? dropDownList.authors.map((item) => (
+                    <MenuItem value={item.name}>{item.name}</MenuItem>
+                  ))
+                : ""}
             </Field>
             <ErrorMessage
               name="author"
@@ -284,11 +298,11 @@ const PublishForm = ({ setNotif }) => {
               variant="outlined"
               fullWidth
             >
-              <MenuItem value="Sports">Sports</MenuItem>
-              <MenuItem value="Politics">Politics</MenuItem>
-              <MenuItem value="Science and Technology">
-                Science and Technology
-              </MenuItem>
+              {dropDownList
+                ? dropDownList.mainTags.map((item) => (
+                    <MenuItem value={item.topic}>{item.topic}</MenuItem>
+                  ))
+                : ""}
             </Field>
             <ErrorMessage
               name="mainTag"
@@ -314,11 +328,11 @@ const PublishForm = ({ setNotif }) => {
               variant="outlined"
               fullWidth
             >
-              <MenuItem value="Sports">Sports</MenuItem>
-              <MenuItem value="Politics">Politics</MenuItem>
-              <MenuItem value="Science and Technology">
-                Science and Technology
-              </MenuItem>
+              {dropDownList
+                ? dropDownList.secondaryTags.map((item) => (
+                    <MenuItem value={item.topic}>{item.topic}</MenuItem>
+                  ))
+                : ""}
             </Field>
             <ErrorMessage
               name="secondaryTags"

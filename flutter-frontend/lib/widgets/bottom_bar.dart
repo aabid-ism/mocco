@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mocco/models/news_card.dart';
 import 'package:mocco/widgets/share_bottom_sheet.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 
 class BottomBar extends StatelessWidget {
   final NewsCard newsCard;
@@ -95,7 +96,9 @@ class BottomBar extends StatelessWidget {
 Future<bool> _launchUrl(String sourceString) async {
   try {
     Uri url = Uri.parse(sourceString);
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+    final response = await http.head(url);
+    if (response.statusCode != 200 ||
+        !await launchUrl(url, mode: LaunchMode.externalApplication)) {
       return false;
     }
     return true;

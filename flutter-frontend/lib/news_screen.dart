@@ -32,17 +32,50 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
           return SafeArea(
             child: Stack(
               children: [
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: CachedNetworkImage(
-                    placeholder: (context, url) => const Center(
-                      child: CircularProgressIndicator(),
+                Container(
+                  height: MediaQuery.of(context).size.height / 3,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: CachedNetworkImage(
+                      placeholder: (context, url) => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                      imageUrl: newsCards[index].imageUrl ?? "",
+                      errorWidget: (context, url, error) => const Center(
+                        child: SizedBox(
+                          height: 90,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Icon(Icons.error, size: 48),
+                              SizedBox(height: 20),
+                              Text(
+                                "The image could not be loaded",
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      fit: BoxFit.cover,
+                      height: MediaQuery.of(context).size.height /
+                          3, //Set image size to 1/3 of the screen
+                      width: double.infinity,
                     ),
-                    imageUrl: newsCards[index].imageUrl ?? "",
-                    fit: BoxFit.cover,
-                    height: MediaQuery.of(context).size.height /
-                        3, //Set image size to 1/3 of the screen
-                    width: double.infinity,
                   ),
                 ),
                 Positioned(
@@ -53,6 +86,14 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(255, 255, 209, 139),
                       borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
                     ),
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(21, 4, 21, 5),

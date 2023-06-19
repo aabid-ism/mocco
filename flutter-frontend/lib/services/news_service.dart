@@ -18,15 +18,17 @@ class NewsService {
           // print("-------------------------------------------");
           // print((obj['description']));
           return NewsCard(
-            id: obj['_id'],
-            title: obj['title'],
-            description: obj['description'],
-            imageUrl: obj['imageUrl'],
-            sourceUrl: obj['sourceUrl'],
-            author: obj['author'],
-            sourceName: obj['sourceName'],
-            // tags: List<String?>.from(obj['tags']),
-          );
+              id: obj['_id'],
+              title: obj['title'],
+              description: obj['description'],
+              imageUrl: obj['imageUrl'],
+              sourceUrl: obj['sourceUrl'],
+              author: obj['author'],
+              sourceName: obj['sourceName'],
+              mainTag: obj['mainTag'],
+              secondaryTags: List<String?>.from(obj['secondaryTags']),
+              locality: obj['locality'],
+              createdAt: obj['createdAt']);
         }).toList();
         return newsModals;
       } else {

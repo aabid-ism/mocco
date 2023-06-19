@@ -47,11 +47,16 @@ const AppBar = styled(MuiAppBar, {
 const PublishNews = ({ open }) => {
   const [notif, setNotif] = useState(false);
 
-  useEffect(() => {
-    if (notif) {
-      toast.success("Successfully Published Article!", { theme: "dark" });
-    }
-  }, [notif]);
+  const handleSubmitFunc = () => {
+    toast.success("Successfully Published Article!", {
+      theme: "dark",
+      onClose: () => {
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      },
+    });
+  };
 
   const sideBarContent = (
     <>
@@ -71,7 +76,7 @@ const PublishNews = ({ open }) => {
           >
             <Card>
               <CardContent>
-                <PublishForm setNotif={setNotif} />
+                <PublishForm handleSubmitFunc={handleSubmitFunc} />
               </CardContent>
             </Card>
           </Box>

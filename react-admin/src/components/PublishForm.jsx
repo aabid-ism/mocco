@@ -52,7 +52,7 @@ const PublishForm = ({ handleSubmitFunc }) => {
   useEffect(() => {
     async function getDropDowns() {
       try {
-        const response = await Axios.post("/get-drop-downs");
+        const response = await Axios.get("/get-drop-downs");
         setDropDownList(response.data);
       } catch (err) {
         console.error(err);

@@ -52,25 +52,7 @@ router.post("/get-news-by-date", async (req, res) => {
   }
 });
 
-router.post("/get-authors", async (req, res) => {
-  const { date } = req.body;
-  try {
-    // getting references to database and collection
-    const db = conn.getDb();
-    const collection = await db.collection("authors");
-
-    // finding and returning all news posts
-    const results = await collection
-      .find({ createdAt: date })
-      .limit(50)
-      .toArray();
-    res.send(results).status(200);
-  } catch (error) {
-    res.send(error).status(500);
-  }
-});
-
-router.post("/get-drop-downs", async (req, res) => {
+router.get("/get-drop-downs", async (req, res) => {
   try {
     // getting references to database and collection
     const db = conn.getDb();

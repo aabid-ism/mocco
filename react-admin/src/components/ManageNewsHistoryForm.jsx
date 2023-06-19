@@ -53,7 +53,7 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
   useEffect(() => {
     async function getDropDowns() {
       try {
-        const response = await Axios.post("/get-drop-downs");
+        const response = await Axios.get("/get-drop-downs");
         console.log(response);
         setDropDownList(response.data);
       } catch (err) {

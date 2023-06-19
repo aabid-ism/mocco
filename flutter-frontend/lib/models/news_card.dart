@@ -6,7 +6,10 @@ class NewsCard {
   final String? sourceUrl;
   final String? author;
   final String? sourceName;
-  final List<String?>? tags;
+  final String? mainTag;
+  //final List<String?>? secondaryTags;
+  final String? locality;
+  final String? createdAt;
 
   NewsCard(
       {required this.id,
@@ -16,5 +19,8 @@ class NewsCard {
       this.sourceUrl,
       this.author,
       this.sourceName,
-      this.tags});
+      this.mainTag,
+      //this.secondaryTags,
+      this.locality,
+      this.createdAt});
 }

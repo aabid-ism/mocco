@@ -26,7 +26,7 @@ class NewsService {
               author: obj['author'],
               sourceName: obj['sourceName'],
               mainTag: obj['mainTag'],
-              secondaryTags: List<String?>.from(obj['secondaryTags']),
+              //secondaryTags: List<String?>.from(obj['secondaryTags']),
               locality: obj['locality'],
               createdAt: obj['createdAt']);
         }).toList();

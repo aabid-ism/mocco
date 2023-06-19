@@ -22,52 +22,84 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
     var newsCards = appState.newsModelsList;
 
     return Scaffold(
-      body: PageView.builder(// Build pages lazily for better performance 
+      body: PageView.builder(
+        // Build pages lazily for better performance
         scrollDirection: Axis.vertical,
         controller: _controller,
         itemCount: newsCards.length,
-        itemBuilder: (BuildContext context, int index) {// Build page items 
-          return SizedBox( // full page container
-            height: MediaQuery.of(context).size.height, 
+        itemBuilder: (BuildContext context, int index) {
+          // Build page items
+          return SafeArea(
             child: Stack(
               children: [
-                SafeArea(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height / 3,
-                        width: double.infinity,
-                        child: AspectRatio(
-                          aspectRatio: 16 / 9,
-                          child: CachedNetworkImage(
-                            placeholder: (context, url) => const Center(
-                              child: CircularProgressIndicator(),
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: CachedNetworkImage(
+                    placeholder: (context, url) => const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                    imageUrl: newsCards[index].imageUrl ?? "",
+                    fit: BoxFit.cover,
+                    height: MediaQuery.of(context).size.height /
+                        3, //Set image size to 1/3 of the screen
+                    width: double.infinity,
+                  ),
+                ),
+                Positioned(
+                  right: 20,
+                  top: (MediaQuery.of(context).size.height / 3) -
+                      11.5, // Position mainTag teblet
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 255, 209, 139),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(21, 4, 21, 5),
+                      child: Text(
+                        newsCards[index].mainTag ?? "mocco",
+                        style: const TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: (MediaQuery.of(context).size.height /
+                      3), //Start contet from where news image ends
+                  child: SizedBox(
+                    width: MediaQuery.of(context)
+                        .size
+                        .width, //Set content area to max display size
+                    child: Padding(
+                      padding: const EdgeInsets.all(21),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment
+                            .start, //Align items from left-to-right in cross axis
+                        children: [
+                          Text(
+                            newsCards[index].title ?? "",
+                            key: Key('$index-title'),
+                            style: const TextStyle(
+                              fontSize: 24,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500,
                             ),
-                            imageUrl: newsCards[index].imageUrl ?? "",
-                            fit: BoxFit.cover,
                           ),
-                        ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            newsCards[index].description ?? "",
+                            key: Key('$index-description'),
+                            style: const TextStyle(
+                                fontSize: 18, color: Colors.black87),
+                          ),
+                        ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
-                        child: Text(
-                          '${newsCards[index].title}',
-                          key: Key('$index-title'),
-                          style: const TextStyle(
-                              fontSize: 22, color: Colors.black),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 5),
-                        child: Text(
-                          '${newsCards[index].description}',
-                          key: Key('$index-description'),
-                          style: const TextStyle(
-                              fontSize: 18, color: Colors.black87),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
                 Positioned(

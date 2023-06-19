@@ -7,7 +7,7 @@ class NewsCard {
   final String? author;
   final String? sourceName;
   final String? mainTag;
-  final List<String?>? secondaryTags;
+  //final List<String?>? secondaryTags;
   final String? locality;
   final String? createdAt;
 
@@ -20,7 +20,7 @@ class NewsCard {
       this.author,
       this.sourceName,
       this.mainTag,
-      this.secondaryTags,
+      //this.secondaryTags,
       this.locality,
       this.createdAt});
 }

@@ -14,11 +14,20 @@ class NewsProvider extends ChangeNotifier {
 
   // get the list of NewsCards from the service and assign to
   // newsModelsList
-  Future<void> fetchNewsFromService() async {
+  Future<void> fetchNewsFromService(BuildContext context) async {
     isLoading = true;
     notifyListeners();
 
     final response = await newsService.fetchAllNews();
+    if (response.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        //Show snack bar msg if failed the launch
+        const SnackBar(
+          backgroundColor: Colors.redAccent,
+          content: Text('Please Connect to the Internet'),
+        ),
+      );
+    }
     newsModelsList = response;
     isLoading = false;
     notifyListeners();

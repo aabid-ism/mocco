@@ -86,7 +86,7 @@ router.get("/get-drop-downs", async (req, res) => {
 router.post("/edit-news", async (req, res) => {
   try {
     const newsId = req.body.id;
-    const updateNews = req.body;
+    const { id, ...updateNews } = req.body;
 
     // getting references to database and collection
     const db = conn.getDb();

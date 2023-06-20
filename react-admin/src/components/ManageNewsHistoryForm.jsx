@@ -5,9 +5,8 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import {
-  Checkbox,
+  Autocomplete,
   Chip,
-  ListItemText,
   MenuItem,
   TextareaAutosize,
   Tooltip,
@@ -175,17 +174,9 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
   });
 
   // function to handle the secondary news tag drop down
-  const handleSecondaryTagChange = (e) => {
-    const { value, checked } = e.target;
-    if (checked) {
-      // Add the selected secondary tag to the state
-      setSelectedSecondaryTags((prevTags) => [...prevTags, value]);
-    } else {
-      // Remove the unselected secondary tag from the state
-      setSelectedSecondaryTags((prevTags) =>
-        prevTags.filter((tag) => tag !== value)
-      );
-    }
+  const handleSecondaryTagChange = (e, values) => {
+    const selectedValues = values.map(({ topic }) => topic);
+    setSelectedSecondaryTags(selectedValues);
   };
 
   return (
@@ -447,51 +438,19 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
           </Box>
         </Box>
 
-        <Box sx={{ marginTop: "10px", width: "30%" }}>
+        <Box sx={{ marginTop: "10px", width: "75%" }}>
           <label htmlFor="secondaryTags">
             <Typography fontWeight="bold">Secondary News Tags</Typography>
           </label>
-          <Field
-            as={TextField}
+          <Autocomplete
             id="secondaryTags"
             name="secondaryTags"
-            select
-            variant="outlined"
-            fullWidth
-            children={
-              dropDownList
-                ? dropDownList.secondaryTags.map((item) => (
-                    <MenuItem key={item._id} value={item.topic}>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "row",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Checkbox
-                          value={item.topic}
-                          checked={
-                            selectedSecondaryTags.includes(item.topic)
-                              ? true
-                              : false
-                          }
-                          onChange={handleSecondaryTagChange}
-                        />
-                        <ListItemText primary={item.topic} />
-                      </Box>
-                    </MenuItem>
-                  ))
-                : []
-            }
-          />
-          <ErrorMessage
-            name="secondaryTags"
-            component="div"
-            style={{
-              color: "red",
-              fontSize: "0.8rem",
-            }}
+            multiple
+            options={dropDownList ? dropDownList.secondaryTags : []}
+            getOptionLabel={(option) => option.topic}
+            renderInput={(params) => <TextField {...params} />}
+            onChange={handleSecondaryTagChange}
+            value={selectedSecondaryTags.map((value) => ({ topic: value }))}
           />
         </Box>
 

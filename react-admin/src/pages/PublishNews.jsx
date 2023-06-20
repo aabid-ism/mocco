@@ -1,3 +1,4 @@
+// <------------------------ IMPORTS ------------------------------->
 import { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -13,6 +14,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const drawerWidth = 240;
 
+// function used for smooth transitioning of the page based on the opening and closing of the navigation bar
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
@@ -45,17 +47,22 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 const PublishNews = ({ open }) => {
-  const [notif, setNotif] = useState(false);
-
-  const handleSubmitFunc = () => {
-    toast.success("Successfully Published Article!", {
-      theme: "dark",
-      onClose: () => {
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-      },
-    });
+  // function to notify successful upload
+  const handleSubmitFunc = (response) => {
+    if (response.status === 200) {
+      toast.success(response.data.message, {
+        theme: "dark",
+        onClose: () => {
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        },
+      });
+    } else {
+      toast.error(response.data.message, {
+        theme: "dark",
+      });
+    }
   };
 
   const sideBarContent = (

@@ -24,18 +24,24 @@ router.post("/publish-news", async (req, res) => {
     const collection = await db.collection("news");
     let data = req.body;
     const today = new Date();
-    const dateOnly = today.toISOString().split("T")[0];
+    const dateOnly = new Date(today.toISOString().split("T")[0]);
     data = { ...data, createdAt: dateOnly };
-    const results = await collection.insertOne(data);
-    res.send(results).status(200);
+    const result = await collection.insertOne(data);
+
+    if (!result) {
+      return res.status(404).json({ message: "News not found" });
+    }
+
+    res.status(200).json({ message: "News updated successfully" });
   } catch (error) {
     console.error(error);
-    res.send(error).status(500);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
 router.post("/get-news-by-date", async (req, res) => {
-  const { date } = req.body;
+  let { date } = req.body;
+  date = new Date(date);
   try {
     // getting references to database and collection
     const db = conn.getDb();
@@ -77,6 +83,34 @@ router.get("/get-drop-downs", async (req, res) => {
   }
 });
 
+router.post("/edit-news", async (req, res) => {
+  try {
+    const newsId = req.body.id;
+    const updateNews = req.body;
+
+    // getting references to database and collection
+    const db = conn.getDb();
+    const collection = await db.collection("news");
+
+    // finding and updating news post based on ID
+    const result = await collection.updateOne(
+      {
+        _id: new ObjectId(newsId),
+      },
+      { $set: updateNews }
+    );
+
+    if (!result) {
+      return res.status(404).json({ message: "News not found" });
+    }
+
+    res.status(200).json({ message: "News updated successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 router.post("/delete-news", async (req, res) => {
   try {
     const newsId = req.body.id;
@@ -93,10 +127,11 @@ router.post("/delete-news", async (req, res) => {
     if (!result) {
       return res.status(404).json({ message: "News not found" });
     }
-    res.send(result).status(200);
+
+    res.status(200).json({ message: "News deleted successfully" });
   } catch (error) {
     console.log(error);
-    res.send(error).status(500);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 

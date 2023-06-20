@@ -1,3 +1,4 @@
+// <------------------------ IMPORTS ------------------------------->
 import { useRef, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -21,6 +22,7 @@ import { ListItemIcon } from "@mui/material";
 
 const drawerWidth = 240;
 
+// function used for smooth transitioning of the page based on the opening and closing of the navigation bar
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
@@ -44,7 +46,7 @@ export default function Navbar({ open, setOpen }) {
   const navigate = useNavigate();
   const listItemTextHomeRef = useRef(null);
   const listItemTextManageNewsHistoryRef = useRef(null);
-  const [pageText, setPageText] = useState("Publish News");
+  const [pageText, setPageText] = useState("Publish News"); // state to set the page headline
 
   const handleDrawerOpen = () => {
     setOpen(true);

@@ -1,16 +1,26 @@
+// <------------------------ IMPORTS ------------------------------->
 import { useState, useEffect, forwardRef, cloneElement } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { MenuItem, TextareaAutosize } from "@mui/material";
+import {
+  Checkbox,
+  Chip,
+  ListItemText,
+  MenuItem,
+  TextareaAutosize,
+  Tooltip,
+} from "@mui/material";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Axios from "../utils/axios.js";
 import Backdrop from "@mui/material/Backdrop";
 import { useSpring, animated } from "@react-spring/web";
 import Modal from "@mui/material/Modal";
+import CancelIcon from "@mui/icons-material/Cancel";
 
+// function used for smooth transitioning of the modal
 const Fade = forwardRef(function Fade(props, ref) {
   const {
     children,
@@ -43,18 +53,19 @@ const Fade = forwardRef(function Fade(props, ref) {
   );
 });
 
-const ManageNewsHistoryForm = ({ selectedNews }) => {
-  const [editOpen, setEditOpen] = useState(false);
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [valid, setValid] = useState(false);
-  const [data, setData] = useState([]);
-  const [dropDownList, setDropDownList] = useState();
+const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
+  const [editOpen, setEditOpen] = useState(false); // state used to manipulate the opening and closing of edit modal.
+  const [deleteOpen, setDeleteOpen] = useState(false); // state used to manipulate the opening and closing of delete modal.
+  const [valid, setValid] = useState(false); // state to check if form has passed validation.
+  const [data, setData] = useState([]); // state to store the data that has been submitted by form (edit or delete).
+  const [dropDownList, setDropDownList] = useState(); // state to store the data return of the dropdown values from the api.
+  const [isDeleteMode, setIsDeleteMode] = useState(false);
+  const [selectedSecondaryTags, setSelectedSecondaryTags] = useState([]);
 
   useEffect(() => {
     async function getDropDowns() {
       try {
         const response = await Axios.get("/get-drop-downs");
-        console.log(response);
         setDropDownList(response.data);
       } catch (err) {
         console.error(err);
@@ -64,64 +75,94 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
     getDropDowns();
   }, []);
 
+  useEffect(() => {
+    if (selectedNews && selectedNews.secondaryTags) {
+      let temp = selectedNews.secondaryTags;
+      setSelectedSecondaryTags(temp);
+    }
+  }, [selectedNews]);
+
+  // Initial values of the form data.
   const initialValues = {
     id: selectedNews ? selectedNews._id : "",
     title: selectedNews ? selectedNews.title : "",
     description: selectedNews ? selectedNews.description : "",
-    // imageUrl: selectedNews ? selectedNews.imageUrl : "",
+    // imageUrl: "https://example.com/default-image.jpg",
     sourceName: selectedNews ? selectedNews.sourceName : "",
     sourceUrl: selectedNews ? selectedNews.sourceUrl : "",
-    author: "",
-    mainTags: "",
-    secondaryTags: "",
-    locality: selectedNews ? selectedNews.locality : "",
+    author:
+      selectedNews && selectedNews.author !== undefined
+        ? selectedNews.author
+        : "",
+    mainTags:
+      selectedNews && selectedNews.mainTag !== undefined
+        ? selectedNews.mainTag
+        : "",
+    secondaryTags: selectedSecondaryTags ? selectedSecondaryTags : [],
+    locality:
+      selectedNews && selectedNews.locality !== undefined
+        ? selectedNews.locality
+        : "",
   };
 
+  // function to set the submitted form data to the state.
   const handleSubmit = async (values) => {
-    console.log(values);
-    try {
-      setData(values);
-      // resetForm({ values: initialValues });
-      setValid(false);
-    } catch (error) {
-      console.error(error);
+    if (isDeleteMode) {
+      try {
+        setData(values);
+        setDeleteOpen(true);
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      try {
+        setData(values);
+        setEditOpen(true);
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
+  // function that sends updated form data to the backend after confirmation from the pop up.
   const handleEditConfirm = async (confirmed) => {
     if (confirmed) {
       try {
-        await Axios.post("/edit-news", data);
+        let response = await Axios.post("/edit-news", data);
         setEditOpen(false);
+        handleSubmitFunc(response);
       } catch (err) {
         console.error(err);
       }
     }
   };
 
+  // function that sends deleted form data to the backend after confirmation from the pop up.
   const handleDeleteConfirm = async (confirmed) => {
     if (confirmed) {
       try {
-        console.log(data.id);
         const response = await Axios.post("/delete-news", data);
         setDeleteOpen(false);
-        console.log(response);
+        handleSubmitFunc(response);
       } catch (err) {
         console.error(err);
       }
     }
   };
 
+  // function used to set state based on if the if the validation is passed.
   const isValidationPassed = (values) => {
     try {
       validationSchema.validateSync(values);
       setValid(true);
       return true;
     } catch (error) {
+      setValid(false);
       return false;
     }
   };
 
+  // validation schema to define the error message.
   const validationSchema = Yup.object({
     title: Yup.string().required("News Headline is required"),
     description: Yup.string().required("News Description is required"),
@@ -132,6 +173,20 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
     mainTags: Yup.string().required("Main News Tags are required"),
     locality: Yup.string().required("Locality is required"),
   });
+
+  // function to handle the secondary news tag drop down
+  const handleSecondaryTagChange = (e) => {
+    const { value, checked } = e.target;
+    if (checked) {
+      // Add the selected secondary tag to the state
+      setSelectedSecondaryTags((prevTags) => [...prevTags, value]);
+    } else {
+      // Remove the unselected secondary tag from the state
+      setSelectedSecondaryTags((prevTags) =>
+        prevTags.filter((tag) => tag !== value)
+      );
+    }
+  };
 
   return (
     <Formik
@@ -197,9 +252,36 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
         </Box>
 
         <Box sx={{ marginBottom: "2%" }}>
-          <label htmlFor="imageUrl">
-            <Typography fontWeight="bold">Choose Image (JPG or PNG)</Typography>
-          </label>
+          <Box
+            sx={{
+              display: "flex",
+            }}
+          >
+            <label htmlFor="imageUrl">
+              <Typography fontWeight="bold">
+                Choose Image (JPG or PNG)
+              </Typography>
+            </label>
+            {selectedNews.imageUrl ? (
+              <Tooltip title={selectedNews.imageUrl} arrow>
+                <Chip
+                  id="imageUrl"
+                  name="imageUrl"
+                  label={selectedNews.imageUrl}
+                  size="small"
+                  onDelete={() => console.log(selectedNews.imageUrl)}
+                  deleteIcon={<CancelIcon />}
+                  sx={{
+                    maxWidth: "150px",
+                    marginLeft: "2%",
+                    marginBottom: "2%",
+                    backgroundColor: "orange",
+                    color: "white",
+                  }}
+                />
+              </Tooltip>
+            ) : null}
+          </Box>
           <Field
             as={TextField}
             id="imageUrl"
@@ -208,9 +290,9 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
             variant="outlined"
             fullWidth
             accept="imageUrl/jpeg, imageUrl/png"
-            inputLabelProps={{
-              shrink: true,
-            }}
+            // inputLabelProps={{
+            //   shrink: true,
+            // }}
           />
           <ErrorMessage
             name="imageUrl"
@@ -281,18 +363,21 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
             </label>
             <Field
               as={TextField}
+              select
               id="author"
               name="author"
-              select
               variant="outlined"
               fullWidth
-            >
-              {dropDownList
-                ? dropDownList.authors.map((item) => (
-                    <MenuItem value={item.name}>{item.name}</MenuItem>
-                  ))
-                : ""}
-            </Field>
+              children={
+                dropDownList && dropDownList.authors
+                  ? dropDownList.authors.map((item) => (
+                      <MenuItem key={item._id} value={item.name}>
+                        {item.name}
+                      </MenuItem>
+                    ))
+                  : []
+              }
+            />
             <ErrorMessage
               name="author"
               component="div"
@@ -314,46 +399,18 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
               select
               variant="outlined"
               fullWidth
-            >
-              {dropDownList
-                ? dropDownList.mainTags.map((item) => (
-                    <MenuItem value={item.topic}>{item.topic}</MenuItem>
-                  ))
-                : ""}
-            </Field>
+              children={
+                dropDownList && dropDownList.mainTags
+                  ? dropDownList.mainTags.map((item) => (
+                      <MenuItem key={item._id} value={item.topic}>
+                        {item.topic}
+                      </MenuItem>
+                    ))
+                  : []
+              }
+            />
             <ErrorMessage
               name="mainTags"
-              component="div"
-              style={{
-                color: "red",
-                fontSize: "0.8rem",
-              }}
-            />
-          </Box>
-
-          <Box sx={{ marginRight: "10px", width: "25%" }}>
-            <label htmlFor="secondaryTags">
-              <Typography fontWeight="bold" sx={{ fontSize: "0.9rem" }}>
-                Secondary News Tags
-              </Typography>
-            </label>
-            <Field
-              as={TextField}
-              id="secondaryTags"
-              name="secondaryTags"
-              select
-              variant="outlined"
-              fullWidth
-              multiple
-            >
-              {dropDownList
-                ? dropDownList.secondaryTags.map((item) => (
-                    <MenuItem value={item.topic}>{item.topic}</MenuItem>
-                  ))
-                : ""}
-            </Field>
-            <ErrorMessage
-              name="secondaryTags"
               component="div"
               style={{
                 color: "red",
@@ -376,8 +433,8 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
               variant="outlined"
               fullWidth
             >
-              <MenuItem value="Local">Local</MenuItem>
-              <MenuItem value="International">International</MenuItem>
+              <MenuItem value="local">Local</MenuItem>
+              <MenuItem value="international">International</MenuItem>
             </Field>
             <ErrorMessage
               name="locality"
@@ -388,6 +445,54 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
               }}
             />
           </Box>
+        </Box>
+
+        <Box sx={{ marginTop: "10px", width: "30%" }}>
+          <label htmlFor="secondaryTags">
+            <Typography fontWeight="bold">Secondary News Tags</Typography>
+          </label>
+          <Field
+            as={TextField}
+            id="secondaryTags"
+            name="secondaryTags"
+            select
+            variant="outlined"
+            fullWidth
+            children={
+              dropDownList
+                ? dropDownList.secondaryTags.map((item) => (
+                    <MenuItem key={item._id} value={item.topic}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Checkbox
+                          value={item.topic}
+                          checked={
+                            selectedSecondaryTags.includes(item.topic)
+                              ? true
+                              : false
+                          }
+                          onChange={handleSecondaryTagChange}
+                        />
+                        <ListItemText primary={item.topic} />
+                      </Box>
+                    </MenuItem>
+                  ))
+                : []
+            }
+          />
+          <ErrorMessage
+            name="secondaryTags"
+            component="div"
+            style={{
+              color: "red",
+              fontSize: "0.8rem",
+            }}
+          />
         </Box>
 
         <Box
@@ -402,6 +507,7 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
             type="submit"
             onClick={() => {
               valid && setEditOpen(true);
+              setIsDeleteMode(false);
             }}
           >
             Edit
@@ -417,6 +523,7 @@ const ManageNewsHistoryForm = ({ selectedNews }) => {
             }}
             onClick={() => {
               valid && setDeleteOpen(true);
+              setIsDeleteMode(true);
             }}
           >
             Delete

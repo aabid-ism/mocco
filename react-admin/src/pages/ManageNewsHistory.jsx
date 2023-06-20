@@ -1,3 +1,4 @@
+// <------------------------ IMPORTS ------------------------------->
 import { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -13,9 +14,12 @@ import "react-datepicker/dist/react-datepicker.css";
 import Chip from "@mui/material/Chip";
 import { Stack } from "@mui/material";
 import Axios from "../utils/axios.js";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const drawerWidth = 240;
 
+// function used for smooth transitioning of the page based on the opening and closing of the navigation bar
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
@@ -52,6 +56,24 @@ const ManageNewsHistory = ({ open }) => {
   const [newsList, setNewsList] = useState([]);
   const [selectedNews, setSelectedNews] = useState([]);
 
+  // function to notify successful edit or delete
+  const handleSubmitFunc = (response) => {
+    if (response.status === 200) {
+      toast.success(response.data.message, {
+        theme: "dark",
+        onClose: () => {
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        },
+      });
+    } else {
+      toast.error(response.data.message, {
+        theme: "dark",
+      });
+    }
+  };
+
   useEffect(() => {
     async function getHeadlines() {
       try {
@@ -73,6 +95,7 @@ const ManageNewsHistory = ({ open }) => {
     setSelectedNews(item);
   }
 
+  // JSX content for the sidebar specific to ManageNewsHistory screen.
   const sideBarContent = (
     <Stack
       sx={{
@@ -154,7 +177,10 @@ const ManageNewsHistory = ({ open }) => {
           >
             <Card>
               <CardContent>
-                <ManageNewsHistoryForm selectedNews={selectedNews} />
+                <ManageNewsHistoryForm
+                  selectedNews={selectedNews}
+                  handleSubmitFunc={handleSubmitFunc}
+                />
               </CardContent>
             </Card>
           </Box>
@@ -163,6 +189,7 @@ const ManageNewsHistory = ({ open }) => {
           <Sidebar>{sideBarContent}</Sidebar>
         </Grid>
       </Grid>
+      <ToastContainer />
     </AppBar>
   );
 };

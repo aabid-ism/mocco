@@ -1,9 +1,15 @@
+// <------------------------ IMPORTS ------------------------------->
 import { useState, useEffect, forwardRef, cloneElement } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { MenuItem, TextareaAutosize } from "@mui/material";
+import {
+  Checkbox,
+  ListItemText,
+  MenuItem,
+  TextareaAutosize,
+} from "@mui/material";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import Axios from "../utils/axios.js";
 import * as Yup from "yup";
@@ -11,6 +17,7 @@ import Backdrop from "@mui/material/Backdrop";
 import { useSpring, animated } from "@react-spring/web";
 import Modal from "@mui/material/Modal";
 
+// function used for smooth transitioning of the modal
 const Fade = forwardRef(function Fade(props, ref) {
   const {
     children,
@@ -44,10 +51,11 @@ const Fade = forwardRef(function Fade(props, ref) {
 });
 
 const PublishForm = ({ handleSubmitFunc }) => {
-  const [open, setOpen] = useState(false);
-  const [valid, setValid] = useState(false);
-  const [data, setData] = useState({});
-  const [dropDownList, setDropDownList] = useState();
+  const [open, setOpen] = useState(false); // state used to manipulate the opening and closing of modal.
+  const [valid, setValid] = useState(false); // state to check if form has passed validation.
+  const [data, setData] = useState({}); // state to store the data that has been submitted by form.
+  const [dropDownList, setDropDownList] = useState(); // state to store the data return of the dropdown values from the api.
+  const [selectedSecondaryTags, setSelectedSecondaryTags] = useState([]);
 
   useEffect(() => {
     async function getDropDowns() {
@@ -62,6 +70,7 @@ const PublishForm = ({ handleSubmitFunc }) => {
     getDropDowns();
   }, []);
 
+  // Initial values of the form data.
   const initialValues = {
     title: "",
     description: "",
@@ -70,42 +79,60 @@ const PublishForm = ({ handleSubmitFunc }) => {
     sourceUrl: "",
     author: "",
     mainTag: "",
-    secondaryTags: "",
+    secondaryTags: [],
     locality: "",
   };
 
+  // function to set the submitted form data to the state.
   const handleSubmit = async (values) => {
+    const updatedObject = { ...values, secondaryTags: selectedSecondaryTags };
     try {
-      setData(values);
-      // resetForm({ values: initialValues });
-      setValid(false);
+      setData(updatedObject);
     } catch (error) {
       console.error(error);
     }
   };
 
+  // function to handle the secondary news tag drop down
+  const handleSecondaryTagChange = (e) => {
+    const { value, checked } = e.target;
+    if (checked) {
+      // Add the selected secondary tag to the state
+      setSelectedSecondaryTags((prevTags) => [...prevTags, value]);
+    } else {
+      // Remove the unselected secondary tag from the state
+      setSelectedSecondaryTags((prevTags) =>
+        prevTags.filter((tag) => tag !== value)
+      );
+    }
+  };
+
+  // function that sends updated form data to the backend after confirmation from the pop up.
   const handleConfirm = async (confirmed) => {
     try {
       if (confirmed) {
-        await Axios.post("/publish-news", data);
+        let response = await Axios.post("/publish-news", data);
         setOpen(false);
-        handleSubmitFunc();
+        handleSubmitFunc(response);
       }
     } catch (err) {
       console.log(err);
     }
   };
 
+  // function used to set state based on if the if the validation is passed.
   const isValidationPassed = (values) => {
     try {
       validationSchema.validateSync(values);
       setValid(true);
       return true;
     } catch (error) {
+      setValid(false);
       return false;
     }
   };
 
+  // validation schema to define the error message.
   const validationSchema = Yup.object({
     title: Yup.string().required("News Headline is required"),
     description: Yup.string().required("News Description is required"),
@@ -191,9 +218,9 @@ const PublishForm = ({ handleSubmitFunc }) => {
             variant="outlined"
             fullWidth
             accept="imageUrl/jpeg, imageUrl/png"
-            inputLabelProps={{
-              shrink: true,
-            }}
+            // inputLabelProps={{
+            //   shrink: true,
+            // }}
           />
           {/* <ErrorMessage
             name="imageUrl"
@@ -269,13 +296,16 @@ const PublishForm = ({ handleSubmitFunc }) => {
               select
               variant="outlined"
               fullWidth
-            >
-              {dropDownList
-                ? dropDownList.authors.map((item) => (
-                    <MenuItem value={item.name}>{item.name}</MenuItem>
-                  ))
-                : ""}
-            </Field>
+              children={
+                dropDownList && dropDownList.authors
+                  ? dropDownList.authors.map((item) => (
+                      <MenuItem key={item._id} value={item.name}>
+                        {item.name}
+                      </MenuItem>
+                    ))
+                  : []
+              }
+            />
             <ErrorMessage
               name="author"
               component="div"
@@ -297,45 +327,18 @@ const PublishForm = ({ handleSubmitFunc }) => {
               select
               variant="outlined"
               fullWidth
-            >
-              {dropDownList
-                ? dropDownList.mainTags.map((item) => (
-                    <MenuItem value={item.topic}>{item.topic}</MenuItem>
-                  ))
-                : ""}
-            </Field>
+              children={
+                dropDownList && dropDownList.mainTags
+                  ? dropDownList.mainTags.map((item) => (
+                      <MenuItem key={item._id} value={item.topic}>
+                        {item.topic}
+                      </MenuItem>
+                    ))
+                  : []
+              }
+            />
             <ErrorMessage
               name="mainTag"
-              component="div"
-              style={{
-                color: "red",
-                fontSize: "0.8rem",
-              }}
-            />
-          </Box>
-
-          <Box sx={{ marginRight: "10px", width: "25%" }}>
-            <label htmlFor="secondaryTags">
-              <Typography fontWeight="bold" sx={{ fontSize: "0.9rem" }}>
-                Secondary News Tags
-              </Typography>
-            </label>
-            <Field
-              as={TextField}
-              id="secondaryTags"
-              name="secondaryTags"
-              select
-              variant="outlined"
-              fullWidth
-            >
-              {dropDownList
-                ? dropDownList.secondaryTags.map((item) => (
-                    <MenuItem value={item.topic}>{item.topic}</MenuItem>
-                  ))
-                : ""}
-            </Field>
-            <ErrorMessage
-              name="secondaryTags"
               component="div"
               style={{
                 color: "red",
@@ -358,8 +361,8 @@ const PublishForm = ({ handleSubmitFunc }) => {
               variant="outlined"
               fullWidth
             >
-              <MenuItem value="Local">Local</MenuItem>
-              <MenuItem value="International">International</MenuItem>
+              <MenuItem value="local">Local</MenuItem>
+              <MenuItem value="international">International</MenuItem>
             </Field>
             <ErrorMessage
               name="locality"
@@ -370,6 +373,54 @@ const PublishForm = ({ handleSubmitFunc }) => {
               }}
             />
           </Box>
+        </Box>
+
+        <Box sx={{ marginTop: "10px", width: "30%" }}>
+          <label htmlFor="secondaryTags">
+            <Typography fontWeight="bold">Secondary News Tags</Typography>
+          </label>
+          <Field
+            as={TextField}
+            id="secondaryTags"
+            name="secondaryTags"
+            select
+            variant="outlined"
+            fullWidth
+            children={
+              dropDownList
+                ? dropDownList.secondaryTags.map((item) => (
+                    <MenuItem key={item._id} value={item.topic}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Checkbox
+                          value={item.topic}
+                          checked={
+                            selectedSecondaryTags.includes(item.topic)
+                              ? true
+                              : false
+                          }
+                          onChange={handleSecondaryTagChange}
+                        />
+                        <ListItemText primary={item.topic} />
+                      </Box>
+                    </MenuItem>
+                  ))
+                : []
+            }
+          />
+          <ErrorMessage
+            name="secondaryTags"
+            component="div"
+            style={{
+              color: "red",
+              fontSize: "0.8rem",
+            }}
+          />
         </Box>
 
         <Box

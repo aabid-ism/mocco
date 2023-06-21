@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mocco/news_provider_state.dart';
-import 'package:mocco/news_screen.dart';
+import 'package:mocco/screen_holder.dart';
+import 'package:mocco/screens/news_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -23,29 +24,5 @@ class MyApp extends StatelessWidget {
         home: const ScreensHolder(),
       ),
     );
-  }
-}
-
-// Show the main News Page or Lifestyle Page or Saved news page
-class ScreensHolder extends StatefulWidget {
-  const ScreensHolder({super.key});
-
-  @override
-  State<ScreensHolder> createState() => _ScreensHolderState();
-}
-
-class _ScreensHolderState extends State<ScreensHolder> {
-  @override
-  void initState() { // Fetch news data before NewsScreen build
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      await Provider.of<NewsProvider>(context, listen: false)
-          .fetchNewsFromService(context);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return const NewsScreenContainer();
   }
 }

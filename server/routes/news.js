@@ -18,6 +18,68 @@ router.get("/", async (req, res) => {
   }
 });
 
+
+router.get("/feed", async (req, res) => {
+  try {
+    // getting references to database and collection
+    const db = conn.getDb();
+    const collection = await db.collection("news");
+
+    // finding and returning all news posts
+    const results = await collection.find({}).limit(20).toArray();
+    results.reverse()
+    res.send(results).status(200);
+  } catch (error) {
+    res.send(error).status(500);
+  }
+});
+
+router.get("/newer", async (req, res) => {
+  try {
+    // Getting references to the database and collection
+    const db = conn.getDb();
+    const collection = await db.collection("news");
+
+    // Extracting the createdAt parameter from the query
+    const createdAt = req.query.date;
+
+    // Constructing the query to retrieve news posts newer than createdAt
+    const query = { createdAt: { $gt: new Date(createdAt) } };
+
+    // Sorting the results in descending order based on createdAt
+    const sortOptions = { createdAt: -1 };
+
+    // Finding and returning the newest news post
+    const result = await collection.find(query).sort(sortOptions).limit(20).toArray();
+    res.send(result).status(200);
+  } catch (error) {
+    res.send(error).status(500);
+  }
+});
+
+router.get("/older", async (req, res) => {
+  try {
+    // Getting references to the database and collection
+    const db = conn.getDb();
+    const collection = await db.collection("news");
+
+    // Extracting the createdAt parameter from the query
+    const createdAt = req.query.date;
+
+    // Constructing the query to retrieve news posts newer than createdAt
+    const query = { createdAt: { $lt: new Date(createdAt) } };
+
+    // Sorting the results in descending order based on createdAt
+    const sortOptions = { createdAt: -1 };
+
+    // Finding and returning the newest news post
+    const result = await collection.find(query).sort(sortOptions).limit(20).toArray();
+    res.send(result).status(200);
+  } catch (error) {
+    res.send(error).status(500);
+  }
+});
+
 router.post("/publish-news", async (req, res) => {
   try {
     const db = conn.getDb();

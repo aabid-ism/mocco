@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class TopMenu extends StatelessWidget {
@@ -17,8 +16,16 @@ class TopMenu extends StatelessWidget {
             text: 'News',
             isActive: currentPageIndex == 0,
           ),
-          const SizedBox(
-            width: 20,
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+            child: Text(
+              "|",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 35  ,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           _TopMenuText(
             text: 'Lifestyle',
@@ -40,8 +47,9 @@ class _TopMenuText extends StatelessWidget {
     return Text(
       text,
       style: TextStyle(
-        color: isActive ? Colors.white : const Color.fromARGB(255, 209, 209, 209),
-        fontSize: isActive ? 20 : 16,
+        color:
+            isActive ? Colors.white : const Color.fromARGB(255, 209, 209, 209),
+        fontSize: 20,
         fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
       ),
     );

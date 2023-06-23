@@ -8,14 +8,15 @@ import conn from "./conn.js";
 
 // importing routes
 import news from "./routes/news.js";
-import image from "./routes/imagepipeline.js"
+import image from "./routes/imagepipeline.js";
 
 const app = express();
 const PORT = process.env.PORT || 5555;
+
 //  middleware
 const corsOptions = {
-    origin: "*",
-  };
+  origin: "*",
+};
 app.use(cors(corsOptions));
 app.use(express.json());
 
@@ -25,11 +26,11 @@ app.use("/image", image);
 
 // Global error handling
 app.use((err, _req, res, next) => {
-    res.status(500).send("Uh oh! An unexpected error occured.");
-  });
+  console.log(err);
+  res.status(500).send("Uh oh! An unexpected error occured.");
+});
 
 app.listen(PORT, "0.0.0.0", async () => {
-    await conn.connectToServer();
-    console.log(`Server listening on port ${PORT}`);
-  });
-  
+  await conn.connectToServer();
+  console.log(`Server listening on port ${PORT}`);
+});

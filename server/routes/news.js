@@ -18,7 +18,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-
 router.get("/feed", async (req, res) => {
   try {
     // getting references to database and collection
@@ -27,7 +26,7 @@ router.get("/feed", async (req, res) => {
 
     // finding and returning all news posts
     const results = await collection.find({}).limit(20).toArray();
-    results.reverse()
+    results.reverse();
     res.send(results).status(200);
   } catch (error) {
     res.send(error).status(500);
@@ -50,7 +49,11 @@ router.get("/newer", async (req, res) => {
     const sortOptions = { createdAt: -1 };
 
     // Finding and returning the newest news post
-    const result = await collection.find(query).sort(sortOptions).limit(20).toArray();
+    const result = await collection
+      .find(query)
+      .sort(sortOptions)
+      .limit(20)
+      .toArray();
     res.send(result).status(200);
   } catch (error) {
     res.send(error).status(500);
@@ -73,7 +76,11 @@ router.get("/older", async (req, res) => {
     const sortOptions = { createdAt: -1 };
 
     // Finding and returning the newest news post
-    const result = await collection.find(query).sort(sortOptions).limit(20).toArray();
+    const result = await collection
+      .find(query)
+      .sort(sortOptions)
+      .limit(20)
+      .toArray();
     res.send(result).status(200);
   } catch (error) {
     res.send(error).status(500);

@@ -50,7 +50,9 @@ const PublishForm = ({ handleSubmitFunc }) => {
   const [valid, setValid] = useState(false); // state to check if form has passed validation.
   const [data, setData] = useState({}); // state to store the data that has been submitted by form.
   const [dropDownList, setDropDownList] = useState(); // state to store the data return of the dropdown values from the api.
-  const [selectedSecondaryTags, setSelectedSecondaryTags] = useState([]);
+  const [selectedSecondaryTags, setSelectedSecondaryTags] = useState([]); // state to store selected secondary tags.
+  const [imageUpload, setImageUpload] = useState(null); // state to store uploaded image.
+  const [imageFormData, setImageFormData] = useState(null); // state to store form data of the uploaded image.
 
   useEffect(() => {
     async function getDropDowns() {
@@ -78,8 +80,16 @@ const PublishForm = ({ handleSubmitFunc }) => {
     locality: "",
   };
 
+  // function to add the image upload to a state
+  const handleFileChange = (event) => {
+    setImageUpload(event.target.files[0]);
+  };
+
   // function to set the submitted form data to the state.
   const handleSubmit = async (values) => {
+    const formData = new FormData();
+    formData.append("image", imageUpload);
+    setImageFormData(formData);
     const updatedObject = { ...values, secondaryTags: selectedSecondaryTags };
     try {
       setData(updatedObject);
@@ -96,14 +106,23 @@ const PublishForm = ({ handleSubmitFunc }) => {
 
   // function that sends updated form data to the backend after confirmation from the pop up.
   const handleConfirm = async (confirmed) => {
-    try {
-      if (confirmed) {
-        let response = await Axios.post("/publish-news", data);
+    if (confirmed) {
+      let request = data;
+      if (imageFormData) {
+        try {
+          let imageResponse = await Axios.post("/image", imageFormData);
+          request = { ...data, imageUrl: imageResponse.data };
+        } catch (err) {
+          console.log(err);
+        }
+      }
+      try {
+        let response = await Axios.post("/publish-news", request);
         setOpen(false);
         handleSubmitFunc(response);
+      } catch (err) {
+        console.log(err);
       }
-    } catch (err) {
-      console.log(err);
     }
   };
 
@@ -198,25 +217,15 @@ const PublishForm = ({ handleSubmitFunc }) => {
             <Typography fontWeight="bold">Choose Image (JPG or PNG)</Typography>
           </label>
           <Field
-            as={TextField}
+            component={TextField}
             id="imageUrl"
             name="imageUrl"
             type="file"
             variant="outlined"
             fullWidth
             accept="imageUrl/jpeg, imageUrl/png"
-            // inputLabelProps={{
-            //   shrink: true,
-            // }}
+            onChange={handleFileChange}
           />
-          {/* <ErrorMessage
-            name="imageUrl"
-            component="div"
-            style={{
-              color: "red",
-              fontSize: "0.8rem",
-            }}
-          /> */}
         </Box>
 
         <Box sx={{ marginBottom: "2%" }}>

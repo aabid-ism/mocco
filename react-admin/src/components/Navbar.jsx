@@ -1,5 +1,5 @@
 // <------------------------ IMPORTS ------------------------------->
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -44,9 +44,7 @@ const AppBar = styled(MuiAppBar, {
 
 export default function Navbar({ open, setOpen }) {
   const navigate = useNavigate();
-  const listItemTextHomeRef = useRef(null);
-  const listItemTextManageNewsHistoryRef = useRef(null);
-  const [pageText, setPageText] = useState("Publish News"); // state to set the page headline
+  const [pageText, setPageText] = useState("Preliminary Posting"); // state to set the page headline
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -58,13 +56,17 @@ export default function Navbar({ open, setOpen }) {
 
   const handleListItemClickHome = () => {
     navigate("/");
-    setPageText("Publish News");
+    setPageText("Preliminary Posting");
   };
 
   const handleListItemClickManageNewsHistory = () => {
     navigate("/manage-news-history");
-    const textContent = listItemTextManageNewsHistoryRef.current.textContent;
-    setPageText(textContent);
+    setPageText("Manage News History");
+  };
+
+  const handleListItemClickNewsPostApproval = () => {
+    navigate("/news-post-approval");
+    setPageText("News Post Approval");
   };
 
   return (
@@ -118,7 +120,18 @@ export default function Navbar({ open, setOpen }) {
               <ListItemIcon>
                 <HomeIcon />
               </ListItemIcon>
-              <ListItemText ref={listItemTextHomeRef} primary={"Home"} />
+              <ListItemText primary={"Preliminary Posting"} />
+            </ListItemButton>
+          </ListItem>
+        </List>
+        <Divider />
+        <List>
+          <ListItem disablePadding>
+            <ListItemButton onClick={handleListItemClickNewsPostApproval}>
+              <ListItemIcon>
+                <SettingsIcon />
+              </ListItemIcon>
+              <ListItemText primary={"News Post Approval"} />
             </ListItemButton>
           </ListItem>
         </List>
@@ -129,10 +142,7 @@ export default function Navbar({ open, setOpen }) {
               <ListItemIcon>
                 <SettingsIcon />
               </ListItemIcon>
-              <ListItemText
-                ref={listItemTextManageNewsHistoryRef}
-                primary={"Manage News History"}
-              />
+              <ListItemText primary={"Manage News History"} />
             </ListItemButton>
           </ListItem>
         </List>

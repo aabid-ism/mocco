@@ -1,8 +1,8 @@
 import { useState } from "react";
 import Navbar from "./components/Navbar";
-import Sidebar from "./components/Sidebar";
-import PublishNews from "./pages/PublishNews";
+import PreliminaryPosting from "./pages/PreliminaryPosting";
 import ManageNewsHistory from "./pages/ManageNewsHistory";
+import NewsPostApproval from "./pages/NewsPostApproval";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 
 function App() {
@@ -24,7 +24,11 @@ function App() {
       children: [
         {
           path: "/",
-          element: <PublishNews open={open} setOpen={setOpen} />,
+          element: <PreliminaryPosting open={open} setOpen={setOpen} />,
+        },
+        {
+          path: "/news-post-approval",
+          element: <NewsPostApproval open={open} setOpen={setOpen} />,
         },
         {
           path: "/manage-news-history",

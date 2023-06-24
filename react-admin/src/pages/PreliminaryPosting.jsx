@@ -7,7 +7,7 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import { Grid } from "@mui/material";
-import PublishForm from "../components/PublishForm";
+import PreliminaryPostingForm from "../components/PreliminaryPostingForm";
 import Sidebar from "../components/Sidebar";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -46,7 +46,7 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-const PublishNews = ({ open }) => {
+const PreliminaryPosting = ({ open }) => {
   // function to notify successful upload
   const handleSubmitFunc = (response) => {
     if (response.status === 200) {
@@ -67,7 +67,7 @@ const PublishNews = ({ open }) => {
 
   const sideBarContent = (
     <>
-      <h2>Publish News Sidebar Content...</h2>
+      <h2>Preliminary Posting Sidebar Content...</h2>
     </>
   );
   return (
@@ -83,7 +83,7 @@ const PublishNews = ({ open }) => {
           >
             <Card>
               <CardContent>
-                <PublishForm handleSubmitFunc={handleSubmitFunc} />
+                <PreliminaryPostingForm handleSubmitFunc={handleSubmitFunc} />
               </CardContent>
             </Card>
           </Box>
@@ -97,4 +97,4 @@ const PublishNews = ({ open }) => {
   );
 };
 
-export default PublishNews;
+export default PreliminaryPosting;

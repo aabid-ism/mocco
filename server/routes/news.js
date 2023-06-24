@@ -87,24 +87,76 @@ router.get("/older", async (req, res) => {
   }
 });
 
-router.post("/publish-news", async (req, res) => {
+router.post("/push-news", async (req, res) => {
   try {
     const db = conn.getDb();
-    const collection = await db.collection("news");
+    const collection = await db.collection("newsStage");
     let data = req.body;
-    const today = new Date();
-    const dateOnly = new Date(today.toISOString().split("T")[0]);
-    data = { ...data, createdAt: dateOnly };
     const result = await collection.insertOne(data);
 
     if (!result) {
       return res.status(404).json({ message: "News not found" });
     }
 
+    res.status(200).json({ message: "News pushed successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post("/approve-news", async (req, res) => {
+  try {
+    const db = conn.getDb();
+    const collection = await db.collection("news");
+    let data = req.body;
+    const today = new Date();
+    const dateOnly = new Date(today.toISOString().split("T")[0]);
+    const { id, ...newData } = data;
+    data = { ...newData, createdAt: dateOnly };
+    const result = await collection.insertOne(data);
+
+    if (!result) {
+      return res.status(404).json({ message: "News not found" });
+    }
+
+    try {
+      const newsId = req.body.id;
+      // getting references to database and collection
+      const db = conn.getDb();
+      const collection = await db.collection("newsStage");
+
+      // finding and deleting news post based on ID
+      const result = await collection.deleteOne({
+        _id: new ObjectId(newsId),
+      });
+
+      if (!result) {
+        return res.status(404).json({ message: "News not found" });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+
     res.status(200).json({ message: "News updated successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/get-unpublished-news", async (req, res) => {
+  try {
+    // getting references to database and collection
+    const db = conn.getDb();
+    const collection = await db.collection("newsStage");
+
+    // finding and returning all unpublished posts
+    const results = await collection.find({}).limit(50).toArray();
+    res.send(results).status(200);
+  } catch (error) {
+    res.send(error).status(500);
   }
 });
 
@@ -152,6 +204,34 @@ router.get("/get-drop-downs", async (req, res) => {
   }
 });
 
+router.post("/edit-unpublished-news", async (req, res) => {
+  try {
+    const newsId = req.body.id;
+    const { id, ...updateNews } = req.body;
+
+    // getting references to database and collection
+    const db = conn.getDb();
+    const collection = await db.collection("newsStage");
+
+    // finding and updating news post based on ID
+    const result = await collection.updateOne(
+      {
+        _id: new ObjectId(newsId),
+      },
+      { $set: updateNews }
+    );
+
+    if (!result) {
+      return res.status(404).json({ message: "News not found" });
+    }
+
+    res.status(200).json({ message: "News edit successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 router.post("/edit-news", async (req, res) => {
   try {
     const newsId = req.body.id;
@@ -173,7 +253,7 @@ router.post("/edit-news", async (req, res) => {
       return res.status(404).json({ message: "News not found" });
     }
 
-    res.status(200).json({ message: "News updated successfully" });
+    res.status(200).json({ message: "News edited successfully" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });

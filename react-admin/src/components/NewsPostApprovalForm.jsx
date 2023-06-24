@@ -52,13 +52,16 @@ const Fade = forwardRef(function Fade(props, ref) {
   );
 });
 
-const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
+const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
   const [editOpen, setEditOpen] = useState(false); // state used to manipulate the opening and closing of edit modal.
   const [deleteOpen, setDeleteOpen] = useState(false); // state used to manipulate the opening and closing of delete modal.
+  const [approveOpen, setApproveOpen] = useState(false); // state used to manipulate the opening and closing of approve modal.
   const [valid, setValid] = useState(false); // state to check if form has passed validation.
   const [data, setData] = useState([]); // state to store the data that has been submitted by form (edit or delete).
   const [dropDownList, setDropDownList] = useState(); // state to store the data return of the dropdown values from the api.
   const [isDeleteMode, setIsDeleteMode] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [isApproveMode, setIsApproveMode] = useState(false);
   const [selectedSecondaryTags, setSelectedSecondaryTags] = useState([]);
 
   useEffect(() => {
@@ -109,8 +112,14 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
     setData(values);
     if (isDeleteMode) {
       setDeleteOpen(true);
-    } else if (isEditMode) {
+    }
+
+    if (isEditMode) {
       setEditOpen(true);
+    }
+
+    if (isApproveMode) {
+      setApproveOpen(true);
     }
   };
 
@@ -118,7 +127,7 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
   const handleEditConfirm = async (confirmed) => {
     if (confirmed) {
       try {
-        let response = await Axios.post("/edit-news", data);
+        let response = await Axios.post("/edit-unpublished-news", data);
         setEditOpen(false);
         handleSubmitFunc(response);
       } catch (err) {
@@ -133,6 +142,18 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
       try {
         const response = await Axios.post("/delete-news", data);
         setDeleteOpen(false);
+        handleSubmitFunc(response);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
+  const handleApproveConfirm = async (confirmed) => {
+    if (confirmed) {
+      try {
+        const response = await Axios.post("/approve-news", data);
+        setApproveOpen(false);
         handleSubmitFunc(response);
       } catch (err) {
         console.error(err);
@@ -503,6 +524,7 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
             display: "flex",
             justifyContent: "flex-end",
             gap: 2,
+            marginTop: "20px",
           }}
         >
           <Button
@@ -510,7 +532,9 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
             type="submit"
             onClick={() => {
               valid && setEditOpen(true);
+              setIsEditMode(true);
               setIsDeleteMode(false);
+              setIsApproveMode(false);
             }}
           >
             Edit
@@ -527,12 +551,33 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
             onClick={() => {
               valid && setDeleteOpen(true);
               setIsDeleteMode(true);
+              setIsEditMode(false);
+              setIsApproveMode(false);
             }}
           >
             Delete
           </Button>
+          <Button
+            variant="contained"
+            type="submit"
+            sx={{
+              backgroundColor: "green",
+              "&:hover": {
+                backgroundColor: "green",
+              },
+            }}
+            onClick={() => {
+              valid && setApproveOpen(true);
+              setIsApproveMode(true);
+              setIsDeleteMode(false);
+              setIsEditMode(false);
+            }}
+          >
+            Approve
+          </Button>
         </Box>
-        {editOpen ? (
+
+        {editOpen && (
           <Modal
             aria-labelledby="spring-modal-title"
             aria-describedby="spring-modal-description"
@@ -574,54 +619,98 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
               </Box>
             </Fade>
           </Modal>
-        ) : (
-          deleteOpen && (
-            <Modal
-              aria-labelledby="spring-modal-title"
-              aria-describedby="spring-modal-description"
-              open={open}
-              onClose={() => setDeleteOpen(false)}
-              closeAfterTransition
-              slots={{ backdrop: Backdrop }}
-              slotProps={{
-                backdrop: {
-                  TransitionComponent: Fade,
-                },
-              }}
-            >
-              <Fade in={open}>
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    width: 400,
-                    bgcolor: "background.paper",
-                    border: "2px solid #000",
-                    boxShadow: 24,
-                    p: 4,
-                    textAlign: "center",
-                  }}
+        )}
+
+        {deleteOpen && (
+          <Modal
+            aria-labelledby="spring-modal-title"
+            aria-describedby="spring-modal-description"
+            open={open}
+            onClose={() => setDeleteOpen(false)}
+            closeAfterTransition
+            slots={{ backdrop: Backdrop }}
+            slotProps={{
+              backdrop: {
+                TransitionComponent: Fade,
+              },
+            }}
+          >
+            <Fade in={open}>
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: 400,
+                  bgcolor: "background.paper",
+                  border: "2px solid #000",
+                  boxShadow: 24,
+                  p: 4,
+                  textAlign: "center",
+                }}
+              >
+                <Typography id="spring-modal-description" sx={{ mt: 2 }}>
+                  Are you sure you want to delete this article?
+                </Typography>
+                <Button
+                  sx={{ mt: 2, mx: "auto" }}
+                  variant="contained"
+                  onClick={() => handleDeleteConfirm(true)}
                 >
-                  <Typography id="spring-modal-description" sx={{ mt: 2 }}>
-                    Are you sure you want to delete this article?
-                  </Typography>
-                  <Button
-                    sx={{ mt: 2, mx: "auto" }}
-                    variant="contained"
-                    onClick={() => handleDeleteConfirm(true)}
-                  >
-                    Yes
-                  </Button>
-                </Box>
-              </Fade>
-            </Modal>
-          )
+                  Yes
+                </Button>
+              </Box>
+            </Fade>
+          </Modal>
+        )}
+
+        {approveOpen && (
+          <Modal
+            aria-labelledby="spring-modal-title"
+            aria-describedby="spring-modal-description"
+            open={open}
+            onClose={() => setApproveOpen(false)}
+            closeAfterTransition
+            slots={{ backdrop: Backdrop }}
+            slotProps={{
+              backdrop: {
+                TransitionComponent: Fade,
+              },
+            }}
+          >
+            <Fade in={open}>
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: 400,
+                  bgcolor: "background.paper",
+                  border: "2px solid #000",
+                  boxShadow: 24,
+                  p: 4,
+                  textAlign: "center",
+                }}
+              >
+                <Typography id="spring-modal-description" sx={{ mt: 2 }}>
+                  Are you sure you want to approve this article?
+                </Typography>
+                <Button
+                  sx={{ mt: 2, mx: "auto" }}
+                  variant="contained"
+                  onClick={() => handleApproveConfirm(true)}
+                >
+                  Yes
+                </Button>
+              </Box>
+            </Fade>
+          </Modal>
         )}
       </Form>
     </Formik>
   );
 };
 
-export default ManageNewsHistoryForm;
+export default NewsPostApprovalForm;

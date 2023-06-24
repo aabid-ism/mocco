@@ -45,7 +45,7 @@ const Fade = forwardRef(function Fade(props, ref) {
   );
 });
 
-const PublishForm = ({ handleSubmitFunc }) => {
+const PreliminaryPostingForm = ({ handleSubmitFunc }) => {
   const [open, setOpen] = useState(false); // state used to manipulate the opening and closing of modal.
   const [valid, setValid] = useState(false); // state to check if form has passed validation.
   const [data, setData] = useState({}); // state to store the data that has been submitted by form.
@@ -87,9 +87,11 @@ const PublishForm = ({ handleSubmitFunc }) => {
 
   // function to set the submitted form data to the state.
   const handleSubmit = async (values) => {
-    const formData = new FormData();
-    formData.append("image", imageUpload);
-    setImageFormData(formData);
+    if (imageUpload) {
+      const formData = new FormData();
+      formData.append("image", imageUpload);
+      setImageFormData(formData);
+    }
     const updatedObject = { ...values, secondaryTags: selectedSecondaryTags };
     try {
       setData(updatedObject);
@@ -117,7 +119,7 @@ const PublishForm = ({ handleSubmitFunc }) => {
         }
       }
       try {
-        let response = await Axios.post("/publish-news", request);
+        let response = await Axios.post("/push-news", request);
         setOpen(false);
         handleSubmitFunc(response);
       } catch (err) {
@@ -185,6 +187,32 @@ const PublishForm = ({ handleSubmitFunc }) => {
         </Box>
 
         <Box sx={{ marginBottom: "2%" }}>
+          <label htmlFor="sinhalaTitle">
+            <Typography fontWeight="bold">News Headline (Sinhala)</Typography>
+          </label>
+          <Field
+            as={TextField}
+            id="sinhalaTitle"
+            name="sinhalaTitle"
+            variant="outlined"
+            fullWidth
+            inputProps={{
+              style: {
+                padding: "10px",
+              },
+            }}
+          />
+          <ErrorMessage
+            name="sinhalaTitle"
+            component="div"
+            style={{
+              color: "red",
+              fontSize: "0.8rem",
+            }}
+          />
+        </Box>
+
+        <Box sx={{ marginBottom: "2%" }}>
           <label htmlFor="description">
             <Typography fontWeight="bold">News Description</Typography>
           </label>
@@ -204,6 +232,36 @@ const PublishForm = ({ handleSubmitFunc }) => {
           />
           <ErrorMessage
             name="description"
+            component="div"
+            style={{
+              color: "red",
+              fontSize: "0.8rem",
+            }}
+          />
+        </Box>
+
+        <Box sx={{ marginBottom: "2%" }}>
+          <label htmlFor="sinhalaDescription">
+            <Typography fontWeight="bold">
+              News Description (Sinhala)
+            </Typography>
+          </label>
+          <Field
+            as={TextareaAutosize}
+            id="sinhalaDescription"
+            name="sinhalaDescription"
+            minRows={3}
+            maxRows={5}
+            placeholder="Enter text here..."
+            style={{
+              width: "100%",
+              padding: "20px",
+              resize: "none",
+              border: "1px solid #ccc",
+            }}
+          />
+          <ErrorMessage
+            name="sinhalaDescription"
             component="div"
             style={{
               color: "red",
@@ -400,7 +458,7 @@ const PublishForm = ({ handleSubmitFunc }) => {
               valid && setOpen(true);
             }}
           >
-            Publish
+            Push
           </Button>
         </Box>
 
@@ -450,4 +508,4 @@ const PublishForm = ({ handleSubmitFunc }) => {
   );
 };
 
-export default PublishForm;
+export default PreliminaryPostingForm;

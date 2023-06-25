@@ -70,7 +70,9 @@ const PreliminaryPostingForm = ({ handleSubmitFunc }) => {
   // Initial values of the form data.
   const initialValues = {
     title: "",
+    sinhalaTitle: "",
     description: "",
+    sinhalaDescription: "",
     imageUrl: "",
     sourceName: "",
     sourceUrl: "",

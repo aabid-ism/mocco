@@ -111,6 +111,7 @@ const PreliminaryPostingForm = ({ handleSubmitFunc }) => {
   // function that sends updated form data to the backend after confirmation from the pop up.
   const handleConfirm = async (confirmed) => {
     if (confirmed) {
+      setOpen(false);
       let request = data;
       if (imageFormData) {
         try {
@@ -122,7 +123,6 @@ const PreliminaryPostingForm = ({ handleSubmitFunc }) => {
       }
       try {
         let response = await Axios.post("/push-news", request);
-        setOpen(false);
         handleSubmitFunc(response);
       } catch (err) {
         console.log(err);

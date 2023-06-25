@@ -138,9 +138,19 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
   // function that sends updated form data to the backend after confirmation from the pop up.
   const handleEditConfirm = async (confirmed) => {
     if (confirmed) {
+      setEditOpen(false);
+      let request = data;
+      if (imageFormData) {
+        try {
+          let imageResponse = await Axios.post("/image", imageFormData);
+          request = { ...data, imageUrl: imageResponse.data };
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
       try {
-        let response = await Axios.post("/edit-unpublished-news", data);
-        setEditOpen(false);
+        let response = await Axios.post("/edit-unpublished-news", request);
         handleSubmitFunc(response);
       } catch (err) {
         console.error(err);
@@ -150,10 +160,10 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
 
   // function that sends deleted form data to the backend after confirmation from the pop up.
   const handleDeleteConfirm = async (confirmed) => {
+    setDeleteOpen(false);
     if (confirmed) {
       try {
-        const response = await Axios.post("/delete-news", data);
-        setDeleteOpen(false);
+        const response = await Axios.post("/delete-unpublished-news", data);
         handleSubmitFunc(response);
       } catch (err) {
         console.error(err);
@@ -163,6 +173,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
 
   const handleApproveConfirm = async (confirmed) => {
     if (confirmed) {
+      setApproveOpen(false);
       let request = data;
       if (imageFormData) {
         try {
@@ -175,7 +186,6 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
 
       try {
         const response = await Axios.post("/approve-news", request);
-        setApproveOpen(false);
         handleSubmitFunc(response);
       } catch (err) {
         console.error(err);

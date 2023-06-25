@@ -121,9 +121,9 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
   // function that sends updated form data to the backend after confirmation from the pop up.
   const handleEditConfirm = async (confirmed) => {
     if (confirmed) {
+      setEditOpen(false);
       try {
         let response = await Axios.post("/edit-news", data);
-        setEditOpen(false);
         handleSubmitFunc(response);
       } catch (err) {
         console.error(err);
@@ -134,9 +134,9 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
   // function that sends deleted form data to the backend after confirmation from the pop up.
   const handleDeleteConfirm = async (confirmed) => {
     if (confirmed) {
+      setDeleteOpen(false);
       try {
         const response = await Axios.post("/delete-news", data);
-        setDeleteOpen(false);
         handleSubmitFunc(response);
       } catch (err) {
         console.error(err);

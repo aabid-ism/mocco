@@ -260,6 +260,30 @@ router.post("/edit-news", async (req, res) => {
   }
 });
 
+router.post("/delete-unpublished-news", async (req, res) => {
+  try {
+    const newsId = req.body.id;
+
+    // getting references to database and collection
+    const db = conn.getDb();
+    const collection = await db.collection("newsStage");
+
+    // finding and deleting news post based on ID
+    const result = await collection.deleteOne({
+      _id: new ObjectId(newsId),
+    });
+
+    if (!result) {
+      return res.status(404).json({ message: "News not found" });
+    }
+
+    res.status(200).json({ message: "News deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 router.post("/delete-news", async (req, res) => {
   try {
     const newsId = req.body.id;

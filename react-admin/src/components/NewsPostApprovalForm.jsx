@@ -59,10 +59,13 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
   const [valid, setValid] = useState(false); // state to check if form has passed validation.
   const [data, setData] = useState([]); // state to store the data that has been submitted by form (edit or delete).
   const [dropDownList, setDropDownList] = useState(); // state to store the data return of the dropdown values from the api.
-  const [isDeleteMode, setIsDeleteMode] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [isApproveMode, setIsApproveMode] = useState(false);
+  const [isDeleteMode, setIsDeleteMode] = useState(false); // state to track the button clicked
+  const [isEditMode, setIsEditMode] = useState(false); // state to track the button clicked
+  const [isApproveMode, setIsApproveMode] = useState(false); // state to track the button clicked
   const [selectedSecondaryTags, setSelectedSecondaryTags] = useState([]);
+  const [imageUrlChip, setImageUrlChip] = useState(""); // state to track the image url chip.
+  const [imageUpload, setImageUpload] = useState(null); // state to store uploaded image.
+  const [imageFormData, setImageFormData] = useState(null); // state to store form data of the uploaded image.
 
   useEffect(() => {
     async function getDropDowns() {
@@ -81,6 +84,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
     if (selectedNews && selectedNews.secondaryTags) {
       let temp = selectedNews.secondaryTags;
       setSelectedSecondaryTags(temp);
+      setImageUrlChip(selectedNews ? selectedNews.imageUrl : "");
     }
   }, [selectedNews]);
 
@@ -88,15 +92,17 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
   const initialValues = {
     id: selectedNews ? selectedNews._id : "",
     title: selectedNews ? selectedNews.title : "",
+    sinhalaTitle: selectedNews ? selectedNews.sinhalaTitle : "",
     description: selectedNews ? selectedNews.description : "",
-    // imageUrl: "https://example.com/default-image.jpg",
+    sinhalaDescription: selectedNews ? selectedNews.sinhalaDescription : "",
+    imageUrl: "",
     sourceName: selectedNews ? selectedNews.sourceName : "",
     sourceUrl: selectedNews ? selectedNews.sourceUrl : "",
     author:
       selectedNews && selectedNews.author !== undefined
         ? selectedNews.author
         : "",
-    mainTags:
+    mainTag:
       selectedNews && selectedNews.mainTag !== undefined
         ? selectedNews.mainTag
         : "",
@@ -109,7 +115,13 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
 
   // function to set the submitted form data to the state.
   const handleSubmit = async (values) => {
-    setData(values);
+    if (imageUpload) {
+      const formData = new FormData();
+      formData.append("image", imageUpload);
+      setImageFormData(formData);
+    }
+
+    setData({ ...values, imageUrl: imageUrlChip ? imageUrlChip : "" });
     if (isDeleteMode) {
       setDeleteOpen(true);
     }
@@ -126,9 +138,19 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
   // function that sends updated form data to the backend after confirmation from the pop up.
   const handleEditConfirm = async (confirmed) => {
     if (confirmed) {
+      setEditOpen(false);
+      let request = data;
+      if (imageFormData) {
+        try {
+          let imageResponse = await Axios.post("/image", imageFormData);
+          request = { ...data, imageUrl: imageResponse.data };
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
       try {
-        let response = await Axios.post("/edit-unpublished-news", data);
-        setEditOpen(false);
+        let response = await Axios.post("/edit-unpublished-news", request);
         handleSubmitFunc(response);
       } catch (err) {
         console.error(err);
@@ -138,10 +160,10 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
 
   // function that sends deleted form data to the backend after confirmation from the pop up.
   const handleDeleteConfirm = async (confirmed) => {
+    setDeleteOpen(false);
     if (confirmed) {
       try {
-        const response = await Axios.post("/delete-news", data);
-        setDeleteOpen(false);
+        const response = await Axios.post("/delete-unpublished-news", data);
         handleSubmitFunc(response);
       } catch (err) {
         console.error(err);
@@ -151,14 +173,29 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
 
   const handleApproveConfirm = async (confirmed) => {
     if (confirmed) {
+      setApproveOpen(false);
+      let request = data;
+      if (imageFormData) {
+        try {
+          let imageResponse = await Axios.post("/image", imageFormData);
+          request = { ...data, imageUrl: imageResponse.data };
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
       try {
-        const response = await Axios.post("/approve-news", data);
-        setApproveOpen(false);
+        const response = await Axios.post("/approve-news", request);
         handleSubmitFunc(response);
       } catch (err) {
         console.error(err);
       }
     }
+  };
+
+  // function to add the image upload to a state
+  const handleFileChange = (event) => {
+    setImageUpload(event.target.files[0]);
   };
 
   // function used to set state based on if the if the validation is passed.
@@ -176,12 +213,15 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
   // validation schema to define the error message.
   const validationSchema = Yup.object({
     title: Yup.string().required("News Headline is required"),
+    sinhalaTitle: Yup.string().required("Sinhala News Title is required"),
     description: Yup.string().required("News Description is required"),
-    // imageUrl: Yup.string().required("Image URL is required"),
+    sinhalaDescription: Yup.string().required(
+      "Sinhala News Description is required"
+    ),
     sourceName: Yup.string().required("Source Name is required"),
     sourceUrl: Yup.string().required("Source URL is required"),
     author: Yup.string().required("Author is required"),
-    mainTags: Yup.string().required("Main News Tags are required"),
+    mainTag: Yup.string().required("Main News Tags are required"),
     locality: Yup.string().required("Locality is required"),
   });
 
@@ -321,14 +361,14 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
                 Choose Image (JPG or PNG)
               </Typography>
             </label>
-            {selectedNews && selectedNews.imageUrl ? (
-              <Tooltip title={selectedNews.imageUrl} arrow>
+            {imageUrlChip ? (
+              <Tooltip title={imageUrlChip} arrow>
                 <Chip
                   id="imageUrl"
                   name="imageUrl"
-                  label={selectedNews.imageUrl}
+                  label={imageUrlChip}
                   size="small"
-                  onDelete={() => console.log(selectedNews.imageUrl)}
+                  onDelete={() => setImageUrlChip("")}
                   deleteIcon={<CancelIcon />}
                   sx={{
                     maxWidth: "150px",
@@ -342,13 +382,15 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
             ) : null}
           </Box>
           <Field
-            as={TextField}
+            disabled={imageUrlChip ? true : false}
+            component={TextField}
             id="imageUrl"
             name="imageUrl"
             type="file"
             variant="outlined"
             fullWidth
             accept="imageUrl/jpeg, imageUrl/png"
+            onChange={handleFileChange}
           />
           <ErrorMessage
             name="imageUrl"
@@ -445,13 +487,13 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
           </Box>
 
           <Box sx={{ marginRight: "10px", width: "25%" }}>
-            <label htmlFor="mainTags">
+            <label htmlFor="mainTag">
               <Typography fontWeight="bold">Main News Tags</Typography>
             </label>
             <Field
               as={TextField}
-              id="mainTags"
-              name="mainTags"
+              id="mainTag"
+              name="mainTag"
               select
               variant="outlined"
               fullWidth

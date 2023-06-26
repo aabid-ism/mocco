@@ -58,6 +58,7 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
   const [valid, setValid] = useState(false); // state to check if form has passed validation.
   const [data, setData] = useState([]); // state to store the data that has been submitted by form (edit or delete).
   const [dropDownList, setDropDownList] = useState(); // state to store the data return of the dropdown values from the api.
+  const [imageUrlChip, setImageUrlChip] = useState(""); // state to track the image url chip.
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [selectedSecondaryTags, setSelectedSecondaryTags] = useState([]);
 
@@ -78,6 +79,7 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
     if (selectedNews && selectedNews.secondaryTags) {
       let temp = selectedNews.secondaryTags;
       setSelectedSecondaryTags(temp);
+      setImageUrlChip(selectedNews.imageUrl);
     }
   }, [selectedNews]);
 
@@ -85,15 +87,17 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
   const initialValues = {
     id: selectedNews ? selectedNews._id : "",
     title: selectedNews ? selectedNews.title : "",
+    sinhalaTitle: selectedNews ? selectedNews.sinhalaTitle : "",
     description: selectedNews ? selectedNews.description : "",
-    // imageUrl: "https://example.com/default-image.jpg",
+    sinhalaDescription: selectedNews ? selectedNews.sinhalaDescription : "",
+    imageUrl: "",
     sourceName: selectedNews ? selectedNews.sourceName : "",
     sourceUrl: selectedNews ? selectedNews.sourceUrl : "",
     author:
       selectedNews && selectedNews.author !== undefined
         ? selectedNews.author
         : "",
-    mainTags:
+    mainTag:
       selectedNews && selectedNews.mainTag !== undefined
         ? selectedNews.mainTag
         : "",
@@ -106,10 +110,10 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
 
   // function to set the submitted form data to the state.
   const handleSubmit = async (values) => {
-    setData(values);
+    setData({ ...values, imageUrl: imageUrlChip ? imageUrlChip : "" });
     if (isDeleteMode) {
       setDeleteOpen(true);
-    } else if (isEditMode) {
+    } else {
       setEditOpen(true);
     }
   };
@@ -117,9 +121,9 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
   // function that sends updated form data to the backend after confirmation from the pop up.
   const handleEditConfirm = async (confirmed) => {
     if (confirmed) {
+      setEditOpen(false);
       try {
         let response = await Axios.post("/edit-news", data);
-        setEditOpen(false);
         handleSubmitFunc(response);
       } catch (err) {
         console.error(err);
@@ -130,9 +134,9 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
   // function that sends deleted form data to the backend after confirmation from the pop up.
   const handleDeleteConfirm = async (confirmed) => {
     if (confirmed) {
+      setDeleteOpen(false);
       try {
         const response = await Axios.post("/delete-news", data);
-        setDeleteOpen(false);
         handleSubmitFunc(response);
       } catch (err) {
         console.error(err);
@@ -155,12 +159,15 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
   // validation schema to define the error message.
   const validationSchema = Yup.object({
     title: Yup.string().required("News Headline is required"),
+    sinhalaTitle: Yup.string().required("Sinhala News Title is required"),
     description: Yup.string().required("News Description is required"),
-    // imageUrl: Yup.string().required("Image URL is required"),
+    sinhalaDescription: Yup.string().required(
+      "Sinhala News Description is required"
+    ),
     sourceName: Yup.string().required("Source Name is required"),
     sourceUrl: Yup.string().required("Source URL is required"),
     author: Yup.string().required("Author is required"),
-    mainTags: Yup.string().required("Main News Tags are required"),
+    mainTag: Yup.string().required("Main News Tags are required"),
     locality: Yup.string().required("Locality is required"),
   });
 
@@ -300,14 +307,14 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
                 Choose Image (JPG or PNG)
               </Typography>
             </label>
-            {selectedNews && selectedNews.imageUrl ? (
-              <Tooltip title={selectedNews.imageUrl} arrow>
+            {imageUrlChip ? (
+              <Tooltip title={imageUrlChip} arrow>
                 <Chip
                   id="imageUrl"
                   name="imageUrl"
-                  label={selectedNews.imageUrl}
+                  label={imageUrlChip}
                   size="small"
-                  onDelete={() => console.log(selectedNews.imageUrl)}
+                  onDelete={() => setImageUrlChip("")}
                   deleteIcon={<CancelIcon />}
                   sx={{
                     maxWidth: "150px",
@@ -321,6 +328,7 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
             ) : null}
           </Box>
           <Field
+            disabled={imageUrlChip ? true : false}
             as={TextField}
             id="imageUrl"
             name="imageUrl"
@@ -424,13 +432,13 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
           </Box>
 
           <Box sx={{ marginRight: "10px", width: "25%" }}>
-            <label htmlFor="mainTags">
+            <label htmlFor="mainTag">
               <Typography fontWeight="bold">Main News Tags</Typography>
             </label>
             <Field
               as={TextField}
-              id="mainTags"
-              name="mainTags"
+              id="mainTag"
+              name="mainTag"
               select
               variant="outlined"
               fullWidth
@@ -445,7 +453,7 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
               }
             />
             <ErrorMessage
-              name="mainTags"
+              name="mainTag"
               component="div"
               style={{
                 color: "red",

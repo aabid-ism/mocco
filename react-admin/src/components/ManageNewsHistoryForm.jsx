@@ -240,6 +240,7 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
               style: {
                 padding: "10px",
               },
+              maxLength: 100,
             }}
           />
           <ErrorMessage
@@ -266,6 +267,7 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
               style: {
                 padding: "10px",
               },
+              maxLength: 100,
             }}
           />
           <ErrorMessage
@@ -294,6 +296,9 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
               padding: "20px",
               resize: "none",
               border: "1px solid #ccc",
+            }}
+            inputProps={{
+              maxLength: 350,
             }}
           />
           <ErrorMessage
@@ -324,6 +329,9 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
               padding: "20px",
               resize: "none",
               border: "1px solid #ccc",
+            }}
+            inputProps={{
+              maxLength: 350,
             }}
           />
           <ErrorMessage
@@ -401,6 +409,7 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
               style: {
                 padding: "10px",
               },
+              maxLength: 100,
             }}
           />
           <ErrorMessage
@@ -592,7 +601,7 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
           <Modal
             aria-labelledby="spring-modal-title"
             aria-describedby="spring-modal-description"
-            open={open}
+            open={editOpen}
             onClose={() => setEditOpen(false)}
             closeAfterTransition
             slots={{ backdrop: Backdrop }}
@@ -602,7 +611,7 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
               },
             }}
           >
-            <Fade in={open}>
+            <Fade in={editOpen}>
               <Box
                 sx={{
                   position: "absolute",
@@ -635,7 +644,7 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
             <Modal
               aria-labelledby="spring-modal-title"
               aria-describedby="spring-modal-description"
-              open={open}
+              open={deleteOpen}
               onClose={() => setDeleteOpen(false)}
               closeAfterTransition
               slots={{ backdrop: Backdrop }}
@@ -645,7 +654,7 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
                 },
               }}
             >
-              <Fade in={open}>
+              <Fade in={deleteOpen}>
                 <Box
                   sx={{
                     position: "absolute",

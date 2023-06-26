@@ -273,6 +273,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
               style: {
                 padding: "10px",
               },
+              maxLength: 100,
             }}
           />
           <ErrorMessage
@@ -299,6 +300,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
               style: {
                 padding: "10px",
               },
+              maxLength: 100,
             }}
           />
           <ErrorMessage
@@ -319,6 +321,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
             as={TextareaAutosize}
             id="description"
             name="description"
+            maxLength={350}
             minRows={3}
             maxRows={5}
             placeholder="Enter text here..."
@@ -349,6 +352,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
             as={TextareaAutosize}
             id="sinhalaDescription"
             name="sinhalaDescription"
+            maxLength={350}
             minRows={3}
             maxRows={5}
             placeholder="Enter text here..."
@@ -435,6 +439,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
               style: {
                 padding: "10px",
               },
+              maxLength: 100,
             }}
           />
           <ErrorMessage
@@ -650,7 +655,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
           <Modal
             aria-labelledby="spring-modal-title"
             aria-describedby="spring-modal-description"
-            open={open}
+            open={editOpen}
             onClose={() => setEditOpen(false)}
             closeAfterTransition
             slots={{ backdrop: Backdrop }}
@@ -660,7 +665,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
               },
             }}
           >
-            <Fade in={open}>
+            <Fade in={editOpen}>
               <Box
                 sx={{
                   position: "absolute",
@@ -694,7 +699,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
           <Modal
             aria-labelledby="spring-modal-title"
             aria-describedby="spring-modal-description"
-            open={open}
+            open={deleteOpen}
             onClose={() => setDeleteOpen(false)}
             closeAfterTransition
             slots={{ backdrop: Backdrop }}
@@ -704,7 +709,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
               },
             }}
           >
-            <Fade in={open}>
+            <Fade in={deleteOpen}>
               <Box
                 sx={{
                   position: "absolute",
@@ -738,7 +743,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
           <Modal
             aria-labelledby="spring-modal-title"
             aria-describedby="spring-modal-description"
-            open={open}
+            open={approveOpen}
             onClose={() => setApproveOpen(false)}
             closeAfterTransition
             slots={{ backdrop: Backdrop }}
@@ -748,7 +753,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
               },
             }}
           >
-            <Fade in={open}>
+            <Fade in={approveOpen}>
               <Box
                 sx={{
                   position: "absolute",

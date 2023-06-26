@@ -183,6 +183,7 @@ const PreliminaryPostingForm = ({ handleSubmitFunc }) => {
               style: {
                 padding: "10px",
               },
+              maxLength: 100,
             }}
           />
           <ErrorMessage
@@ -209,6 +210,7 @@ const PreliminaryPostingForm = ({ handleSubmitFunc }) => {
               style: {
                 padding: "10px",
               },
+              maxLength: 100,
             }}
           />
           <ErrorMessage
@@ -229,6 +231,7 @@ const PreliminaryPostingForm = ({ handleSubmitFunc }) => {
             as={TextareaAutosize}
             id="description"
             name="description"
+            maxLength={350}
             minRows={3}
             maxRows={5}
             placeholder="Enter text here..."
@@ -259,6 +262,7 @@ const PreliminaryPostingForm = ({ handleSubmitFunc }) => {
             as={TextareaAutosize}
             id="sinhalaDescription"
             name="sinhalaDescription"
+            maxLength={350}
             minRows={3}
             maxRows={5}
             placeholder="Enter text here..."
@@ -309,6 +313,7 @@ const PreliminaryPostingForm = ({ handleSubmitFunc }) => {
               style: {
                 padding: "10px",
               },
+              maxLength: 100,
             }}
           />
           <ErrorMessage

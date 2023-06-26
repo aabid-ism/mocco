@@ -18,6 +18,8 @@ import Backdrop from "@mui/material/Backdrop";
 import { useSpring, animated } from "@react-spring/web";
 import Modal from "@mui/material/Modal";
 import CancelIcon from "@mui/icons-material/Cancel";
+import Switch from "@mui/material/Switch";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 // function used for smooth transitioning of the modal
 const Fade = forwardRef(function Fade(props, ref) {
@@ -66,6 +68,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
   const [imageUrlChip, setImageUrlChip] = useState(""); // state to track the image url chip.
   const [imageUpload, setImageUpload] = useState(null); // state to store uploaded image.
   const [imageFormData, setImageFormData] = useState(null); // state to store form data of the uploaded image.
+  const [lifeStyle, setLifeStyle] = useState(false); // state to track the lifestyle toggle.
 
   useEffect(() => {
     async function getDropDowns() {
@@ -85,6 +88,13 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
       let temp = selectedNews.secondaryTags;
       setSelectedSecondaryTags(temp);
       setImageUrlChip(selectedNews ? selectedNews.imageUrl : "");
+      setLifeStyle(
+        selectedNews
+          ? selectedNews.typeOfPost === "lifestyle"
+            ? true
+            : false
+          : false
+      );
     }
   }, [selectedNews]);
 
@@ -121,7 +131,11 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
       setImageFormData(formData);
     }
 
-    setData({ ...values, imageUrl: imageUrlChip ? imageUrlChip : "" });
+    setData({
+      ...values,
+      imageUrl: imageUrlChip ? imageUrlChip : "",
+      typeOfPost: lifeStyle ? "lifestyle" : "news",
+    });
     if (isDeleteMode) {
       setDeleteOpen(true);
     }
@@ -185,8 +199,13 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
       }
 
       try {
-        const response = await Axios.post("/approve-news", request);
-        handleSubmitFunc(response);
+        if (lifeStyle) {
+          const response = await Axios.post("/approve-lifestyle-news", request);
+          handleSubmitFunc(response);
+        } else {
+          const response = await Axios.post("/approve-news", request);
+          handleSubmitFunc(response);
+        }
       } catch (err) {
         console.error(err);
       }
@@ -543,6 +562,14 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
               }}
             />
           </Box>
+
+          <FormControlLabel
+            sx={{ marginLeft: "10px" }}
+            label="Lifestyle"
+            control={<Switch />}
+            checked={lifeStyle}
+            onChange={() => setLifeStyle(!lifeStyle)}
+          />
         </Box>
 
         <Box sx={{ marginTop: "10px", width: "75%" }}>

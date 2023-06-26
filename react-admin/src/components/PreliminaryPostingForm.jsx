@@ -11,6 +11,8 @@ import * as Yup from "yup";
 import Backdrop from "@mui/material/Backdrop";
 import { useSpring, animated } from "@react-spring/web";
 import Modal from "@mui/material/Modal";
+import Switch from "@mui/material/Switch";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 // function used for smooth transitioning of the modal
 const Fade = forwardRef(function Fade(props, ref) {
@@ -53,6 +55,7 @@ const PreliminaryPostingForm = ({ handleSubmitFunc }) => {
   const [selectedSecondaryTags, setSelectedSecondaryTags] = useState([]); // state to store selected secondary tags.
   const [imageUpload, setImageUpload] = useState(null); // state to store uploaded image.
   const [imageFormData, setImageFormData] = useState(null); // state to store form data of the uploaded image.
+  const [lifeStyle, setLifeStyle] = useState(false);
 
   useEffect(() => {
     async function getDropDowns() {
@@ -94,7 +97,11 @@ const PreliminaryPostingForm = ({ handleSubmitFunc }) => {
       formData.append("image", imageUpload);
       setImageFormData(formData);
     }
-    const updatedObject = { ...values, secondaryTags: selectedSecondaryTags };
+    const updatedObject = {
+      ...values,
+      secondaryTags: selectedSecondaryTags,
+      typeOfPost: lifeStyle ? "lifestyle" : "news",
+    };
     try {
       setData(updatedObject);
     } catch (error) {
@@ -429,6 +436,14 @@ const PreliminaryPostingForm = ({ handleSubmitFunc }) => {
               }}
             />
           </Box>
+
+          <FormControlLabel
+            sx={{ marginLeft: "10px" }}
+            label="Lifestyle"
+            control={<Switch />}
+            checked={lifeStyle}
+            onChange={() => setLifeStyle(!lifeStyle)}
+          />
         </Box>
 
         <Box sx={{ marginTop: "10px", width: "75%" }}>

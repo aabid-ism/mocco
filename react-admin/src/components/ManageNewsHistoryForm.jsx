@@ -18,6 +18,8 @@ import Backdrop from "@mui/material/Backdrop";
 import { useSpring, animated } from "@react-spring/web";
 import Modal from "@mui/material/Modal";
 import CancelIcon from "@mui/icons-material/Cancel";
+import Switch from "@mui/material/Switch";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 // function used for smooth transitioning of the modal
 const Fade = forwardRef(function Fade(props, ref) {
@@ -61,6 +63,7 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
   const [imageUrlChip, setImageUrlChip] = useState(""); // state to track the image url chip.
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [selectedSecondaryTags, setSelectedSecondaryTags] = useState([]);
+  const [lifeStyle, setLifeStyle] = useState(false); // state to track the lifestyle toggle.
 
   useEffect(() => {
     async function getDropDowns() {
@@ -80,6 +83,13 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
       let temp = selectedNews.secondaryTags;
       setSelectedSecondaryTags(temp);
       setImageUrlChip(selectedNews.imageUrl);
+      setLifeStyle(
+        selectedNews
+          ? selectedNews.typeOfPost === "lifestyle"
+            ? true
+            : false
+          : false
+      );
     }
   }, [selectedNews]);
 
@@ -110,7 +120,11 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
 
   // function to set the submitted form data to the state.
   const handleSubmit = async (values) => {
-    setData({ ...values, imageUrl: imageUrlChip ? imageUrlChip : "" });
+    setData({
+      ...values,
+      imageUrl: imageUrlChip ? imageUrlChip : "",
+      typeOfPost: selectedNews ? selectedNews.typeOfPost : "",
+    });
     if (isDeleteMode) {
       setDeleteOpen(true);
     } else {
@@ -123,8 +137,29 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
     if (confirmed) {
       setEditOpen(false);
       try {
-        let response = await Axios.post("/edit-news", data);
-        handleSubmitFunc(response);
+        if (lifeStyle) {
+          if (data.typeOfPost === "news") {
+            let response = await Axios.post("/add-news-to-lifestyle", {
+              ...data,
+              typeOfPost: "lifestyle",
+            });
+            handleSubmitFunc(response);
+          } else {
+            let response = await Axios.post("/edit-lifestyle-news", data);
+            handleSubmitFunc(response);
+          }
+        } else {
+          if (data.typeOfPost === "lifestyle") {
+            let response = await Axios.post("/add-lifestyle-to-news", {
+              ...data,
+              typeOfPost: "news",
+            });
+            handleSubmitFunc(response);
+          } else {
+            let response = await Axios.post("/edit-news", data);
+            handleSubmitFunc(response);
+          }
+        }
       } catch (err) {
         console.error(err);
       }
@@ -136,8 +171,13 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
     if (confirmed) {
       setDeleteOpen(false);
       try {
-        const response = await Axios.post("/delete-news", data);
-        handleSubmitFunc(response);
+        if (selectedNews && selectedNews.typeOfPost === "lifestyle") {
+          const response = await Axios.post("/delete-lifestyle-news", data);
+          handleSubmitFunc(response);
+        } else {
+          const response = await Axios.post("/delete-news", data);
+          handleSubmitFunc(response);
+        }
       } catch (err) {
         console.error(err);
       }
@@ -488,6 +528,14 @@ const ManageNewsHistoryForm = ({ selectedNews, handleSubmitFunc }) => {
               }}
             />
           </Box>
+
+          <FormControlLabel
+            sx={{ marginLeft: "10px" }}
+            label="Lifestyle"
+            control={<Switch />}
+            checked={lifeStyle}
+            onChange={() => setLifeStyle(!lifeStyle)}
+          />
         </Box>
 
         <Box sx={{ marginTop: "10px", width: "75%" }}>

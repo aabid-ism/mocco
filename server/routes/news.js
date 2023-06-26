@@ -87,6 +87,7 @@ router.get("/older", async (req, res) => {
   }
 });
 
+// PUSH NEWS TO THE newsStage COLLECTION (UNPUBLISHED).
 router.post("/push-news", async (req, res) => {
   try {
     const db = conn.getDb();
@@ -105,6 +106,7 @@ router.post("/push-news", async (req, res) => {
   }
 });
 
+// APPROVE NEWS FOR PUBLICATION BY DELETING FROM newsStage AND INSERTING TO news COLLECTION.
 router.post("/approve-news", async (req, res) => {
   try {
     const db = conn.getDb();
@@ -146,6 +148,7 @@ router.post("/approve-news", async (req, res) => {
   }
 });
 
+// GET ALL UNPUBLISHED NEWS FROM newsStage COLLECTION.
 router.get("/get-unpublished-news", async (req, res) => {
   try {
     // getting references to database and collection
@@ -160,6 +163,7 @@ router.get("/get-unpublished-news", async (req, res) => {
   }
 });
 
+// GET ALL PUBLISHED NEWS FROM news COLLECTION BASED ON THE SELECTED DATE.
 router.post("/get-news-by-date", async (req, res) => {
   let { date } = req.body;
   date = new Date(date);
@@ -179,6 +183,7 @@ router.post("/get-news-by-date", async (req, res) => {
   }
 });
 
+// GET ALL DROP DOWNS FROM mainTags, secondaryTags and authors COLLECTIONS.
 router.get("/get-drop-downs", async (req, res) => {
   try {
     // getting references to database and collection
@@ -204,6 +209,7 @@ router.get("/get-drop-downs", async (req, res) => {
   }
 });
 
+// EDIT UNPUBLISHED NEWS IN THE newsStage COLLECTION.
 router.post("/edit-unpublished-news", async (req, res) => {
   try {
     const newsId = req.body.id;
@@ -232,6 +238,7 @@ router.post("/edit-unpublished-news", async (req, res) => {
   }
 });
 
+// EDIT PUBLISHED NEWS IN THE news COLLECTION.
 router.post("/edit-news", async (req, res) => {
   try {
     const newsId = req.body.id;
@@ -260,6 +267,7 @@ router.post("/edit-news", async (req, res) => {
   }
 });
 
+// DELETE UNPUBLISHED NEWS IN THE newsStage COLLECTION.
 router.post("/delete-unpublished-news", async (req, res) => {
   try {
     const newsId = req.body.id;
@@ -284,6 +292,7 @@ router.post("/delete-unpublished-news", async (req, res) => {
   }
 });
 
+// DELETE PUBLISHED NEWS IN THE news COLLECTION.
 router.post("/delete-news", async (req, res) => {
   try {
     const newsId = req.body.id;
@@ -304,6 +313,206 @@ router.post("/delete-news", async (req, res) => {
     res.status(200).json({ message: "News deleted successfully" });
   } catch (error) {
     console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// GET ALL PUBLISHED LIFESTYLE NEWS FROM THE lifestyle COLLECTION BASED ON THE SELECTED DATE.
+router.post("/get-lifestyle-news-by-date", async (req, res) => {
+  let { date } = req.body;
+  date = new Date(date);
+  try {
+    // getting references to database and collection
+    const db = conn.getDb();
+    const collection = await db.collection("lifestyle");
+
+    // finding and returning all news posts
+    const results = await collection
+      .find({ createdAt: date })
+      .limit(50)
+      .toArray();
+    res.send(results).status(200);
+  } catch (error) {
+    res.send(error).status(500);
+  }
+});
+
+// APPROVE LIFESTYLE NEWS FOR PUBLICATION BY DELETING FROM newsStage AND INSERTING TO lifestyle COLLECTION.
+router.post("/approve-lifestyle-news", async (req, res) => {
+  try {
+    const db = conn.getDb();
+    const collection = await db.collection("lifestyle");
+    let data = req.body;
+    const today = new Date();
+    const dateOnly = new Date(today.toISOString().split("T")[0]);
+    const { id, ...newData } = data;
+    data = { ...newData, createdAt: dateOnly };
+    const result = await collection.insertOne(data);
+
+    if (!result) {
+      return res.status(404).json({ message: "Lifestyle News not found" });
+    }
+
+    try {
+      const newsId = req.body.id;
+      // getting references to database and collection
+      const db = conn.getDb();
+      const collection = await db.collection("newsStage");
+
+      // finding and deleting news post based on ID
+      const result = await collection.deleteOne({
+        _id: new ObjectId(newsId),
+      });
+
+      if (!result) {
+        return res.status(404).json({ message: "Lifestyle News not found" });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+
+    res.status(200).json({ message: "Lifestyle News updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// EDIT PUBLISHED LIFESTYLE NEWS IN THE lifestyle COLLECTION.
+router.post("/edit-lifestyle-news", async (req, res) => {
+  try {
+    const newsId = req.body.id;
+    const { id, ...updateNews } = req.body;
+
+    // getting references to database and collection
+    const db = conn.getDb();
+    const collection = await db.collection("lifestyle");
+
+    // finding and updating news post based on ID
+    const result = await collection.updateOne(
+      {
+        _id: new ObjectId(newsId),
+      },
+      { $set: updateNews }
+    );
+
+    if (!result) {
+      return res.status(404).json({ message: "Lifestyle News not found" });
+    }
+
+    res.status(200).json({ message: "Lifestyle News edited successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// DELETE PUBLISHED LIFESTYLE NEWS IN THE lifestyle COLLECTION.
+router.post("/delete-lifestyle-news", async (req, res) => {
+  try {
+    const newsId = req.body.id;
+
+    // getting references to database and collection
+    const db = conn.getDb();
+    const collection = await db.collection("lifestyle");
+
+    // finding and deleting news post based on ID
+    const result = await collection.deleteOne({
+      _id: new ObjectId(newsId),
+    });
+
+    if (!result) {
+      return res.status(404).json({ message: "Lifestyle News not found" });
+    }
+
+    res.status(200).json({ message: "Lifestyle News deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// ADD NEWS TO LIFESTYLE NEWS FOR PUBLICATION BY DELETING FROM news AND INSERTING TO lifestyle COLLECTION.
+router.post("/add-news-to-lifestyle", async (req, res) => {
+  try {
+    const db = conn.getDb();
+    const collection = await db.collection("lifestyle");
+    let data = req.body;
+    const today = new Date();
+    const dateOnly = new Date(today.toISOString().split("T")[0]);
+    const { id, ...newData } = data;
+    data = { ...newData, createdAt: dateOnly };
+    const result = await collection.insertOne(data);
+
+    if (!result) {
+      return res.status(404).json({ message: "News not found" });
+    }
+
+    try {
+      const newsId = req.body.id;
+      // getting references to database and collection
+      const db = conn.getDb();
+      const collection = await db.collection("news");
+
+      // finding and deleting news post based on ID
+      const result = await collection.deleteOne({
+        _id: new ObjectId(newsId),
+      });
+
+      if (!result) {
+        return res.status(404).json({ message: "News not found" });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+
+    res.status(200).json({ message: "Lifestyle News updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// ADD LIFESTYLE NEWS TO NEWS FOR PUBLICATION BY DELETING FROM lifestyle AND INSERTING TO news COLLECTION.
+router.post("/add-lifestyle-to-news", async (req, res) => {
+  try {
+    const db = conn.getDb();
+    const collection = await db.collection("news");
+    let data = req.body;
+    const today = new Date();
+    const dateOnly = new Date(today.toISOString().split("T")[0]);
+    const { id, ...newData } = data;
+    data = { ...newData, createdAt: dateOnly };
+    const result = await collection.insertOne(data);
+
+    if (!result) {
+      return res.status(404).json({ message: "Lifestyle News not found" });
+    }
+
+    try {
+      const newsId = req.body.id;
+      // getting references to database and collection
+      const db = conn.getDb();
+      const collection = await db.collection("lifestyle");
+
+      // finding and deleting news post based on ID
+      const result = await collection.deleteOne({
+        _id: new ObjectId(newsId),
+      });
+
+      if (!result) {
+        return res.status(404).json({ message: "Lifestyle News not found" });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+
+    res.status(200).json({ message: "News updated successfully" });
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 });

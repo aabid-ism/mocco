@@ -79,10 +79,26 @@ const ManageNewsHistory = ({ open }) => {
       try {
         const date = new Date(startDate);
         const formattedDate = date.toISOString().split("T")[0];
-        const response = await Axios.post("/get-news-by-date", {
+
+        // get published news from news collection
+        const newsResponse = await Axios.post("/get-news-by-date", {
           date: formattedDate,
         });
-        setNewsList(response.data);
+
+        // get published lifestyle news from news collection
+        const lifestyleNewsResponse = await Axios.post(
+          "/get-lifestyle-news-by-date",
+          {
+            date: formattedDate,
+          }
+        );
+
+        const responseArrayList = [
+          ...newsResponse.data,
+          ...lifestyleNewsResponse.data,
+        ];
+
+        setNewsList(responseArrayList);
       } catch (err) {
         console.error(err);
       }

@@ -18,6 +18,8 @@ import Backdrop from "@mui/material/Backdrop";
 import { useSpring, animated } from "@react-spring/web";
 import Modal from "@mui/material/Modal";
 import CancelIcon from "@mui/icons-material/Cancel";
+import Switch from "@mui/material/Switch";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 // function used for smooth transitioning of the modal
 const Fade = forwardRef(function Fade(props, ref) {
@@ -66,6 +68,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
   const [imageUrlChip, setImageUrlChip] = useState(""); // state to track the image url chip.
   const [imageUpload, setImageUpload] = useState(null); // state to store uploaded image.
   const [imageFormData, setImageFormData] = useState(null); // state to store form data of the uploaded image.
+  const [lifeStyle, setLifeStyle] = useState(false); // state to track the lifestyle toggle.
 
   useEffect(() => {
     async function getDropDowns() {
@@ -85,6 +88,13 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
       let temp = selectedNews.secondaryTags;
       setSelectedSecondaryTags(temp);
       setImageUrlChip(selectedNews ? selectedNews.imageUrl : "");
+      setLifeStyle(
+        selectedNews
+          ? selectedNews.typeOfPost === "lifestyle"
+            ? true
+            : false
+          : false
+      );
     }
   }, [selectedNews]);
 
@@ -121,7 +131,11 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
       setImageFormData(formData);
     }
 
-    setData({ ...values, imageUrl: imageUrlChip ? imageUrlChip : "" });
+    setData({
+      ...values,
+      imageUrl: imageUrlChip ? imageUrlChip : "",
+      typeOfPost: lifeStyle ? "lifestyle" : "news",
+    });
     if (isDeleteMode) {
       setDeleteOpen(true);
     }
@@ -185,8 +199,13 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
       }
 
       try {
-        const response = await Axios.post("/approve-news", request);
-        handleSubmitFunc(response);
+        if (lifeStyle) {
+          const response = await Axios.post("/approve-lifestyle-news", request);
+          handleSubmitFunc(response);
+        } else {
+          const response = await Axios.post("/approve-news", request);
+          handleSubmitFunc(response);
+        }
       } catch (err) {
         console.error(err);
       }
@@ -254,6 +273,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
               style: {
                 padding: "10px",
               },
+              maxLength: 100,
             }}
           />
           <ErrorMessage
@@ -280,6 +300,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
               style: {
                 padding: "10px",
               },
+              maxLength: 100,
             }}
           />
           <ErrorMessage
@@ -300,6 +321,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
             as={TextareaAutosize}
             id="description"
             name="description"
+            maxLength={350}
             minRows={3}
             maxRows={5}
             placeholder="Enter text here..."
@@ -330,6 +352,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
             as={TextareaAutosize}
             id="sinhalaDescription"
             name="sinhalaDescription"
+            maxLength={350}
             minRows={3}
             maxRows={5}
             placeholder="Enter text here..."
@@ -416,6 +439,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
               style: {
                 padding: "10px",
               },
+              maxLength: 100,
             }}
           />
           <ErrorMessage
@@ -543,6 +567,14 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
               }}
             />
           </Box>
+
+          <FormControlLabel
+            sx={{ marginLeft: "10px" }}
+            label="Lifestyle"
+            control={<Switch />}
+            checked={lifeStyle}
+            onChange={() => setLifeStyle(!lifeStyle)}
+          />
         </Box>
 
         <Box sx={{ marginTop: "10px", width: "75%" }}>
@@ -623,7 +655,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
           <Modal
             aria-labelledby="spring-modal-title"
             aria-describedby="spring-modal-description"
-            open={open}
+            open={editOpen}
             onClose={() => setEditOpen(false)}
             closeAfterTransition
             slots={{ backdrop: Backdrop }}
@@ -633,7 +665,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
               },
             }}
           >
-            <Fade in={open}>
+            <Fade in={editOpen}>
               <Box
                 sx={{
                   position: "absolute",
@@ -667,7 +699,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
           <Modal
             aria-labelledby="spring-modal-title"
             aria-describedby="spring-modal-description"
-            open={open}
+            open={deleteOpen}
             onClose={() => setDeleteOpen(false)}
             closeAfterTransition
             slots={{ backdrop: Backdrop }}
@@ -677,7 +709,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
               },
             }}
           >
-            <Fade in={open}>
+            <Fade in={deleteOpen}>
               <Box
                 sx={{
                   position: "absolute",
@@ -711,7 +743,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
           <Modal
             aria-labelledby="spring-modal-title"
             aria-describedby="spring-modal-description"
-            open={open}
+            open={approveOpen}
             onClose={() => setApproveOpen(false)}
             closeAfterTransition
             slots={{ backdrop: Backdrop }}
@@ -721,7 +753,7 @@ const NewsPostApprovalForm = ({ selectedNews, handleSubmitFunc }) => {
               },
             }}
           >
-            <Fade in={open}>
+            <Fade in={approveOpen}>
               <Box
                 sx={{
                   position: "absolute",

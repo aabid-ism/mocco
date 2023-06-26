@@ -44,6 +44,7 @@ const AppBar = styled(MuiAppBar, {
 
 export default function Navbar({ open, setOpen }) {
   const navigate = useNavigate();
+  const [activeItem, setActiveItem] = useState(null);
   const [pageText, setPageText] = useState("Preliminary Posting"); // state to set the page headline
 
   const handleDrawerOpen = () => {
@@ -55,16 +56,19 @@ export default function Navbar({ open, setOpen }) {
   };
 
   const handleListItemClickHome = () => {
+    setActiveItem("Preliminary Posting");
     navigate("/");
     setPageText("Preliminary Posting");
   };
 
   const handleListItemClickManageNewsHistory = () => {
+    setActiveItem("Manage News History");
     navigate("/manage-news-history");
     setPageText("Manage News History");
   };
 
   const handleListItemClickNewsPostApproval = () => {
+    setActiveItem("News Post Approval");
     navigate("/news-post-approval");
     setPageText("News Post Approval");
   };
@@ -116,7 +120,15 @@ export default function Navbar({ open, setOpen }) {
         <Divider />
         <List>
           <ListItem disablePadding>
-            <ListItemButton onClick={handleListItemClickHome}>
+            <ListItemButton
+              sx={{
+                backgroundColor:
+                  activeItem === "Preliminary Posting"
+                    ? "#cbd5e1"
+                    : "transparent",
+              }}
+              onClick={handleListItemClickHome}
+            >
               <ListItemIcon>
                 <HomeIcon />
               </ListItemIcon>
@@ -127,7 +139,15 @@ export default function Navbar({ open, setOpen }) {
         <Divider />
         <List>
           <ListItem disablePadding>
-            <ListItemButton onClick={handleListItemClickNewsPostApproval}>
+            <ListItemButton
+              sx={{
+                backgroundColor:
+                  activeItem === "News Post Approval"
+                    ? "#cbd5e1"
+                    : "transparent",
+              }}
+              onClick={handleListItemClickNewsPostApproval}
+            >
               <ListItemIcon>
                 <SettingsIcon />
               </ListItemIcon>
@@ -138,7 +158,15 @@ export default function Navbar({ open, setOpen }) {
         <Divider />
         <List>
           <ListItem disablePadding>
-            <ListItemButton onClick={handleListItemClickManageNewsHistory}>
+            <ListItemButton
+              sx={{
+                backgroundColor:
+                  activeItem === "Manage News History"
+                    ? "#cbd5e1"
+                    : "transparent",
+              }}
+              onClick={handleListItemClickManageNewsHistory}
+            >
               <ListItemIcon>
                 <SettingsIcon />
               </ListItemIcon>

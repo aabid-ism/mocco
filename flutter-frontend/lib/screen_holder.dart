@@ -17,8 +17,6 @@ class _ScreensHolderState extends State<ScreensHolder> {
   late int _currentPageIndex;
   final PageController _pageController =
       PageController(initialPage: 0); //Initializr page controlle and set initial page to 0
-  final PageStorageBucket _pageStorageBucket =
-      PageStorageBucket(); //Initialize page storage bucket
 
   @override
   void initState() {
@@ -43,23 +41,19 @@ class _ScreensHolderState extends State<ScreensHolder> {
       body: SafeArea(
         child: Stack(
           children: [
-            PageStorage(
-              bucket: _pageStorageBucket,
-              child: PageView(
-                key: const Key('screenHolderPV'),
-                scrollDirection: Axis.horizontal,
-                controller: _pageController,
-                onPageChanged: (int index) {
-                  //on page change action
-                  setState(() {
-                    _currentPageIndex = index; //change current page index
-                  });
-                },
-                children: const [
-                  NewsScreenContainer(),
-                  LifestyleScreen(),
-                ],
-              ),
+            PageView(
+              scrollDirection: Axis.horizontal,
+              controller: _pageController,
+              onPageChanged: (int index) {
+                //on page change action
+                setState(() {
+                  _currentPageIndex = index; //change current page index
+                });
+              },
+              children: const [
+                NewsScreenContainer(),
+                LifestyleScreen(),
+              ],
             ),
             Positioned(
               top: 0,

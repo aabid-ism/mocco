@@ -1,7 +1,6 @@
 import "package:flutter/material.dart";
 import "package:mocco/models/news_card.dart";
 import "package:mocco/services/news_service.dart";
-import "package:provider/provider.dart";
 
 class NewsProvider extends ChangeNotifier {
   // declaring state variables

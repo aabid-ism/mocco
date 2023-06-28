@@ -13,11 +13,26 @@ class TopMenu extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _TopMenuText(
-            text: 'News',
+            text: 'Explorer',
             isActive: currentPageIndex == 0,
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+            child: Text(
+              "|",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 35  ,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          _TopMenuText(
+            text: 'News',
+            isActive: currentPageIndex == 1,
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 0, horizontal: 8),
             child: Text(
               "|",
               style: TextStyle(
@@ -29,7 +44,7 @@ class TopMenu extends StatelessWidget {
           ),
           _TopMenuText(
             text: 'Lifestyle',
-            isActive: currentPageIndex == 1,
+            isActive: currentPageIndex == 2,
           ),
         ],
       ),

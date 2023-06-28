@@ -11,6 +11,8 @@ import * as Yup from "yup";
 import Backdrop from "@mui/material/Backdrop";
 import { useSpring, animated } from "@react-spring/web";
 import Modal from "@mui/material/Modal";
+import Switch from "@mui/material/Switch";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 // function used for smooth transitioning of the modal
 const Fade = forwardRef(function Fade(props, ref) {
@@ -45,12 +47,15 @@ const Fade = forwardRef(function Fade(props, ref) {
   );
 });
 
-const PublishForm = ({ handleSubmitFunc }) => {
+const PreliminaryPostingForm = ({ handleSubmitFunc }) => {
   const [open, setOpen] = useState(false); // state used to manipulate the opening and closing of modal.
   const [valid, setValid] = useState(false); // state to check if form has passed validation.
   const [data, setData] = useState({}); // state to store the data that has been submitted by form.
   const [dropDownList, setDropDownList] = useState(); // state to store the data return of the dropdown values from the api.
-  const [selectedSecondaryTags, setSelectedSecondaryTags] = useState([]);
+  const [selectedSecondaryTags, setSelectedSecondaryTags] = useState([]); // state to store selected secondary tags.
+  const [imageUpload, setImageUpload] = useState(null); // state to store uploaded image.
+  const [imageFormData, setImageFormData] = useState(null); // state to store form data of the uploaded image.
+  const [lifeStyle, setLifeStyle] = useState(false);
 
   useEffect(() => {
     async function getDropDowns() {
@@ -68,7 +73,9 @@ const PublishForm = ({ handleSubmitFunc }) => {
   // Initial values of the form data.
   const initialValues = {
     title: "",
+    sinhalaTitle: "",
     description: "",
+    sinhalaDescription: "",
     imageUrl: "",
     sourceName: "",
     sourceUrl: "",
@@ -78,9 +85,23 @@ const PublishForm = ({ handleSubmitFunc }) => {
     locality: "",
   };
 
+  // function to add the image upload to a state
+  const handleFileChange = (event) => {
+    setImageUpload(event.target.files[0]);
+  };
+
   // function to set the submitted form data to the state.
   const handleSubmit = async (values) => {
-    const updatedObject = { ...values, secondaryTags: selectedSecondaryTags };
+    if (imageUpload) {
+      const formData = new FormData();
+      formData.append("image", imageUpload);
+      setImageFormData(formData);
+    }
+    const updatedObject = {
+      ...values,
+      secondaryTags: selectedSecondaryTags,
+      typeOfPost: lifeStyle ? "lifestyle" : "news",
+    };
     try {
       setData(updatedObject);
     } catch (error) {
@@ -96,14 +117,23 @@ const PublishForm = ({ handleSubmitFunc }) => {
 
   // function that sends updated form data to the backend after confirmation from the pop up.
   const handleConfirm = async (confirmed) => {
-    try {
-      if (confirmed) {
-        let response = await Axios.post("/publish-news", data);
-        setOpen(false);
-        handleSubmitFunc(response);
+    if (confirmed) {
+      setOpen(false);
+      let request = data;
+      if (imageFormData) {
+        try {
+          let imageResponse = await Axios.post("/image", imageFormData);
+          request = { ...data, imageUrl: imageResponse.data };
+        } catch (err) {
+          console.log(err);
+        }
       }
-    } catch (err) {
-      console.log(err);
+      try {
+        let response = await Axios.post("/push-news", request);
+        handleSubmitFunc(response);
+      } catch (err) {
+        console.log(err);
+      }
     }
   };
 
@@ -153,10 +183,38 @@ const PublishForm = ({ handleSubmitFunc }) => {
               style: {
                 padding: "10px",
               },
+              maxLength: 100,
             }}
           />
           <ErrorMessage
             name="title"
+            component="div"
+            style={{
+              color: "red",
+              fontSize: "0.8rem",
+            }}
+          />
+        </Box>
+
+        <Box sx={{ marginBottom: "2%" }}>
+          <label htmlFor="sinhalaTitle">
+            <Typography fontWeight="bold">News Headline (Sinhala)</Typography>
+          </label>
+          <Field
+            as={TextField}
+            id="sinhalaTitle"
+            name="sinhalaTitle"
+            variant="outlined"
+            fullWidth
+            inputProps={{
+              style: {
+                padding: "10px",
+              },
+              maxLength: 100,
+            }}
+          />
+          <ErrorMessage
+            name="sinhalaTitle"
             component="div"
             style={{
               color: "red",
@@ -173,6 +231,7 @@ const PublishForm = ({ handleSubmitFunc }) => {
             as={TextareaAutosize}
             id="description"
             name="description"
+            maxLength={350}
             minRows={3}
             maxRows={5}
             placeholder="Enter text here..."
@@ -194,29 +253,50 @@ const PublishForm = ({ handleSubmitFunc }) => {
         </Box>
 
         <Box sx={{ marginBottom: "2%" }}>
+          <label htmlFor="sinhalaDescription">
+            <Typography fontWeight="bold">
+              News Description (Sinhala)
+            </Typography>
+          </label>
+          <Field
+            as={TextareaAutosize}
+            id="sinhalaDescription"
+            name="sinhalaDescription"
+            maxLength={350}
+            minRows={3}
+            maxRows={5}
+            placeholder="Enter text here..."
+            style={{
+              width: "100%",
+              padding: "20px",
+              resize: "none",
+              border: "1px solid #ccc",
+            }}
+          />
+          <ErrorMessage
+            name="sinhalaDescription"
+            component="div"
+            style={{
+              color: "red",
+              fontSize: "0.8rem",
+            }}
+          />
+        </Box>
+
+        <Box sx={{ marginBottom: "2%" }}>
           <label htmlFor="imageUrl">
             <Typography fontWeight="bold">Choose Image (JPG or PNG)</Typography>
           </label>
           <Field
-            as={TextField}
+            component={TextField}
             id="imageUrl"
             name="imageUrl"
             type="file"
             variant="outlined"
             fullWidth
             accept="imageUrl/jpeg, imageUrl/png"
-            // inputLabelProps={{
-            //   shrink: true,
-            // }}
+            onChange={handleFileChange}
           />
-          {/* <ErrorMessage
-            name="imageUrl"
-            component="div"
-            style={{
-              color: "red",
-              fontSize: "0.8rem",
-            }}
-          /> */}
         </Box>
 
         <Box sx={{ marginBottom: "2%" }}>
@@ -233,6 +313,7 @@ const PublishForm = ({ handleSubmitFunc }) => {
               style: {
                 padding: "10px",
               },
+              maxLength: 100,
             }}
           />
           <ErrorMessage
@@ -360,6 +441,14 @@ const PublishForm = ({ handleSubmitFunc }) => {
               }}
             />
           </Box>
+
+          <FormControlLabel
+            sx={{ marginLeft: "10px" }}
+            label="Lifestyle"
+            control={<Switch />}
+            checked={lifeStyle}
+            onChange={() => setLifeStyle(!lifeStyle)}
+          />
         </Box>
 
         <Box sx={{ marginTop: "10px", width: "75%" }}>
@@ -391,7 +480,7 @@ const PublishForm = ({ handleSubmitFunc }) => {
               valid && setOpen(true);
             }}
           >
-            Publish
+            Push
           </Button>
         </Box>
 
@@ -441,4 +530,4 @@ const PublishForm = ({ handleSubmitFunc }) => {
   );
 };
 
-export default PublishForm;
+export default PreliminaryPostingForm;

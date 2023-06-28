@@ -5,10 +5,10 @@ import Box from "@mui/material/Box";
 import MuiAppBar from "@mui/material/AppBar";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import { Grid } from "@mui/material";
+import { Grid, TextField, Typography } from "@mui/material";
 import "react-datepicker/dist/react-datepicker.css";
 import Sidebar from "../components/Sidebar";
-import ManageNewsHistoryForm from "../components/ManageNewsHistoryForm";
+import NewsPostApprovalForm from "../components/NewsPostApprovalForm";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Chip from "@mui/material/Chip";
@@ -51,8 +51,7 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-const ManageNewsHistory = ({ open }) => {
-  const [startDate, setStartDate] = useState(new Date());
+const NewsPostApproval = ({ open }) => {
   const [newsList, setNewsList] = useState([]);
   const [selectedNews, setSelectedNews] = useState([]);
 
@@ -77,63 +76,49 @@ const ManageNewsHistory = ({ open }) => {
   useEffect(() => {
     async function getHeadlines() {
       try {
-        const date = new Date(startDate);
-        const formattedDate = date.toISOString().split("T")[0];
-
-        // get published news from news collection
-        const newsResponse = await Axios.post("/get-news-by-date", {
-          date: formattedDate,
-        });
-
-        // get published lifestyle news from news collection
-        const lifestyleNewsResponse = await Axios.post(
-          "/get-lifestyle-news-by-date",
-          {
-            date: formattedDate,
-          }
-        );
-
-        const responseArrayList = [
-          ...newsResponse.data,
-          ...lifestyleNewsResponse.data,
-        ];
-
-        setNewsList(responseArrayList);
+        const response = await Axios.get("/get-unpublished-news");
+        setNewsList(response.data);
       } catch (err) {
         console.error(err);
       }
     }
 
     getHeadlines();
-  }, [startDate]);
+  }, []);
 
   function handleChipClick(item) {
     setSelectedNews(item);
   }
 
-  // JSX content for the sidebar specific to ManageNewsHistory screen.
+  // JSX content for the sidebar specific to NewsPostApprovalForm screen.
   const sideBarContent = (
-    <Stack
+    <Box
       sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 30,
+        maxHeight: "475px",
+        overflowY: "auto",
+        scrollbarWidth: "thin",
+        scrollbarColor: "gray lightgray",
+        "&::-webkit-scrollbar": {
+          width: "6px",
+        },
+        "&::-webkit-scrollbar-track": {
+          borderRadius: "8px",
+          background: "lightgray",
+        },
+        "&::-webkit-scrollbar-thumb": {
+          borderRadius: "8px",
+          background: "gray",
+        },
+        paddingLeft: "10px",
       }}
     >
-      <Box sx={{ marginBottom: 3 }}>
-        <label htmlFor="datepicker">Select a date:</label>
-        <DatePicker
-          selected={startDate}
-          onChange={(date) => setStartDate(date)}
-          open={true}
-        />
-      </Box>
+      <Typography component="span" variant="h5" color="black" fontWeight="bold">
+        Unpublished News
+      </Typography>
       <Box
         sx={{
-          maxHeight: "475px",
+          maxHeight: "300px",
           overflowY: "auto",
-          scrollbarWidth: "thin",
-          scrollbarColor: "gray lightgray",
           "&::-webkit-scrollbar": {
             width: "6px",
           },
@@ -145,39 +130,20 @@ const ManageNewsHistory = ({ open }) => {
             borderRadius: "8px",
             background: "gray",
           },
-          paddingLeft: "10px",
         }}
       >
-        <Box
-          sx={{
-            maxHeight: "300px",
-            overflowY: "auto",
-            "&::-webkit-scrollbar": {
-              width: "6px",
-            },
-            "&::-webkit-scrollbar-track": {
-              borderRadius: "8px",
-              background: "lightgray",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              borderRadius: "8px",
-              background: "gray",
-            },
-          }}
-        >
-          {newsList.map((item) => (
-            <Chip
-              key={item._id}
-              label={item.title}
-              variant="outlined"
-              title={item.title}
-              sx={{ marginBottom: "6px", width: "100%" }}
-              onClick={() => handleChipClick(item)}
-            />
-          ))}
-        </Box>
+        {newsList.map((item) => (
+          <Chip
+            key={item._id}
+            label={item.title}
+            variant="outlined"
+            title={item.title}
+            sx={{ marginBottom: "6px", width: "100%" }}
+            onClick={() => handleChipClick(item)}
+          />
+        ))}
       </Box>
-    </Stack>
+    </Box>
   );
 
   return (
@@ -193,7 +159,7 @@ const ManageNewsHistory = ({ open }) => {
           >
             <Card>
               <CardContent>
-                <ManageNewsHistoryForm
+                <NewsPostApprovalForm
                   selectedNews={selectedNews}
                   handleSubmitFunc={handleSubmitFunc}
                 />
@@ -210,4 +176,4 @@ const ManageNewsHistory = ({ open }) => {
   );
 };
 
-export default ManageNewsHistory;
+export default NewsPostApproval;

@@ -47,35 +47,52 @@ class _NewsScreenContainerState extends State<NewsScreenContainer> {
                   ),
                   child: Align(
                     alignment: Alignment.topCenter,
-                    child: CachedNetworkImage(
-                      placeholder: (context, url) => const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                      imageUrl: newsCards[index].imageUrl ?? "",
-                      errorWidget: (context, url, error) => const Center(
-                        child: SizedBox(
-                          height: 90,
-                          child: Column(
-                            mainAxisAlignment:
-                                MainAxisAlignment.spaceAround,
-                            children: [
-                              Icon(Icons.error, size: 48),
-                              SizedBox(height: 20),
-                              Text(
-                                "The image could not be loaded",
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              )
-                            ],
+                    child: ShaderMask(
+                      shaderCallback: (Rect bounds) {
+                        return LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          stops: const [0.0, 0.2],
+                          colors: [
+                            Colors.black.withOpacity(
+                                0.8), // starting color (20% transparent)
+                            Colors.black.withOpacity(
+                                0.0), // ending color (fully transparent)
+                          ],
+                        ).createShader(bounds);
+                      },
+                      blendMode: BlendMode
+                          .srcATop, // Apply the shader on top of the image
+                      child: CachedNetworkImage(
+                        placeholder: (context, url) => const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        imageUrl: newsCards[index].imageUrl ?? "",
+                        errorWidget: (context, url, error) => const Center(
+                          child: SizedBox(
+                            height: 90,
+                            child: Column(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceAround,
+                              children: [
+                                Icon(Icons.error, size: 48),
+                                SizedBox(height: 20),
+                                Text(
+                                  "The image could not be loaded",
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         ),
+                        fit: BoxFit.cover,
+                        height: MediaQuery.of(context).size.height /
+                            3, //Set image size to 1/3 of the screen
+                        width: double.infinity,
                       ),
-                      fit: BoxFit.cover,
-                      height: MediaQuery.of(context).size.height /
-                          3, //Set image size to 1/3 of the screen
-                      width: double.infinity,
                     ),
                   ),
                 ),

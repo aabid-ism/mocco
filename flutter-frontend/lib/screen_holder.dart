@@ -1,7 +1,7 @@
 // Show the main News Page or Lifestyle Page or Saved news page
 import 'package:flutter/material.dart';
 import 'package:mocco/news_provider_state.dart';
-import 'package:mocco/screens/explorer_screen.dart';
+import 'package:mocco/screens/explore_screen.dart';
 import 'package:mocco/screens/lifestyle_screen.dart';
 import 'package:mocco/screens/news_screen.dart';
 import 'package:mocco/widgets/top_menu.dart';
@@ -52,7 +52,7 @@ class _ScreensHolderState extends State<ScreensHolder> {
                 });
               },
               children: const [
-                ExplorerScreen(),
+                ExploreScreen(),
                 NewsScreenContainer(),
                 LifestyleScreen(),
               ],

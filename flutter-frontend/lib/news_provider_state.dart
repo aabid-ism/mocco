@@ -2,9 +2,13 @@ import "package:flutter/material.dart";
 import "package:mocco/models/news_card.dart";
 import "package:mocco/services/news_service.dart";
 
+import "env.dart";
+
 class NewsProvider extends ChangeNotifier {
+  String url = serverUrl;
   // declaring state variables
   List<NewsCard> newsModelsList = [];
+  List<NewsCard> lifestyleModelsList = [];
   bool isLoading = false;
 
   // creating a Service object that gives access to a method
@@ -17,8 +21,10 @@ class NewsProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    final response = await newsService.fetchAllNews();
-    if (response.isEmpty) {
+    final newsResponse = await newsService.fetchAllNews(serverUrl);
+    final lifestyleResponse =
+        await newsService.fetchAllNews('$serverUrl/lifestyle');
+    if (newsResponse.isEmpty || lifestyleResponse.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         //Show snack bar msg if failed the launch
         const SnackBar(
@@ -27,7 +33,8 @@ class NewsProvider extends ChangeNotifier {
         ),
       );
     }
-    newsModelsList = response;
+    newsModelsList = newsResponse;
+    lifestyleModelsList = lifestyleResponse;
     isLoading = false;
     notifyListeners();
   }

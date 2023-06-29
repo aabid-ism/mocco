@@ -1,4 +1,4 @@
-package com.example.mocco
+package global.serendib.mocco
 
 import io.flutter.embedding.android.FlutterActivity
 

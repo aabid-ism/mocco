@@ -7,8 +7,11 @@ import cors from "cors";
 import conn from "./conn.js";
 
 // importing routes
-import news from "./routes/news.js";
-import image from "./routes/imagepipeline.js";
+import feed from "./routes/Feed.js";
+import imagePipeline from "./routes/ImagePipeline.js";
+import preliminaryPosting from "./routes/PreliminaryPosting.js";
+import newsPostApproval from "./routes/NewsPostApproval.js";
+import manageNewsHistory from "./routes/ManageNewsHistory.js";
 
 const app = express();
 const PORT = process.env.PORT || 5555;
@@ -21,8 +24,11 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // defining routes
-app.use("/", news);
-app.use("/image", image);
+app.use("/", feed);
+app.use("/", preliminaryPosting);
+app.use("/", newsPostApproval);
+app.use("/", manageNewsHistory);
+app.use("/image", imagePipeline);
 
 // Global error handling
 app.use((err, _req, res, next) => {

@@ -5,17 +5,17 @@ import Box from "@mui/material/Box";
 import MuiAppBar from "@mui/material/AppBar";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import { Grid, TextField, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import "react-datepicker/dist/react-datepicker.css";
 import Sidebar from "../components/Sidebar";
 import NewsPostApprovalForm from "../components/NewsPostApprovalForm";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Chip from "@mui/material/Chip";
-import { Stack } from "@mui/material";
 import Axios from "../utils/axios.js";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const drawerWidth = 240;
 
@@ -54,20 +54,28 @@ const AppBar = styled(MuiAppBar, {
 const NewsPostApproval = ({ open }) => {
   const [newsList, setNewsList] = useState([]);
   const [selectedNews, setSelectedNews] = useState([]);
+  const [loader, setLoader] = useState(false); // state to handle page loader
+
+  // function to handle loader close
+  const handleLoaderClose = () => {
+    setLoader(false);
+  };
+
+  // function to handle loader open
+  const handleLoaderOpen = () => {
+    setLoader(true);
+  };
 
   // function to notify successful edit or delete
   const handleSubmitFunc = (response) => {
     if (response.status === 200) {
       toast.success(response.data.message, {
+        autoClose: 1500,
         theme: "dark",
-        onClose: () => {
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
-        },
       });
     } else {
-      toast.error(response.data.message, {
+      toast.error(response.message, {
+        autoClose: 1500,
         theme: "dark",
       });
     }
@@ -84,7 +92,7 @@ const NewsPostApproval = ({ open }) => {
     }
 
     getHeadlines();
-  }, []);
+  }, [selectedNews]);
 
   function handleChipClick(item) {
     setSelectedNews(item);
@@ -147,32 +155,43 @@ const NewsPostApproval = ({ open }) => {
   );
 
   return (
-    <AppBar open={open}>
-      <Grid container spacing={2}>
-        <Grid item xs={8}>
-          <Box
-            sx={{
-              paddingTop: "2%",
-              paddingLeft: "2%",
-              paddingBottom: "2%",
-            }}
-          >
-            <Card>
-              <CardContent>
-                <NewsPostApprovalForm
-                  selectedNews={selectedNews}
-                  handleSubmitFunc={handleSubmitFunc}
-                />
-              </CardContent>
-            </Card>
-          </Box>
+    <>
+      <AppBar open={open}>
+        <Grid container spacing={2}>
+          <Grid item xs={8}>
+            <Box
+              sx={{
+                paddingTop: "2%",
+                paddingLeft: "2%",
+                paddingBottom: "2%",
+              }}
+            >
+              <Card>
+                <CardContent>
+                  <NewsPostApprovalForm
+                    setSelectedNews={setSelectedNews}
+                    selectedNews={selectedNews}
+                    handleSubmitFunc={handleSubmitFunc}
+                    handleLoaderOpen={handleLoaderOpen}
+                    handleLoaderClose={handleLoaderClose}
+                  />
+                </CardContent>
+              </Card>
+            </Box>
+          </Grid>
+          <Grid item xs={4}>
+            <Sidebar>{sideBarContent}</Sidebar>
+          </Grid>
         </Grid>
-        <Grid item xs={4}>
-          <Sidebar>{sideBarContent}</Sidebar>
-        </Grid>
-      </Grid>
-      <ToastContainer />
-    </AppBar>
+        <ToastContainer />
+      </AppBar>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loader}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    </>
   );
 };
 

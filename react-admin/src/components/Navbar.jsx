@@ -44,7 +44,7 @@ const AppBar = styled(MuiAppBar, {
 
 export default function Navbar({ open, setOpen }) {
   const navigate = useNavigate();
-  const [activeItem, setActiveItem] = useState(null);
+  const [activeItem, setActiveItem] = useState("Preliminary Posting"); // state to handle the selected tab
   const [pageText, setPageText] = useState("Preliminary Posting"); // state to set the page headline
 
   const handleDrawerOpen = () => {
@@ -117,14 +117,14 @@ export default function Navbar({ open, setOpen }) {
             <ChevronLeftIcon />
           </IconButton>
         </Box>
-        <Divider />
+
         <List>
           <ListItem disablePadding>
             <ListItemButton
               sx={{
                 backgroundColor:
                   activeItem === "Preliminary Posting"
-                    ? "#cbd5e1"
+                    ? "#e2e8f0"
                     : "transparent",
               }}
               onClick={handleListItemClickHome}
@@ -136,14 +136,14 @@ export default function Navbar({ open, setOpen }) {
             </ListItemButton>
           </ListItem>
         </List>
-        <Divider />
+
         <List>
           <ListItem disablePadding>
             <ListItemButton
               sx={{
                 backgroundColor:
                   activeItem === "News Post Approval"
-                    ? "#cbd5e1"
+                    ? "#e2e8f0"
                     : "transparent",
               }}
               onClick={handleListItemClickNewsPostApproval}
@@ -155,14 +155,14 @@ export default function Navbar({ open, setOpen }) {
             </ListItemButton>
           </ListItem>
         </List>
-        <Divider />
+
         <List>
           <ListItem disablePadding>
             <ListItemButton
               sx={{
                 backgroundColor:
                   activeItem === "Manage News History"
-                    ? "#cbd5e1"
+                    ? "#e2e8f0"
                     : "transparent",
               }}
               onClick={handleListItemClickManageNewsHistory}
@@ -174,7 +174,6 @@ export default function Navbar({ open, setOpen }) {
             </ListItemButton>
           </ListItem>
         </List>
-        <Divider />
       </Drawer>
     </Box>
   );

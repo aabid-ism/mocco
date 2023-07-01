@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "499732426438",
+    "project_id": "mocco-2e40e",
+    "storage_bucket": "mocco-2e40e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:499732426438:android:c3a76118b00d71d2e5f1c7",
+        "android_client_info": {
+          "package_name": "global.serendib.mocco"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "499732426438-4ttjn8ff2cod7au02ch5a09frl7bcnsp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZoYoaJGfbgbpr3ztwbmZLCAXHLUIVPCM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "499732426438-4ttjn8ff2cod7au02ch5a09frl7bcnsp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "499732426438-ft36civhbcrmupgjo5hcur00abirpipg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.mocco"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

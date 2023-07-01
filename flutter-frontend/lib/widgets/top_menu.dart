@@ -6,30 +6,49 @@ class TopMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(6.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
+    return SafeArea(
+      child: Stack(
         children: [
-          _TopMenuText(
-            text: 'News',
-            isActive: currentPageIndex == 0,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
-            child: Text(
-              "|",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 35  ,
-                fontWeight: FontWeight.bold,
+          Container(
+            height: MediaQuery.of(context).size.height / 8,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: const Alignment(0, .2),
+                colors: [
+                  Colors.black
+                      .withOpacity(0.3), // starting color (20% transparent)
+                  Colors.black.withOpacity(0.0), // endinrent)
+                ],
               ),
             ),
           ),
-          _TopMenuText(
-            text: 'Lifestyle',
-            isActive: currentPageIndex == 1,
+          Positioned(
+            child: Padding(
+              padding: const EdgeInsets.all(6.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _TopMenuText(
+                    text: 'Explore',
+                    isActive: currentPageIndex == 0,
+                  ),
+                  _TopMenuSeparator(
+                      isActive: currentPageIndex == 0 || currentPageIndex == 1),
+                  _TopMenuText(
+                    text: 'News',
+                    isActive: currentPageIndex == 1,
+                  ),
+                  _TopMenuSeparator(
+                      isActive: currentPageIndex == 1 || currentPageIndex == 2),
+                  _TopMenuText(
+                    text: 'Lifestyle',
+                    isActive: currentPageIndex == 2,
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
@@ -48,9 +67,31 @@ class _TopMenuText extends StatelessWidget {
       text,
       style: TextStyle(
         color:
-            isActive ? Colors.white : const Color.fromARGB(255, 209, 209, 209),
+            isActive ? Colors.white : const Color.fromARGB(205, 114, 114, 114),
         fontSize: 20,
-        fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
+        fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+      ),
+    );
+  }
+}
+
+class _TopMenuSeparator extends StatelessWidget {
+  final bool isActive;
+  const _TopMenuSeparator({required this.isActive});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
+      child: Text(
+        "|",
+        style: TextStyle(
+          color: isActive
+              ? Colors.white
+              : const Color.fromARGB(205, 114, 114, 114),
+          fontSize: 35,
+          fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+        ),
       ),
     );
   }

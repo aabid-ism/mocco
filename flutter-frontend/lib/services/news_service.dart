@@ -1,14 +1,11 @@
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
-import "package:mocco/env.dart";
 import 'package:mocco/models/news_card.dart';
 
 class NewsService {
-  Future<List<NewsCard>> fetchAllNews() async {
+  Future<List<NewsCard>> fetchAllNews(String reqUrl) async {
     // get request to api
-    const url = serverUrl;
-    final uri = Uri.parse(url);
+    final uri = Uri.parse(reqUrl);
     try {
       final response = await http.get(uri);
       if (response.statusCode == 200) {

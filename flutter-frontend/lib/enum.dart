@@ -1,0 +1,4 @@
+enum NewsScreenUsers{
+  newsScreen,
+  lifestyleScreen,
+}

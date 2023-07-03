@@ -43,7 +43,33 @@ const router = express.Router();
 
 // Posting an Image
 router.post("/", uploadStrategy, async (req, res) => {
-  const blobName = getBlobName(req.file.originalname);
+  const today = new Date();
+  const dateTimeString = today.toISOString();
+  const dateOnly = dateTimeString.split("T")[0];
+  const blobName = `${dateOnly}/${getBlobName(req.file.originalname)}`;
+
+  // Check if the image URL is provided
+  if (req.body.imageUrl) {
+    // Extract the blob name from the provided image URL
+    const path = req.body.imageUrl;
+    const existingBlobName = path.slice(
+      path.indexOf(containerName2) + containerName2.length + 1
+    );
+
+    // Get the "images" container
+    const containerClient =
+      blobServiceClient.getContainerClient(containerName2);
+
+    // Check if a blob with the existing blob name exists
+    const existingBlobClient =
+      containerClient.getBlockBlobClient(existingBlobName);
+    const exists = await existingBlobClient.exists();
+
+    if (exists) {
+      // Delete the existing blob
+      await existingBlobClient.delete();
+    }
+  }
 
   // get the stream of bytes from req.file
   const stream = getStream(req.file.buffer);
@@ -51,7 +77,6 @@ router.post("/", uploadStrategy, async (req, res) => {
   const containerClient = blobServiceClient.getContainerClient(containerName2);
   // create a new blob with the unique name we generated
   const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-
   try {
     await blockBlobClient.uploadStream(
       stream,
@@ -59,14 +84,42 @@ router.post("/", uploadStrategy, async (req, res) => {
       uploadOptions.maxBuffers,
       { blobHTTPHeaders: { blobContentType: "image/jpeg" } }
     );
-
     // Construct the file path
     const filePath = `https://${process.env.AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${containerName2}/${blobName}`;
-
     res.send(filePath).status(200);
   } catch (err) {
     console.log(err);
     return res.status(404).send(err);
+  }
+});
+
+// Deleting an Image
+router.post("/delete-image", async (req, res) => {
+  try {
+    // Check if the image URL is provided
+    if (req.body.imgUrl) {
+      // Extract the blob name from the provided image URL
+      const path = req.body.imgUrl;
+      const existingBlobName = path.slice(
+        path.indexOf(containerName2) + containerName2.length + 1
+      );
+
+      // Get the "images" container
+      const containerClient =
+        blobServiceClient.getContainerClient(containerName2);
+
+      // Check if a blob with the existing blob name exists
+      const existingBlobClient =
+        containerClient.getBlockBlobClient(existingBlobName);
+      const exists = await existingBlobClient.exists();
+
+      if (exists) {
+        // Delete the existing blob
+        await existingBlobClient.delete();
+      }
+    }
+  } catch (err) {
+    console.error(err);
   }
 });
 

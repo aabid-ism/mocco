@@ -107,6 +107,9 @@ router.post("/push-news", async (req, res) => {
     const db = conn.getDb();
     const collection = await db.collection("newsStage");
     let data = req.body;
+    const today = new Date();
+    const { id, ...newData } = data;
+    data = { ...newData, createdAt: today };
     const result = await collection.insertOne(data);
 
     if (!result) {
@@ -127,9 +130,8 @@ router.post("/approve-news", async (req, res) => {
     const collection = await db.collection("news");
     let data = req.body;
     const today = new Date();
-    const dateOnly = new Date(today.toISOString().split("T")[0]);
     const { id, ...newData } = data;
-    data = { ...newData, createdAt: dateOnly };
+    data = { ...newData, createdAt: today };
     const result = await collection.insertOne(data);
 
     if (!result) {
@@ -234,18 +236,22 @@ router.post("/edit-unpublished-news", async (req, res) => {
     const collection = await db.collection("newsStage");
 
     // finding and updating news post based on ID
-    const result = await collection.updateOne(
+    const result = await collection.findOneAndUpdate(
       {
         _id: new ObjectId(newsId),
       },
-      { $set: updateNews }
+      { $set: updateNews },
+      { returnDocument: "after" }
     );
 
-    if (!result) {
+    // Check if a document was found and updated
+    if (!result.value) {
       return res.status(404).json({ message: "News not found" });
     }
 
-    res.status(200).json({ message: "News edit successfully" });
+    res
+      .status(200)
+      .json({ message: "News edited successfully", value: result.value });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
@@ -263,18 +269,21 @@ router.post("/edit-news", async (req, res) => {
     const collection = await db.collection("news");
 
     // finding and updating news post based on ID
-    const result = await collection.updateOne(
+    const result = await collection.findOneAndUpdate(
       {
         _id: new ObjectId(newsId),
       },
-      { $set: updateNews }
+      { $set: updateNews },
+      { returnDocument: "after" }
     );
 
     if (!result) {
       return res.status(404).json({ message: "News not found" });
     }
 
-    res.status(200).json({ message: "News edited successfully" });
+    res
+      .status(200)
+      .json({ message: "News edited successfully", value: result.value });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
@@ -358,9 +367,8 @@ router.post("/approve-lifestyle-news", async (req, res) => {
     const collection = await db.collection("lifestyle");
     let data = req.body;
     const today = new Date();
-    const dateOnly = new Date(today.toISOString().split("T")[0]);
     const { id, ...newData } = data;
-    data = { ...newData, createdAt: dateOnly };
+    data = { ...newData, createdAt: today };
     const result = await collection.insertOne(data);
 
     if (!result) {
@@ -404,18 +412,22 @@ router.post("/edit-lifestyle-news", async (req, res) => {
     const collection = await db.collection("lifestyle");
 
     // finding and updating news post based on ID
-    const result = await collection.updateOne(
+    const result = await collection.findOneAndUpdate(
       {
         _id: new ObjectId(newsId),
       },
-      { $set: updateNews }
+      { $set: updateNews },
+      { returnDocument: "after" }
     );
 
     if (!result) {
       return res.status(404).json({ message: "Lifestyle News not found" });
     }
 
-    res.status(200).json({ message: "Lifestyle News edited successfully" });
+    res.status(200).json({
+      message: "Lifestyle News edited successfully",
+      value: result.value,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
@@ -454,9 +466,8 @@ router.post("/add-news-to-lifestyle", async (req, res) => {
     const collection = await db.collection("lifestyle");
     let data = req.body;
     const today = new Date();
-    const dateOnly = new Date(today.toISOString().split("T")[0]);
     const { id, ...newData } = data;
-    data = { ...newData, createdAt: dateOnly };
+    data = { ...newData, createdAt: today };
     const result = await collection.insertOne(data);
 
     if (!result) {
@@ -496,9 +507,8 @@ router.post("/add-lifestyle-to-news", async (req, res) => {
     const collection = await db.collection("news");
     let data = req.body;
     const today = new Date();
-    const dateOnly = new Date(today.toISOString().split("T")[0]);
     const { id, ...newData } = data;
-    data = { ...newData, createdAt: dateOnly };
+    data = { ...newData, createdAt: today };
     const result = await collection.insertOne(data);
 
     if (!result) {

@@ -8,15 +8,14 @@ import { Container } from "react-bootstrap";
 import LeftSidebar from "./components/left/LeftSidebar";
 import RightSidebar from "./components/right/RightSidebar";
 import FeedContainer from "./components/FeedContainer";
-import { MoccoProvider, useMoccoDispatch } from "./providers/NewsProvider";
+import { MoccoNewsFeedProvider } from "./providers/NewsProvider";
 import { useEffect } from "react";
 import { fetchDefaultFeed } from "./services/FetchService";
 function App() {
-  
   return (
     <>
       <NavigatorBar />
-      <MoccoProvider>
+      <MoccoNewsFeedProvider>
         <Container fluid style={{ backgroundColor: "#F1F2F5" }}>
           <div
             style={{
@@ -55,7 +54,7 @@ function App() {
             </Col>
           </div>
         </Container>
-      </MoccoProvider>
+      </MoccoNewsFeedProvider>
     </>
   );
 }

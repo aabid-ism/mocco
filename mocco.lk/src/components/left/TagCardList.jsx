@@ -1,5 +1,6 @@
 import React from "react";
 import TagCard from "./TagCard";
+import { NewsType } from "../../enums";
 
 // All Tags Array
 const news_categories = [
@@ -20,8 +21,9 @@ const news_categories = [
   "Travel and Tourism",
   "Technology",
 ];
-
-const tagCardList = news_categories.map((tag) => (
+const newsTagsList = Object.values(NewsType);
+const filteredNewsTagsList = newsTagsList.filter((tag) => tag !== "");
+const tagCardList = filteredNewsTagsList.map((tag) => (
   <TagCard tag={tag} key={tag} />
 ));
 

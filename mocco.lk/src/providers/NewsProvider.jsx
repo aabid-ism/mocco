@@ -1,31 +1,32 @@
 import { React, createContext, useReducer, useContext } from "react";
 import { fetchDefaultFeed } from "../services/FetchService";
 import { FeedType, NewsType, Language } from "../enums";
+
 // stores and provides the state of the webapp
-export const MoccoContext = createContext(null);
+export const moccoNewsFeedContext = createContext(null);
 
 // stores and provides the dispatch functions of the webapp
-export const MoccoDispatchContext = createContext(null);
+export const moccoNewsFeedDispatchContext = createContext(null);
 
-export function useMoccoContext() {
-  return useContext(MoccoContext);
+export function useMoccoNewsFeedContext() {
+  return useContext(moccoNewsFeedContext);
 }
 
-export function useMoccoDispatch() {
-  return useContext(MoccoDispatchContext);
+export function useMoccoNewsFeedDispatchContext() {
+  return useContext(moccoNewsFeedDispatchContext);
 }
 
 // Mocco Provider provides a Higher-Order Component to automatically wrap
 // the state context (Mocco Context) and dispatch contect (MoccoDispatchContext)
-export function MoccoProvider({ children }) {
+export function MoccoNewsFeedProvider({ children }) {
   const [mocco, dispatch] = useReducer(moccoReducer, initialMocco);
 
   return (
-    <MoccoContext.Provider value={mocco}>
-      <MoccoDispatchContext.Provider value={dispatch}>
+    <moccoNewsFeedContext.Provider value={mocco}>
+      <moccoNewsFeedDispatchContext.Provider value={dispatch}>
         {children}
-      </MoccoDispatchContext.Provider>
-    </MoccoContext.Provider>
+      </moccoNewsFeedDispatchContext.Provider>
+    </moccoNewsFeedContext.Provider>
   );
 }
 

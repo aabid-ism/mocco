@@ -8,8 +8,8 @@ import conn from "./conn.js";
 
 // importing routes
 import news from "./routes/news.js";
-import image from "./routes/imagepipeline.js";
-import explorenews from "./routes/explorenews.js"
+import image from "./routes/image-pipeline/imagepipeline.js";
+import explorenews from "./routes/get-news/get-news-by-tag.js";
 
 const app = express();
 const PORT = process.env.PORT || 5555;

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocco/models/news_card.dart';
 
@@ -23,17 +24,23 @@ class NewsService {
               author: obj['author'],
               sourceName: obj['sourceName'],
               mainTag: obj['mainTag'],
-              //secondaryTags: List<String?>.from(obj['secondaryTags']),
+              secondaryTags: List<String?>.from(obj['secondaryTags']),
               locality: obj['locality'],
-              createdAt: obj['createdAt']);
+              createdAt: DateTime.tryParse(obj['createdAt']),
+              sinhalaDescription: obj['sinhalaDescription'],
+              sinhalaTitle: obj['sinhalaTitle'],
+              typeOfPost: obj['typeOfPost']);
         }).toList();
+        //newsModals.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
         return newsModals;
       } else {
         // internal server error(500) or 404 error
         return [];
       }
     } on Exception catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       return [];
     }
   }

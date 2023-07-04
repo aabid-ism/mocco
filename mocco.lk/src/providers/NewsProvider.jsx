@@ -59,6 +59,13 @@ function moccoReducer(state, action) {
         is_loading: false,
       };
     }
+
+    case "SET_LANG": {
+      return {
+        ...state,
+        language: action.payload,
+      };
+    }
     case "SetNFetchTagSpecificFeed": {
     }
     case "FetchYdayFeed": {

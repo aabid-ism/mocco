@@ -75,8 +75,11 @@ function FeedContainer() {
     <NewsCard
       key={newsObj._id}
       heading={newsObj.title}
+      sinhalaHeading={newsObj.sinhalaTitle}
       description={newsObj.description}
+      sinhalaDescription={newsObj.sinhalaDescription}
       imageUrl={newsObj.imageUrl}
+      lang={appState.language}
     />
   ));
   if (appState.postFeed.length > 1) {

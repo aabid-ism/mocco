@@ -142,7 +142,9 @@ const ManageNewsHistoryForm = ({
       secondaryTags: selectedSecondaryTags ? selectedSecondaryTags : [],
       imageUrl: imageUrlChip ? imageUrlChip : "",
       typeOfPost: selectedNews ? selectedNews.typeOfPost : "",
+      postIndex: selectedNews ? selectedNews.postIndex : "",
     });
+
     if (isDeleteMode) {
       setDeleteOpen(true);
     } else {
@@ -173,7 +175,6 @@ const ManageNewsHistoryForm = ({
         console.log(err);
       }
     }
-
     try {
       if (lifeStyle) {
         if (request.typeOfPost === "news") {
@@ -187,6 +188,9 @@ const ManageNewsHistoryForm = ({
           if (fileInputRef.current) {
             fileInputRef.current.value = "";
           }
+          setImageUrlChip("");
+          setSelectedSecondaryTags([]);
+          setLifeStyle(false);
           setImageUpload(null);
           setValid(false);
           handleSubmitFunc(response);
@@ -198,6 +202,9 @@ const ManageNewsHistoryForm = ({
           if (fileInputRef.current) {
             fileInputRef.current.value = "";
           }
+          setImageUrlChip("");
+          setSelectedSecondaryTags([]);
+          setLifeStyle(false);
           setImageUpload(null);
           setValid(false);
           handleSubmitFunc(response);
@@ -214,6 +221,9 @@ const ManageNewsHistoryForm = ({
           if (fileInputRef.current) {
             fileInputRef.current.value = "";
           }
+          setImageUrlChip("");
+          setSelectedSecondaryTags([]);
+          setLifeStyle(false);
           setImageUpload(null);
           setValid(false);
           handleSubmitFunc(response);
@@ -225,6 +235,9 @@ const ManageNewsHistoryForm = ({
           if (fileInputRef.current) {
             fileInputRef.current.value = "";
           }
+          setImageUrlChip("");
+          setSelectedSecondaryTags([]);
+          setLifeStyle(false);
           setImageUpload(null);
           setValid(false);
           handleSubmitFunc(response);

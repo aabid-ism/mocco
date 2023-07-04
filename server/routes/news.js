@@ -176,7 +176,11 @@ router.post("/approve-news", async (req, res) => {
           ? lifestyleMaxPostIndex.postIndex + 1
           : 1);
 
-    data = { ...newData, createdAt: today, postIndex: newPostIndex };
+    data = {
+      ...newData,
+      createdAt: convertedDateTime,
+      postIndex: newPostIndex,
+    };
     const result = await newsCollection.insertOne(data);
 
     if (!result) {
@@ -455,7 +459,11 @@ router.post("/approve-lifestyle-news", async (req, res) => {
       : (newPostIndex = lifestyleMaxPostIndex
           ? lifestyleMaxPostIndex.postIndex + 1
           : 1);
-    data = { ...newData, createdAt: today, postIndex: newPostIndex };
+    data = {
+      ...newData,
+      createdAt: convertedDateTime,
+      postIndex: newPostIndex,
+    };
     const result = await lifestyleCollection.insertOne(data);
 
     if (!result) {

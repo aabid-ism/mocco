@@ -127,17 +127,30 @@ router.post("/push-news", async (req, res) => {
 router.post("/approve-news", async (req, res) => {
   try {
     const db = conn.getDb();
-    const collection = await db.collection("news");
+    let newPostIndex;
+    const newsCollection = await db.collection("news");
+    const lifestyleCollection = await db.collection("lifestyle");
     let data = req.body;
     const today = new Date();
     const { id, ...newData } = data;
-    const maxPostIndex = await collection.findOne(
+    const newsMaxPostIndex = await newsCollection.findOne(
       {},
       { sort: { postIndex: -1 }, projection: { postIndex: 1 } }
     );
-    const newPostIndex = maxPostIndex ? maxPostIndex.postIndex + 1 : 1;
+
+    const lifestyleMaxPostIndex = await lifestyleCollection.findOne(
+      {},
+      { sort: { postIndex: -1 }, projection: { postIndex: 1 } }
+    );
+
+    newsMaxPostIndex.postIndex > lifestyleMaxPostIndex.postIndex
+      ? (newPostIndex = newsMaxPostIndex ? newsMaxPostIndex.postIndex + 1 : 1)
+      : (newPostIndex = lifestyleMaxPostIndex
+          ? lifestyleMaxPostIndex.postIndex + 1
+          : 1);
+
     data = { ...newData, createdAt: today, postIndex: newPostIndex };
-    const result = await collection.insertOne(data);
+    const result = await newsCollection.insertOne(data);
 
     if (!result) {
       return res.status(404).json({ message: "News not found" });
@@ -387,17 +400,29 @@ router.post("/get-lifestyle-news-by-date", async (req, res) => {
 router.post("/approve-lifestyle-news", async (req, res) => {
   try {
     const db = conn.getDb();
-    const collection = await db.collection("lifestyle");
+    let newPostIndex;
+    const newsCollection = await db.collection("news");
+    const lifestyleCollection = await db.collection("lifestyle");
     let data = req.body;
     const today = new Date();
     const { id, ...newData } = data;
-    const maxPostIndex = await collection.findOne(
+    const newsMaxPostIndex = await newsCollection.findOne(
       {},
       { sort: { postIndex: -1 }, projection: { postIndex: 1 } }
     );
-    const newPostIndex = maxPostIndex ? maxPostIndex.postIndex + 1 : 1;
+
+    const lifestyleMaxPostIndex = await lifestyleCollection.findOne(
+      {},
+      { sort: { postIndex: -1 }, projection: { postIndex: 1 } }
+    );
+
+    newsMaxPostIndex.postIndex > lifestyleMaxPostIndex.postIndex
+      ? (newPostIndex = newsMaxPostIndex ? newsMaxPostIndex.postIndex + 1 : 1)
+      : (newPostIndex = lifestyleMaxPostIndex
+          ? lifestyleMaxPostIndex.postIndex + 1
+          : 1);
     data = { ...newData, createdAt: today, postIndex: newPostIndex };
-    const result = await collection.insertOne(data);
+    const result = await lifestyleCollection.insertOne(data);
 
     if (!result) {
       return res.status(404).json({ message: "Lifestyle News not found" });

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:mocco/app_preferences.dart';
 import 'package:mocco/models/news_card.dart';
 import 'package:mocco/news_provider_state.dart';
 import 'package:mocco/widgets/bottom_bar.dart';
@@ -22,7 +23,11 @@ class _NewsContainerState extends State<NewsContainer> {
   Widget build(BuildContext context) {
     _containerReqFrom = widget.requestSource;
     var appState = context.watch<NewsProvider>();
-    var newsCards = _containerReqFrom == NewsScreenUsers.newsScreen ? appState.newsModelsList: appState.lifestyleModelsList;
+    var preferencesState = context.watch<AppPreferences>();
+    preferencesState.init();
+    var newsCards = _containerReqFrom == NewsScreenUsers.newsScreen
+        ? appState.newsModelsList
+        : appState.lifestyleModelsList;
 
     return Scaffold(
       body: PageView.builder(
@@ -124,7 +129,11 @@ class _NewsContainerState extends State<NewsContainer> {
                             .start, //Align items from left-to-right in cross axis
                         children: [
                           Text(
-                            newsCards[index].title ?? "",
+                            langProcessor(
+                                newsCards[index].title,
+                                newsCards[index].sinhalaTitle ??
+                                    newsCards[index].title,
+                                preferencesState.isEng),
                             key: Key('$index-title'),
                             style: const TextStyle(
                               fontSize: 24,
@@ -136,7 +145,11 @@ class _NewsContainerState extends State<NewsContainer> {
                             height: 10,
                           ),
                           Text(
-                            newsCards[index].description ?? "",
+                            langProcessor(
+                                newsCards[index].description,
+                                newsCards[index].sinhalaDescription ??
+                                    newsCards[index].description,
+                                preferencesState.isEng),
                             key: Key('$index-description'),
                             style: const TextStyle(
                                 fontSize: 18, color: Colors.black87),
@@ -163,4 +176,14 @@ class _NewsContainerState extends State<NewsContainer> {
       ),
     );
   }
+}
+
+String langProcessor(String eng, String sin, bool isEng) {
+  if (!isEng) {
+    if (sin.isEmpty) {
+      return eng;
+    }
+    return sin;
+  }
+  return eng;
 }

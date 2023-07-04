@@ -21,7 +21,7 @@ class NewsProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    final newsResponse = await newsService.fetchAllNews(serverUrl);
+    final newsResponse = await newsService.fetchAllNews('$serverUrl/feed');
     final lifestyleResponse =
         await newsService.fetchAllNews('$serverUrl/lifestyle');
     if (newsResponse.isEmpty || lifestyleResponse.isEmpty) {

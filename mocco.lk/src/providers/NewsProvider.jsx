@@ -1,5 +1,4 @@
 import { React, createContext, useReducer, useContext } from "react";
-import { fetchDefaultFeed } from "../services/FetchService";
 import { FeedType, NewsType, Language } from "../enums";
 
 // stores and provides the state of the webapp
@@ -19,10 +18,10 @@ export function useMoccoNewsFeedDispatchContext() {
 // Mocco Provider provides a Higher-Order Component to automatically wrap
 // the state context (Mocco Context) and dispatch contect (MoccoDispatchContext)
 export function MoccoNewsFeedProvider({ children }) {
-  const [mocco, dispatch] = useReducer(moccoReducer, initialMocco);
+  const [moccoNewsFeedState, dispatch] = useReducer(moccoReducer, initialState);
 
   return (
-    <moccoNewsFeedContext.Provider value={mocco}>
+    <moccoNewsFeedContext.Provider value={moccoNewsFeedState}>
       <moccoNewsFeedDispatchContext.Provider value={dispatch}>
         {children}
       </moccoNewsFeedDispatchContext.Provider>
@@ -31,15 +30,40 @@ export function MoccoNewsFeedProvider({ children }) {
 }
 
 // Mocco Reducer
-function moccoReducer(mocco, action) {
+function moccoReducer(state, action) {
   switch (action.type) {
-    case "FetchDefaultFeed": {
-      console.log(action.payload);
+    case "SET_LOADING": {
       return {
-        ...mocco,
+        ...state,
+        is_loading: true,
+      };
+    }
+    case "DispatchDefaultFeed": {
+      // console.log(action.payload);
+      return {
+        ...state,
         feedTag: FeedType.YESTERDAY,
         newsTag: NewsType.EMPTY,
         postFeed: action.payload,
+        is_loading: false,
+      };
+    }
+
+    case "LOAD_TO_FEED": {
+      // console.log(action.payload);
+      return {
+        ...state,
+        feedTag: FeedType.YESTERDAY,
+        newsTag: NewsType.EMPTY,
+        postFeed: [...state.postFeed, ...action.payload],
+        is_loading: false,
+      };
+    }
+
+    case "SET_LANG": {
+      return {
+        ...state,
+        language: action.payload,
       };
     }
     case "SetNFetchTagSpecificFeed": {
@@ -53,8 +77,9 @@ function moccoReducer(mocco, action) {
 }
 
 // Initial Mocco
-const initialMocco = {
+const initialState = {
   language: "English",
+  is_loading: true,
   feedTag: FeedType.ALL,
   newsTag: NewsType.EMPTY,
   postFeed: [],

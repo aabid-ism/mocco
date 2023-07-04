@@ -40,8 +40,18 @@ router.get("/feed", async (req, res) => {
     const collection = await db.collection("news");
 
     // finding and returning all news posts
-    const results = await collection.find({}).limit(20).toArray();
-    results.reverse();
+    // const results = await collection.find({}).limit(2).toArray();
+
+    const results = await collection
+      .aggregate([
+        {
+          $sort: { createdAt: -1 },
+        },
+        {
+          $limit: 2,
+        },
+      ])
+      .toArray();
     res.send(results).status(200);
   } catch (error) {
     res.send(error).status(500);
@@ -166,11 +176,7 @@ router.post("/approve-news", async (req, res) => {
           ? lifestyleMaxPostIndex.postIndex + 1
           : 1);
 
-    data = {
-      ...newData,
-      createdAt: convertedDateTime,
-      postIndex: newPostIndex,
-    };
+    data = { ...newData, createdAt: today, postIndex: newPostIndex };
     const result = await newsCollection.insertOne(data);
 
     if (!result) {
@@ -239,6 +245,7 @@ router.post("/get-news-by-date", async (req, res) => {
       })
       .limit(50)
       .toArray();
+
     res.send(results).status(200);
   } catch (error) {
     console.log(error);
@@ -448,11 +455,7 @@ router.post("/approve-lifestyle-news", async (req, res) => {
       : (newPostIndex = lifestyleMaxPostIndex
           ? lifestyleMaxPostIndex.postIndex + 1
           : 1);
-    data = {
-      ...newData,
-      createdAt: convertedDateTime,
-      postIndex: newPostIndex,
-    };
+    data = { ...newData, createdAt: today, postIndex: newPostIndex };
     const result = await lifestyleCollection.insertOne(data);
 
     if (!result) {

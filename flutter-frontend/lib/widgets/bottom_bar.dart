@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mocco/app_preferences.dart';
 import 'package:mocco/models/news_card.dart';
 import 'package:mocco/widgets/share_bottom_sheet.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 
 class BottomBar extends StatelessWidget {
   final NewsCard newsCard;
-  const BottomBar({super.key, required this.newsCard});
+  BottomBar({super.key, required this.newsCard});
 
   @override
   Widget build(BuildContext context) {
+    var preferencesStateWatcher = context.watch<AppPreferences>();
     return Container(
       height: 70,
-      width: 165,
+      width: 220,
       decoration: BoxDecoration(
         color: const Color(0xFFD9D9D9),
         borderRadius: BorderRadius.circular(35),
@@ -92,6 +95,48 @@ class BottomBar extends StatelessWidget {
                       Text(
                         "Source",
                         style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ]),
+                  ),
+                ],
+              ),
+            ),
+            // Lang Toggle Button
+            GestureDetector(
+              // Make whole source column clickable
+              onTap: () async {
+                if (preferencesStateWatcher.isEng) {
+                  if (newsCard.sinhalaTitle!.isEmpty ||
+                      newsCard.sinhalaDescription!.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      //Show snack bar msg if failed the launch
+                      const SnackBar(
+                        backgroundColor: Colors.redAccent,
+                        content: Text(
+                            'Unfortunately, this article is not available in Sinhala'),
+                      ),
+                    );
+                    return;
+                  }
+                }
+                preferencesStateWatcher.toggleLang();
+              },
+              child: Column(
+                children: [
+                  // Source Icon Buttom
+                  IconButton(
+                    onPressed: null,
+                    icon: Column(children: [
+                      const Icon(Icons.language, color: Colors.black),
+                      const SizedBox(
+                        height: 4,
+                      ),
+                      Text(
+                        preferencesStateWatcher.isEng ? "ENG" : "SIN",
+                        style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
                         ),

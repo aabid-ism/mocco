@@ -137,12 +137,30 @@ router.post("/push-news", async (req, res) => {
 router.post("/approve-news", async (req, res) => {
   try {
     const db = conn.getDb();
-    const collection = await db.collection("news");
+    let newPostIndex;
+    const newsCollection = await db.collection("news");
+    const lifestyleCollection = await db.collection("lifestyle");
     let data = req.body;
     const today = new Date();
     const { id, ...newData } = data;
-    data = { ...newData, createdAt: today };
-    const result = await collection.insertOne(data);
+    const newsMaxPostIndex = await newsCollection.findOne(
+      {},
+      { sort: { postIndex: -1 }, projection: { postIndex: 1 } }
+    );
+
+    const lifestyleMaxPostIndex = await lifestyleCollection.findOne(
+      {},
+      { sort: { postIndex: -1 }, projection: { postIndex: 1 } }
+    );
+
+    newsMaxPostIndex.postIndex > lifestyleMaxPostIndex.postIndex
+      ? (newPostIndex = newsMaxPostIndex ? newsMaxPostIndex.postIndex + 1 : 1)
+      : (newPostIndex = lifestyleMaxPostIndex
+          ? lifestyleMaxPostIndex.postIndex + 1
+          : 1);
+
+    data = { ...newData, createdAt: today, postIndex: newPostIndex };
+    const result = await newsCollection.insertOne(data);
 
     if (!result) {
       return res.status(404).json({ message: "News not found" });
@@ -192,19 +210,29 @@ router.get("/get-unpublished-news", async (req, res) => {
 // GET ALL PUBLISHED NEWS FROM news COLLECTION BASED ON THE SELECTED DATE.
 router.post("/get-news-by-date", async (req, res) => {
   let { date } = req.body;
-  date = new Date(date);
+  const startOfDay = new Date(date);
+  const endOfDay = new Date(date);
+  endOfDay.setDate(endOfDay.getDate() + 1);
+
   try {
-    // getting references to database and collection
+    // Getting references to the database and collection
     const db = conn.getDb();
     const collection = await db.collection("news");
 
-    // finding and returning all news posts
+    // Finding and returning all news posts within the specified date range
     const results = await collection
-      .find({ createdAt: date })
+      .find({
+        createdAt: {
+          $gte: startOfDay,
+          $lt: endOfDay,
+        },
+      })
       .limit(50)
       .toArray();
+
     res.send(results).status(200);
   } catch (error) {
+    console.log(error);
     res.send(error).status(500);
   }
 });
@@ -353,7 +381,10 @@ router.post("/delete-news", async (req, res) => {
 // GET ALL PUBLISHED LIFESTYLE NEWS FROM THE lifestyle COLLECTION BASED ON THE SELECTED DATE.
 router.post("/get-lifestyle-news-by-date", async (req, res) => {
   let { date } = req.body;
-  date = new Date(date);
+  const startOfDay = new Date(date);
+  const endOfDay = new Date(date);
+  endOfDay.setDate(endOfDay.getDate() + 1);
+
   try {
     // getting references to database and collection
     const db = conn.getDb();
@@ -361,7 +392,12 @@ router.post("/get-lifestyle-news-by-date", async (req, res) => {
 
     // finding and returning all news posts
     const results = await collection
-      .find({ createdAt: date })
+      .find({
+        createdAt: {
+          $gte: startOfDay,
+          $lt: endOfDay,
+        },
+      })
       .limit(50)
       .toArray();
     res.send(results).status(200);
@@ -374,12 +410,29 @@ router.post("/get-lifestyle-news-by-date", async (req, res) => {
 router.post("/approve-lifestyle-news", async (req, res) => {
   try {
     const db = conn.getDb();
-    const collection = await db.collection("lifestyle");
+    let newPostIndex;
+    const newsCollection = await db.collection("news");
+    const lifestyleCollection = await db.collection("lifestyle");
     let data = req.body;
     const today = new Date();
     const { id, ...newData } = data;
-    data = { ...newData, createdAt: today };
-    const result = await collection.insertOne(data);
+    const newsMaxPostIndex = await newsCollection.findOne(
+      {},
+      { sort: { postIndex: -1 }, projection: { postIndex: 1 } }
+    );
+
+    const lifestyleMaxPostIndex = await lifestyleCollection.findOne(
+      {},
+      { sort: { postIndex: -1 }, projection: { postIndex: 1 } }
+    );
+
+    newsMaxPostIndex.postIndex > lifestyleMaxPostIndex.postIndex
+      ? (newPostIndex = newsMaxPostIndex ? newsMaxPostIndex.postIndex + 1 : 1)
+      : (newPostIndex = lifestyleMaxPostIndex
+          ? lifestyleMaxPostIndex.postIndex + 1
+          : 1);
+    data = { ...newData, createdAt: today, postIndex: newPostIndex };
+    const result = await lifestyleCollection.insertOne(data);
 
     if (!result) {
       return res.status(404).json({ message: "Lifestyle News not found" });

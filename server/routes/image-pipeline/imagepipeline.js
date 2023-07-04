@@ -43,17 +43,12 @@ const router = express.Router();
 
 // Posting an Image
 router.post("/", uploadStrategy, async (req, res) => {
-  const today = new Date();
-  const dateTimeString = today.toISOString();
-  const dateOnly = dateTimeString.split("T")[0];
-  const blobName = `${dateOnly}/${getBlobName(req.file.originalname)}`;
-
   // Check if the image URL is provided
   if (req.body.imageUrl) {
     // Extract the blob name from the provided image URL
-    const path = req.body.imageUrl;
-    const existingBlobName = path.slice(
-      path.indexOf(containerName2) + containerName2.length + 1
+    const existingImageUrl = req.body.imageUrl;
+    const existingPath = existingImageUrl.slice(
+      existingImageUrl.indexOf(containerName2) + containerName2.length + 1
     );
 
     // Get the "images" container
@@ -61,35 +56,71 @@ router.post("/", uploadStrategy, async (req, res) => {
       blobServiceClient.getContainerClient(containerName2);
 
     // Check if a blob with the existing blob name exists
-    const existingBlobClient =
-      containerClient.getBlockBlobClient(existingBlobName);
+    const existingBlobClient = containerClient.getBlockBlobClient(existingPath);
     const exists = await existingBlobClient.exists();
-
     if (exists) {
       // Delete the existing blob
       await existingBlobClient.delete();
-    }
-  }
+      const existingDate = existingPath.substring(0, existingPath.indexOf("/"));
+      const newBlobPath = `${existingDate}/${getBlobName(
+        req.file.originalname
+      )}`;
 
-  // get the stream of bytes from req.file
-  const stream = getStream(req.file.buffer);
-  // get the "images" container
-  const containerClient = blobServiceClient.getContainerClient(containerName2);
-  // create a new blob with the unique name we generated
-  const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-  try {
-    await blockBlobClient.uploadStream(
-      stream,
-      uploadOptions.bufferSize,
-      uploadOptions.maxBuffers,
-      { blobHTTPHeaders: { blobContentType: "image/jpeg" } }
-    );
-    // Construct the file path
-    const filePath = `https://${process.env.AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${containerName2}/${blobName}`;
-    res.send(filePath).status(200);
-  } catch (err) {
-    console.log(err);
-    return res.status(404).send(err);
+      // get the stream of bytes from req.file
+      const stream = getStream(req.file.buffer);
+
+      // get the "images" container
+      const containerClient =
+        blobServiceClient.getContainerClient(containerName2);
+
+      // create a new blob with the unique name we generated
+      const blockBlobClient = containerClient.getBlockBlobClient(newBlobPath);
+      try {
+        await blockBlobClient.uploadStream(
+          stream,
+          uploadOptions.bufferSize,
+          uploadOptions.maxBuffers,
+          { blobHTTPHeaders: { blobContentType: "image/jpeg" } }
+        );
+
+        // Construct the file path
+        const filePath = `https://${process.env.AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${containerName2}/${newBlobPath}`;
+        res.send(filePath).status(200);
+      } catch (err) {
+        console.log(err);
+        return res.status(404).send(err);
+      }
+    }
+  } else {
+    const today = new Date();
+    const dateTimeString = today.toISOString();
+    const dateOnly = dateTimeString.split("T")[0];
+    const blobName = `${dateOnly}/${getBlobName(req.file.originalname)}`;
+
+    // get the stream of bytes from req.file
+    const stream = getStream(req.file.buffer);
+
+    // get the "images" container
+    const containerClient =
+      blobServiceClient.getContainerClient(containerName2);
+
+    // create a new blob with the unique name we generated
+    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+    try {
+      await blockBlobClient.uploadStream(
+        stream,
+        uploadOptions.bufferSize,
+        uploadOptions.maxBuffers,
+        { blobHTTPHeaders: { blobContentType: "image/jpeg" } }
+      );
+
+      // Construct the file path
+      const filePath = `https://${process.env.AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${containerName2}/${blobName}`;
+      res.send(filePath).status(200);
+    } catch (err) {
+      console.log(err);
+      return res.status(404).send(err);
+    }
   }
 });
 

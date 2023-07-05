@@ -3,12 +3,10 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:appinio_social_share/appinio_social_share.dart';
 
 class ShareBottomSheet extends StatelessWidget {
   final String imageURL;
   final String heading;
-  AppinioSocialShare appinioSocialShare = AppinioSocialShare();
   ShareBottomSheet({
     super.key,
     required this.imageURL,

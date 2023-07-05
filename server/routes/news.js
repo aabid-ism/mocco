@@ -1,6 +1,7 @@
 import conn from "../conn.js";
 import express from "express";
 import { ObjectId } from "mongodb";
+import moment from "moment-timezone";
 
 const router = express.Router();
 
@@ -118,8 +119,16 @@ router.post("/push-news", async (req, res) => {
     const collection = await db.collection("newsStage");
     let data = req.body;
     const today = new Date();
+
+    // converting the UTC to GMT +5:30
+    const utcDateTime = moment.utc(today);
+    const convertedDateTime = moment
+      .utc(utcDateTime)
+      .add(5, "hours")
+      .add(30, "minutes")
+      .toDate();
     const { id, ...newData } = data;
-    data = { ...newData, createdAt: today };
+    data = { ...newData, createdAt: convertedDateTime };
     const result = await collection.insertOne(data);
 
     if (!result) {
@@ -142,6 +151,14 @@ router.post("/approve-news", async (req, res) => {
     const lifestyleCollection = await db.collection("lifestyle");
     let data = req.body;
     const today = new Date();
+
+    // converting the UTC to GMT +5:30
+    const utcDateTime = moment.utc(today);
+    const convertedDateTime = moment
+      .utc(utcDateTime)
+      .add(5, "hours")
+      .add(30, "minutes")
+      .toDate();
     const { id, ...newData } = data;
     const newsMaxPostIndex = await newsCollection.findOne(
       {},
@@ -159,7 +176,11 @@ router.post("/approve-news", async (req, res) => {
           ? lifestyleMaxPostIndex.postIndex + 1
           : 1);
 
-    data = { ...newData, createdAt: today, postIndex: newPostIndex };
+    data = {
+      ...newData,
+      createdAt: convertedDateTime,
+      postIndex: newPostIndex,
+    };
     const result = await newsCollection.insertOne(data);
 
     if (!result) {
@@ -213,7 +234,6 @@ router.post("/get-news-by-date", async (req, res) => {
   const startOfDay = new Date(date);
   const endOfDay = new Date(date);
   endOfDay.setDate(endOfDay.getDate() + 1);
-
   try {
     // Getting references to the database and collection
     const db = conn.getDb();
@@ -415,6 +435,14 @@ router.post("/approve-lifestyle-news", async (req, res) => {
     const lifestyleCollection = await db.collection("lifestyle");
     let data = req.body;
     const today = new Date();
+
+    // converting the UTC to GMT +5:30
+    const utcDateTime = moment.utc(today);
+    const convertedDateTime = moment
+      .utc(utcDateTime)
+      .add(5, "hours")
+      .add(30, "minutes")
+      .toDate();
     const { id, ...newData } = data;
     const newsMaxPostIndex = await newsCollection.findOne(
       {},
@@ -431,7 +459,11 @@ router.post("/approve-lifestyle-news", async (req, res) => {
       : (newPostIndex = lifestyleMaxPostIndex
           ? lifestyleMaxPostIndex.postIndex + 1
           : 1);
-    data = { ...newData, createdAt: today, postIndex: newPostIndex };
+    data = {
+      ...newData,
+      createdAt: convertedDateTime,
+      postIndex: newPostIndex,
+    };
     const result = await lifestyleCollection.insertOne(data);
 
     if (!result) {
@@ -529,8 +561,16 @@ router.post("/add-news-to-lifestyle", async (req, res) => {
     const collection = await db.collection("lifestyle");
     let data = req.body;
     const today = new Date();
+
+    // converting the UTC to GMT +5:30
+    const utcDateTime = moment.utc(today);
+    const convertedDateTime = moment
+      .utc(utcDateTime)
+      .add(5, "hours")
+      .add(30, "minutes")
+      .toDate();
     const { id, ...newData } = data;
-    data = { ...newData, createdAt: today };
+    data = { ...newData, createdAt: convertedDateTime };
     const result = await collection.insertOne(data);
 
     if (!result) {
@@ -570,8 +610,16 @@ router.post("/add-lifestyle-to-news", async (req, res) => {
     const collection = await db.collection("news");
     let data = req.body;
     const today = new Date();
+
+    // converting the UTC to GMT +5:30
+    const utcDateTime = moment.utc(today);
+    const convertedDateTime = moment
+      .utc(utcDateTime)
+      .add(5, "hours")
+      .add(30, "minutes")
+      .toDate();
     const { id, ...newData } = data;
-    data = { ...newData, createdAt: today };
+    data = { ...newData, createdAt: convertedDateTime };
     const result = await collection.insertOne(data);
 
     if (!result) {

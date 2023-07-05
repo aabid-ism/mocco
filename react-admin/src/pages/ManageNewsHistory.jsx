@@ -87,8 +87,10 @@ const ManageNewsHistory = ({ open }) => {
   useEffect(() => {
     async function getHeadlines() {
       try {
-        const date = new Date(startDate);
-        const formattedDate = date.toISOString().split("T")[0];
+        const year = startDate.getFullYear();
+        const month = String(startDate.getMonth() + 1).padStart(2, "0");
+        const day = String(startDate.getDate()).padStart(2, "0");
+        const formattedDate = `${year}-${month}-${day}`;
 
         // get published news from news collection
         const newsResponse = await Axios.post("/get-news-by-date", {

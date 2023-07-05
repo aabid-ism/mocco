@@ -18,6 +18,30 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/exact-post", async (req, res) => {
+  try {
+    const reqPostIndex = parseInt(req.query.postIndex);
+    // getting references to database and collection
+    const db = conn.getDb();
+    const newsCollection = await db.collection("news");
+
+    let result = await newsCollection
+      .find({ postIndex: reqPostIndex })
+      .limit(1)
+      .toArray();
+
+    if (result.length == 0) {
+      const lifeCollection = await db.collection("lifestyle");
+      result = await lifeCollection
+        .find({ postIndex: reqPostIndex })
+        .limit(1)
+        .toArray();
+    }
+    res.send(result).status(200);
+  } catch (e) {
+    res.send(e).status(500);
+  }
+});
 router.get("/lifestyle", async (req, res) => {
   try {
     // getting references to database and collection

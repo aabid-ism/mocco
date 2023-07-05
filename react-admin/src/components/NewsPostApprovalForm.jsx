@@ -291,6 +291,7 @@ const NewsPostApprovalForm = ({
       setValid(true);
       return true;
     } catch (error) {
+      console.log(error);
       setValid(false);
       return false;
     }
@@ -467,9 +468,6 @@ const NewsPostApprovalForm = ({
                       name="image"
                       label={imageUrlChip}
                       size="small"
-                      onClick={() => {
-                        window.open(imageUrlChip, "_blank");
-                      }}
                       onDelete={() => setImageUrlChip("")}
                       deleteIcon={<CancelIcon />}
                       sx={{

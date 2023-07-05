@@ -469,9 +469,6 @@ const ManageNewsHistoryForm = ({
                       name="image"
                       label={imageUrlChip}
                       size="small"
-                      onClick={() => {
-                        window.open(imageUrlChip, "_blank");
-                      }}
                       onDelete={() => setImageUrlChip("")}
                       deleteIcon={<CancelIcon />}
                       sx={{

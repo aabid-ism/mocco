@@ -207,6 +207,9 @@ const ManageNewsHistoryForm = ({
           setImageUpload(null);
           setValid(false);
           handleSubmitFunc(response);
+          setImageUrlChip("");
+          setLifeStyle(false);
+          setSelectedSecondaryTags([]);
         } else {
           let response = await Axios.post("/edit-lifestyle-news", request);
           response && handleLoaderClose();
@@ -234,6 +237,9 @@ const ManageNewsHistoryForm = ({
           setImageUpload(null);
           setValid(false);
           handleSubmitFunc(response);
+          setImageUrlChip("");
+          setLifeStyle(false);
+          setSelectedSecondaryTags([]);
         } else {
           let response = await Axios.post("/edit-news", request);
           response && handleLoaderClose();
@@ -278,6 +284,7 @@ const ManageNewsHistoryForm = ({
         setSelectedNews(null);
         resetForm();
         setImageUpload(null);
+        setSelectedSecondaryTags([]);
         setValid(false);
         setImageUrlChip("");
         if (fileInputRef.current) {

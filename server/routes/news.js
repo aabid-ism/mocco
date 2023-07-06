@@ -1,7 +1,6 @@
 import conn from "../conn.js";
 import express from "express";
 import { ObjectId } from "mongodb";
-import moment from "moment-timezone";
 
 const router = express.Router();
 
@@ -43,6 +42,7 @@ router.get("/exact-post", async (req, res) => {
     res.send(e).status(500);
   }
 });
+
 router.get("/lifestyle", async (req, res) => {
   try {
     // getting references to database and collection
@@ -145,14 +145,11 @@ router.post("/push-news", async (req, res) => {
     const today = new Date();
 
     // converting the UTC to GMT +5:30
-    const utcDateTime = moment.utc(today);
-    const convertedDateTime = moment
-      .utc(utcDateTime)
-      .add(5, "hours")
-      .add(30, "minutes")
-      .toDate();
+    today.setUTCHours(today.getUTCHours() + 5);
+    today.setUTCMinutes(today.getUTCMinutes() + 30);
+
     const { id, ...newData } = data;
-    data = { ...newData, createdAt: convertedDateTime };
+    data = { ...newData, createdAt: today };
     const result = await collection.insertOne(data);
 
     if (!result) {
@@ -177,12 +174,9 @@ router.post("/approve-news", async (req, res) => {
     const today = new Date();
 
     // converting the UTC to GMT +5:30
-    const utcDateTime = moment.utc(today);
-    const convertedDateTime = moment
-      .utc(utcDateTime)
-      .add(5, "hours")
-      .add(30, "minutes")
-      .toDate();
+    today.setUTCHours(today.getUTCHours() + 5);
+    today.setUTCMinutes(today.getUTCMinutes() + 30);
+
     const { id, ...newData } = data;
     const newsMaxPostIndex = await newsCollection.findOne(
       {},
@@ -202,7 +196,7 @@ router.post("/approve-news", async (req, res) => {
 
     data = {
       ...newData,
-      createdAt: convertedDateTime,
+      createdAt: today,
       postIndex: newPostIndex,
     };
     const result = await newsCollection.insertOne(data);
@@ -462,12 +456,9 @@ router.post("/approve-lifestyle-news", async (req, res) => {
     const today = new Date();
 
     // converting the UTC to GMT +5:30
-    const utcDateTime = moment.utc(today);
-    const convertedDateTime = moment
-      .utc(utcDateTime)
-      .add(5, "hours")
-      .add(30, "minutes")
-      .toDate();
+    today.setUTCHours(today.getUTCHours() + 5);
+    today.setUTCMinutes(today.getUTCMinutes() + 30);
+
     const { id, ...newData } = data;
     const newsMaxPostIndex = await newsCollection.findOne(
       {},
@@ -486,7 +477,7 @@ router.post("/approve-lifestyle-news", async (req, res) => {
           : 1);
     data = {
       ...newData,
-      createdAt: convertedDateTime,
+      createdAt: today,
       postIndex: newPostIndex,
     };
     const result = await lifestyleCollection.insertOne(data);
@@ -588,14 +579,11 @@ router.post("/add-news-to-lifestyle", async (req, res) => {
     const today = new Date();
 
     // converting the UTC to GMT +5:30
-    const utcDateTime = moment.utc(today);
-    const convertedDateTime = moment
-      .utc(utcDateTime)
-      .add(5, "hours")
-      .add(30, "minutes")
-      .toDate();
+    today.setUTCHours(today.getUTCHours() + 5);
+    today.setUTCMinutes(today.getUTCMinutes() + 30);
+
     const { id, ...newData } = data;
-    data = { ...newData, createdAt: convertedDateTime };
+    data = { ...newData, createdAt: today };
     const result = await collection.insertOne(data);
 
     if (!result) {
@@ -638,14 +626,11 @@ router.post("/add-lifestyle-to-news", async (req, res) => {
     const today = new Date();
 
     // converting the UTC to GMT +5:30
-    const utcDateTime = moment.utc(today);
-    const convertedDateTime = moment
-      .utc(utcDateTime)
-      .add(5, "hours")
-      .add(30, "minutes")
-      .toDate();
+    today.setUTCHours(today.getUTCHours() + 5);
+    today.setUTCMinutes(today.getUTCMinutes() + 30);
+
     const { id, ...newData } = data;
-    data = { ...newData, createdAt: convertedDateTime };
+    data = { ...newData, createdAt: today };
     const result = await collection.insertOne(data);
 
     if (!result) {

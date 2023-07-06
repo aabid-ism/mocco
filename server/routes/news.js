@@ -42,6 +42,7 @@ router.get("/exact-post", async (req, res) => {
     res.send(e).status(500);
   }
 });
+
 router.get("/lifestyle", async (req, res) => {
   try {
     // getting references to database and collection
@@ -184,6 +185,7 @@ router.post("/approve-news", async (req, res) => {
           : 1);
 
     data = { ...newData, createdAt: today, postIndex: newPostIndex };
+    data = { ...newData, createdAt: today };
     const result = await newsCollection.insertOne(data);
 
     if (!result) {
@@ -209,7 +211,7 @@ router.post("/approve-news", async (req, res) => {
       res.status(500).json({ message: "Internal server error" });
     }
 
-    res.status(200).json({ message: "News updated successfully" });
+    res.status(200).json({ message: "News approved and updated successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });

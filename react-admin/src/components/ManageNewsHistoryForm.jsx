@@ -166,8 +166,25 @@ const ManageNewsHistoryForm = ({
           "imageUrl",
           selectedNews ? selectedNews.imageUrl : ""
         );
-        let imageResponse = await Axios.post("/image", imageFormData);
-        request = { ...data, imageUrl: imageResponse.data };
+
+        // checking to differentiate between an already existing post or a newly added post
+        if (selectedNews && selectedNews.imageUrl) {
+          let imageResponse = await Axios.post("/image", imageFormData);
+          try {
+            const imgUrl = selectedNews.imageUrl;
+            let deleteResponse = await Axios.post("/image/delete-image", {
+              imgUrl,
+            });
+            handleSubmitFunc(deleteResponse);
+          } catch (err) {
+            handleSubmitFunc(err);
+            console.log(err);
+          }
+          request = { ...data, imageUrl: imageResponse.data };
+        } else {
+          let imageResponse = await Axios.post("/image", imageFormData);
+          request = { ...data, imageUrl: imageResponse.data };
+        }
       } catch (err) {
         handleSubmitFunc(err);
         console.log(err);
@@ -469,6 +486,9 @@ const ManageNewsHistoryForm = ({
                       name="image"
                       label={imageUrlChip}
                       size="small"
+                      onClick={() => {
+                        window.open(imageUrlChip, "_blank");
+                      }}
                       onDelete={() => setImageUrlChip("")}
                       deleteIcon={<CancelIcon />}
                       sx={{

@@ -19,6 +19,30 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/exact-post", async (req, res) => {
+  try {
+    const reqPostIndex = parseInt(req.query.postIndex);
+    // getting references to database and collection
+    const db = conn.getDb();
+    const newsCollection = await db.collection("news");
+
+    let result = await newsCollection
+      .find({ postIndex: reqPostIndex })
+      .limit(1)
+      .toArray();
+
+    if (result.length == 0) {
+      const lifeCollection = await db.collection("lifestyle");
+      result = await lifeCollection
+        .find({ postIndex: reqPostIndex })
+        .limit(1)
+        .toArray();
+    }
+    res.send(result).status(200);
+  } catch (e) {
+    res.send(e).status(500);
+  }
+});
 router.get("/lifestyle", async (req, res) => {
   try {
     // getting references to database and collection
@@ -40,8 +64,18 @@ router.get("/feed", async (req, res) => {
     const collection = await db.collection("news");
 
     // finding and returning all news posts
-    const results = await collection.find({}).limit(20).toArray();
-    results.reverse();
+    // const results = await collection.find({}).limit(2).toArray();
+
+    const results = await collection
+      .aggregate([
+        {
+          $sort: { createdAt: -1 },
+        },
+        {
+          $limit: 2,
+        },
+      ])
+      .toArray();
     res.send(results).status(200);
   } catch (error) {
     res.send(error).status(500);

@@ -146,6 +146,7 @@ const NewsPostApprovalForm = ({
       imageUrl: imageUrlChip ? imageUrlChip : "",
       typeOfPost: lifeStyle ? "lifestyle" : "news",
     });
+
     if (isDeleteMode) {
       setDeleteOpen(true);
     }
@@ -170,8 +171,25 @@ const NewsPostApprovalForm = ({
           "imageUrl",
           selectedNews ? selectedNews.imageUrl : ""
         );
-        let imageResponse = await Axios.post("/image", imageFormData);
-        request = { ...data, imageUrl: imageResponse.data };
+
+        // checking to differentiate between an already existing post or a newly added post
+        if (selectedNews && selectedNews.imageUrl) {
+          let imageResponse = await Axios.post("/image", imageFormData);
+          try {
+            const imgUrl = selectedNews.imageUrl;
+            let deleteResponse = await Axios.post("/image/delete-image", {
+              imgUrl,
+            });
+            handleSubmitFunc(deleteResponse);
+          } catch (err) {
+            handleSubmitFunc(err);
+            console.log(err);
+          }
+          request = { ...data, imageUrl: imageResponse.data };
+        } else {
+          let imageResponse = await Axios.post("/image", imageFormData);
+          request = { ...data, imageUrl: imageResponse.data };
+        }
       } catch (err) {
         handleSubmitFunc(err);
         console.log(err);
@@ -190,8 +208,8 @@ const NewsPostApprovalForm = ({
       setImageUpload(null);
       handleSubmitFunc(response);
     } catch (err) {
-      handleSubmitFunc(err);
       console.error(err);
+      handleSubmitFunc(err);
     }
   };
 
@@ -236,8 +254,29 @@ const NewsPostApprovalForm = ({
     let request = data;
     if (imageFormData) {
       try {
-        let imageResponse = await Axios.post("/image", imageFormData);
-        request = { ...data, imageUrl: imageResponse.data };
+        imageFormData.append(
+          "imageUrl",
+          selectedNews ? selectedNews.imageUrl : ""
+        );
+
+        // checking to differentiate between an already existing post or a newly added post
+        if (selectedNews && selectedNews.imageUrl) {
+          let imageResponse = await Axios.post("/image", imageFormData);
+          try {
+            const imgUrl = selectedNews.imageUrl;
+            let deleteResponse = await Axios.post("/image/delete-image", {
+              imgUrl,
+            });
+            handleSubmitFunc(deleteResponse);
+          } catch (err) {
+            handleSubmitFunc(err);
+            console.log(err);
+          }
+          request = { ...data, imageUrl: imageResponse.data };
+        } else {
+          let imageResponse = await Axios.post("/image", imageFormData);
+          request = { ...data, imageUrl: imageResponse.data };
+        }
       } catch (err) {
         handleSubmitFunc(err);
         console.log(err);
@@ -468,6 +507,9 @@ const NewsPostApprovalForm = ({
                       name="image"
                       label={imageUrlChip}
                       size="small"
+                      onClick={() => {
+                        window.open(imageUrlChip, "_blank");
+                      }}
                       onDelete={() => setImageUrlChip("")}
                       deleteIcon={<CancelIcon />}
                       sx={{

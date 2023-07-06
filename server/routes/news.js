@@ -42,6 +42,7 @@ router.get("/exact-post", async (req, res) => {
     res.send(e).status(500);
   }
 });
+
 router.get("/lifestyle", async (req, res) => {
   try {
     // getting references to database and collection
@@ -161,29 +162,30 @@ router.post("/push-news", async (req, res) => {
 router.post("/approve-news", async (req, res) => {
   try {
     const db = conn.getDb();
-    let newPostIndex;
+    // let newPostIndex;
     const newsCollection = await db.collection("news");
-    const lifestyleCollection = await db.collection("lifestyle");
+    // const lifestyleCollection = await db.collection("lifestyle");
     let data = req.body;
     const today = new Date();
     const { id, ...newData } = data;
-    const newsMaxPostIndex = await newsCollection.findOne(
-      {},
-      { sort: { postIndex: -1 }, projection: { postIndex: 1 } }
-    );
+    // const newsMaxPostIndex = await newsCollection.findOne(
+    //   {},
+    //   { sort: { postIndex: -1 }, projection: { postIndex: 1 } }
+    // );
 
-    const lifestyleMaxPostIndex = await lifestyleCollection.findOne(
-      {},
-      { sort: { postIndex: -1 }, projection: { postIndex: 1 } }
-    );
+    // const lifestyleMaxPostIndex = await lifestyleCollection.findOne(
+    //   {},
+    //   { sort: { postIndex: -1 }, projection: { postIndex: 1 } }
+    // );
 
-    newsMaxPostIndex.postIndex > lifestyleMaxPostIndex.postIndex
-      ? (newPostIndex = newsMaxPostIndex ? newsMaxPostIndex.postIndex + 1 : 1)
-      : (newPostIndex = lifestyleMaxPostIndex
-          ? lifestyleMaxPostIndex.postIndex + 1
-          : 1);
+    // newsMaxPostIndex.postIndex > lifestyleMaxPostIndex.postIndex
+    //   ? (newPostIndex = newsMaxPostIndex ? newsMaxPostIndex.postIndex + 1 : 1)
+    //   : (newPostIndex = lifestyleMaxPostIndex
+    //       ? lifestyleMaxPostIndex.postIndex + 1
+    //       : 1);
 
-    data = { ...newData, createdAt: today, postIndex: newPostIndex };
+    // data = { ...newData, createdAt: today, postIndex: newPostIndex };
+    data = { ...newData, createdAt: today };
     const result = await newsCollection.insertOne(data);
 
     if (!result) {
@@ -209,7 +211,7 @@ router.post("/approve-news", async (req, res) => {
       res.status(500).json({ message: "Internal server error" });
     }
 
-    res.status(200).json({ message: "News updated successfully" });
+    res.status(200).json({ message: "News approved and updated successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -434,28 +436,29 @@ router.post("/get-lifestyle-news-by-date", async (req, res) => {
 router.post("/approve-lifestyle-news", async (req, res) => {
   try {
     const db = conn.getDb();
-    let newPostIndex;
-    const newsCollection = await db.collection("news");
+    // let newPostIndex;
+    // const newsCollection = await db.collection("news");
     const lifestyleCollection = await db.collection("lifestyle");
     let data = req.body;
     const today = new Date();
     const { id, ...newData } = data;
-    const newsMaxPostIndex = await newsCollection.findOne(
-      {},
-      { sort: { postIndex: -1 }, projection: { postIndex: 1 } }
-    );
+    // const newsMaxPostIndex = await newsCollection.findOne(
+    //   {},
+    //   { sort: { postIndex: -1 }, projection: { postIndex: 1 } }
+    // );
 
-    const lifestyleMaxPostIndex = await lifestyleCollection.findOne(
-      {},
-      { sort: { postIndex: -1 }, projection: { postIndex: 1 } }
-    );
+    // const lifestyleMaxPostIndex = await lifestyleCollection.findOne(
+    //   {},
+    //   { sort: { postIndex: -1 }, projection: { postIndex: 1 } }
+    // );
 
-    newsMaxPostIndex.postIndex > lifestyleMaxPostIndex.postIndex
-      ? (newPostIndex = newsMaxPostIndex ? newsMaxPostIndex.postIndex + 1 : 1)
-      : (newPostIndex = lifestyleMaxPostIndex
-          ? lifestyleMaxPostIndex.postIndex + 1
-          : 1);
-    data = { ...newData, createdAt: today, postIndex: newPostIndex };
+    // newsMaxPostIndex.postIndex > lifestyleMaxPostIndex.postIndex
+    //   ? (newPostIndex = newsMaxPostIndex ? newsMaxPostIndex.postIndex + 1 : 1)
+    //   : (newPostIndex = lifestyleMaxPostIndex
+    //       ? lifestyleMaxPostIndex.postIndex + 1
+    //       : 1);
+    // data = { ...newData, createdAt: today, postIndex: newPostIndex };
+    data = { ...newData, createdAt: today };
     const result = await lifestyleCollection.insertOne(data);
 
     if (!result) {

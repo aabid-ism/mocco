@@ -166,8 +166,25 @@ const ManageNewsHistoryForm = ({
           "imageUrl",
           selectedNews ? selectedNews.imageUrl : ""
         );
-        let imageResponse = await Axios.post("/image", imageFormData);
-        request = { ...data, imageUrl: imageResponse.data };
+
+        // checking to differentiate between an already existing post or a newly added post
+        if (selectedNews && selectedNews.imageUrl) {
+          let imageResponse = await Axios.post("/image", imageFormData);
+          try {
+            const imgUrl = selectedNews.imageUrl;
+            let deleteResponse = await Axios.post("/image/delete-image", {
+              imgUrl,
+            });
+            handleSubmitFunc(deleteResponse);
+          } catch (err) {
+            handleSubmitFunc(err);
+            console.log(err);
+          }
+          request = { ...data, imageUrl: imageResponse.data };
+        } else {
+          let imageResponse = await Axios.post("/image", imageFormData);
+          request = { ...data, imageUrl: imageResponse.data };
+        }
       } catch (err) {
         handleSubmitFunc(err);
         console.log(err);
@@ -190,6 +207,9 @@ const ManageNewsHistoryForm = ({
           setImageUpload(null);
           setValid(false);
           handleSubmitFunc(response);
+          setImageUrlChip("");
+          setLifeStyle(false);
+          setSelectedSecondaryTags([]);
         } else {
           let response = await Axios.post("/edit-lifestyle-news", request);
           response && handleLoaderClose();
@@ -217,6 +237,9 @@ const ManageNewsHistoryForm = ({
           setImageUpload(null);
           setValid(false);
           handleSubmitFunc(response);
+          setImageUrlChip("");
+          setLifeStyle(false);
+          setSelectedSecondaryTags([]);
         } else {
           let response = await Axios.post("/edit-news", request);
           response && handleLoaderClose();
@@ -261,6 +284,7 @@ const ManageNewsHistoryForm = ({
         setSelectedNews(null);
         resetForm();
         setImageUpload(null);
+        setSelectedSecondaryTags([]);
         setValid(false);
         setImageUrlChip("");
         if (fileInputRef.current) {
@@ -469,6 +493,9 @@ const ManageNewsHistoryForm = ({
                       name="image"
                       label={imageUrlChip}
                       size="small"
+                      onClick={() => {
+                        window.open(imageUrlChip, "_blank");
+                      }}
                       onDelete={() => setImageUrlChip("")}
                       deleteIcon={<CancelIcon />}
                       sx={{

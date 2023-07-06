@@ -43,33 +43,22 @@ const router = express.Router();
 
 // Posting an Image
 router.post("/", uploadStrategy, async (req, res) => {
-  const today = new Date();
-  const dateTimeString = today.toISOString();
-  const dateOnly = dateTimeString.split("T")[0];
-  const blobName = `${dateOnly}/${getBlobName(req.file.originalname)}`;
+  let dateOnly;
 
-  // Check if the image URL is provided
+  // checking whether the imageUrl is available or not.
   if (req.body.imageUrl) {
-    // Extract the blob name from the provided image URL
-    const path = req.body.imageUrl;
-    const existingBlobName = path.slice(
-      path.indexOf(containerName2) + containerName2.length + 1
-    );
-
-    // Get the "images" container
-    const containerClient =
-      blobServiceClient.getContainerClient(containerName2);
-
-    // Check if a blob with the existing blob name exists
-    const existingBlobClient =
-      containerClient.getBlockBlobClient(existingBlobName);
-    const exists = await existingBlobClient.exists();
-
-    if (exists) {
-      // Delete the existing blob
-      await existingBlobClient.delete();
-    }
+    // finding previous date in the url.
+    const dateRegex = /(\d{4}-\d{2}-\d{2})/;
+    const previousDate = req.body.imageUrl.match(dateRegex);
+    dateOnly = previousDate[1];
+  } else {
+    const today = new Date();
+    const dateTimeString = today.toISOString();
+    dateOnly = dateTimeString.split("T")[0];
   }
+
+  //finalised blob name.
+  const blobName = `${dateOnly}/${getBlobName(req.file.originalname)}`;
 
   // get the stream of bytes from req.file
   const stream = getStream(req.file.buffer);
@@ -115,7 +104,10 @@ router.post("/delete-image", async (req, res) => {
 
       if (exists) {
         // Delete the existing blob
-        await existingBlobClient.delete();
+        let response = await existingBlobClient.delete();
+        if (response) {
+          res.status(200).json({ message: "News deleted successfully" });
+        }
       }
     }
   } catch (err) {

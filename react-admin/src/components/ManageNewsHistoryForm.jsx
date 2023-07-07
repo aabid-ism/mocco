@@ -142,6 +142,7 @@ const ManageNewsHistoryForm = ({
       secondaryTags: selectedSecondaryTags ? selectedSecondaryTags : [],
       imageUrl: imageUrlChip ? imageUrlChip : "",
       typeOfPost: selectedNews ? selectedNews.typeOfPost : "",
+      postIndex: selectedNews ? selectedNews.postIndex : "",
     });
     if (isDeleteMode) {
       setDeleteOpen(true);

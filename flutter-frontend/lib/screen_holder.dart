@@ -1,6 +1,5 @@
 // Show the main News Page or Lifestyle Page or Saved news page
 import 'package:flutter/material.dart';
-import 'package:mocco/enum.dart';
 import 'package:mocco/news_provider_state.dart';
 import 'package:mocco/screens/explore_screen.dart';
 import 'package:mocco/screens/lifestyle_screen.dart';

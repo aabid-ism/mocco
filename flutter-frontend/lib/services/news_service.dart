@@ -29,6 +29,7 @@ class NewsService {
               createdAt: DateTime.tryParse(obj['createdAt']),
               sinhalaDescription: obj['sinhalaDescription'],
               sinhalaTitle: obj['sinhalaTitle'],
+              postIndex: obj['postIndex'],
               typeOfPost: obj['typeOfPost']);
         }).toList();
         //newsModals.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));

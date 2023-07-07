@@ -1,5 +1,6 @@
 // Show the main News Page or Lifestyle Page or Saved news page
 import 'package:flutter/material.dart';
+import 'package:mocco/enum.dart';
 import 'package:mocco/news_provider_state.dart';
 import 'package:mocco/screens/explore_screen.dart';
 import 'package:mocco/screens/lifestyle_screen.dart';
@@ -17,16 +18,15 @@ class ScreensHolder extends StatefulWidget {
 class _ScreensHolderState extends State<ScreensHolder> {
   late int _currentPageIndex;
   final PageController _pageController = PageController(
-      initialPage: 1); //Initializr page controlle and set initial page to 1
-
+      initialPage: 1); //Initializer page controller and set initial page to 1
   @override
   void initState() {
     // Fetch news data before NewsScreen build
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      await Provider.of<NewsProvider>(context, listen: false)
-          .fetchNewsFromService(context);
-    });
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+        await Provider.of<NewsProvider>(context, listen: false)
+            .fetchNewsFromService(context);
+      });
     _currentPageIndex = 1;
   }
 
@@ -38,6 +38,10 @@ class _ScreensHolderState extends State<ScreensHolder> {
 
   @override
   Widget build(BuildContext context) {
+    // var newsState = context.watch<NewsProvider>();
+    // newsState.notificationFor == NewsScreenUsers.newsScreen?
+    // _currentPageIndex = 1
+    //     :_currentPageIndex = 2;
     return Scaffold(
       body: SafeArea(
         child: Stack(

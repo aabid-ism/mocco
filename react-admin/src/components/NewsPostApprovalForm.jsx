@@ -76,6 +76,7 @@ const NewsPostApprovalForm = ({
   const [imageFormData, setImageFormData] = useState(null); // state to store form data of the uploaded image.
   const [lifeStyle, setLifeStyle] = useState(false); // state to track the lifestyle toggle.
   const fileInputRef = useRef(); // useRef to reference the image upload component and reset after submit.
+  const formikRef = useRef(null);
 
   useEffect(() => {
     async function getDropDowns() {
@@ -114,7 +115,11 @@ const NewsPostApprovalForm = ({
     sinhalaTitle: selectedNews ? selectedNews.sinhalaTitle : "",
     description: selectedNews ? selectedNews.description : "",
     sinhalaDescription: selectedNews ? selectedNews.sinhalaDescription : "",
-    imageUrl: imageUpload ? imageUpload : null,
+    imageUrl: formikRef.current
+      ? formikRef.current.files
+        ? formikRef.current.files[0]
+        : null
+      : null,
     sourceName: selectedNews ? selectedNews.sourceName : "",
     sourceUrl: selectedNews ? selectedNews.sourceUrl : "",
     author:
@@ -320,6 +325,7 @@ const NewsPostApprovalForm = ({
 
   // function to add the image upload to a state
   const handleFileChange = (event) => {
+    // formikRef.current.values.imageUrl = event.target.files[0];
     setImageUpload(event.target.files[0]);
   };
 
@@ -330,7 +336,6 @@ const NewsPostApprovalForm = ({
       setValid(true);
       return true;
     } catch (error) {
-      console.log(error);
       setValid(false);
       return false;
     }
@@ -345,6 +350,7 @@ const NewsPostApprovalForm = ({
     imageUrl:
       !isDeleteMode &&
       imageUrlChip.length === 0 &&
+      !imageUpload &&
       Yup.string().required("Image URL is required"),
     sinhalaDescription:
       !isDeleteMode &&
@@ -364,6 +370,7 @@ const NewsPostApprovalForm = ({
 
   return (
     <Formik
+      innerRef={formikRef}
       initialValues={initialValues}
       onSubmit={handleSubmit}
       validationSchema={validationSchema}

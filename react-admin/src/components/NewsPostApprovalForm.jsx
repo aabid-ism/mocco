@@ -76,7 +76,7 @@ const NewsPostApprovalForm = ({
   const [imageFormData, setImageFormData] = useState(null); // state to store form data of the uploaded image.
   const [lifeStyle, setLifeStyle] = useState(false); // state to track the lifestyle toggle.
   const fileInputRef = useRef(); // useRef to reference the image upload component and reset after submit.
-  const formikRef = useRef(null);
+  const formikRef = useRef(null); // useRef to reference the form data of formik.
 
   useEffect(() => {
     async function getDropDowns() {
@@ -214,6 +214,7 @@ const NewsPostApprovalForm = ({
       handleSubmitFunc(response);
     } catch (err) {
       console.error(err);
+      err && handleLoaderClose();
       handleSubmitFunc(err);
     }
   };
@@ -238,8 +239,9 @@ const NewsPostApprovalForm = ({
       }
       handleSubmitFunc(response);
     } catch (err) {
-      handleSubmitFunc(err);
       console.error(err);
+      err && handleLoaderClose();
+      handleSubmitFunc(err);
     }
 
     if (data.imageUrl) {
@@ -283,8 +285,9 @@ const NewsPostApprovalForm = ({
           request = { ...data, imageUrl: imageResponse.data };
         }
       } catch (err) {
+        console.error(err);
+        err && handleLoaderClose();
         handleSubmitFunc(err);
-        console.log(err);
       }
     }
 
@@ -325,7 +328,6 @@ const NewsPostApprovalForm = ({
 
   // function to add the image upload to a state
   const handleFileChange = (event) => {
-    // formikRef.current.values.imageUrl = event.target.files[0];
     setImageUpload(event.target.files[0]);
   };
 

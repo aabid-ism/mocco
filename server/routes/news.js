@@ -1,9 +1,8 @@
 import conn from "../conn.js";
 import express from "express";
 import { ObjectId } from "mongodb";
-
 const router = express.Router();
-
+import sendNotification from "../services/notifications.js";
 router.get("/", async (req, res) => {
   try {
     // getting references to database and collection
@@ -194,6 +193,15 @@ router.post("/approve-news", async (req, res) => {
 
     data = { ...newData, createdAt: today, postIndex: newPostIndex };
     const result = await newsCollection.insertOne(data);
+
+    // ---------------------------------
+    // ******SENDING NOTIFICATION*******
+    // ---------------------------------
+
+    await sendNotification(newPostIndex);
+    // ----------------------------------------
+    // ******END OF SENDING NOTIFICATION*******
+    // ----------------------------------------
 
     if (!result) {
       return res.status(404).json({ message: "News not found" });

@@ -144,8 +144,9 @@ const PreliminaryPostingForm = ({
       }
       handleSubmitFunc(response);
     } catch (err) {
+      console.error(err);
+      err && handleLoaderClose();
       handleSubmitFunc(err);
-      console.log(err);
     }
   };
 

@@ -187,8 +187,9 @@ const ManageNewsHistoryForm = ({
           request = { ...data, imageUrl: imageResponse.data };
         }
       } catch (err) {
+        console.error(err);
+        err && handleLoaderClose();
         handleSubmitFunc(err);
-        console.log(err);
       }
     }
 
@@ -304,8 +305,9 @@ const ManageNewsHistoryForm = ({
         }
       }
     } catch (err) {
-      handleSubmitFunc(err);
       console.error(err);
+      err && handleLoaderClose();
+      handleSubmitFunc(err);
     }
   };
 

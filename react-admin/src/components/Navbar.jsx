@@ -1,5 +1,5 @@
 // <------------------------ IMPORTS ------------------------------->
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -8,14 +8,13 @@ import MuiAppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
 import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { ListItemIcon } from "@mui/material";
@@ -44,8 +43,15 @@ const AppBar = styled(MuiAppBar, {
 
 export default function Navbar({ open, setOpen }) {
   const navigate = useNavigate();
-  const [activeItem, setActiveItem] = useState("Preliminary Posting"); // state to handle the selected tab
-  const [pageText, setPageText] = useState("Preliminary Posting"); // state to set the page headline
+  const location = useLocation();
+  const [activeItem, setActiveItem] = useState(""); // state to handle the selected tab
+  const [pageText, setPageText] = useState(""); // state to set the page headline
+
+  const tabs = [
+    { label: "Preliminary Posting", url: "/" },
+    { label: "News Post Approval", url: "/news-post-approval" },
+    { label: "Manage News History", url: "/manage-news-history" },
+  ];
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -55,23 +61,21 @@ export default function Navbar({ open, setOpen }) {
     setOpen(false);
   };
 
-  const handleListItemClickHome = () => {
-    setActiveItem("Preliminary Posting");
-    navigate("/");
-    setPageText("Preliminary Posting");
+  const handleListItemClick = (item) => {
+    setActiveItem(item.label);
+    navigate(item.url);
+    setPageText(item.label);
   };
 
-  const handleListItemClickManageNewsHistory = () => {
-    setActiveItem("Manage News History");
-    navigate("/manage-news-history");
-    setPageText("Manage News History");
-  };
+  function getLabelByUrl(url) {
+    const tab = tabs.find((tab) => tab.url === url);
+    setActiveItem(tab ? tab.label : null);
+  }
 
-  const handleListItemClickNewsPostApproval = () => {
-    setActiveItem("News Post Approval");
-    navigate("/news-post-approval");
-    setPageText("News Post Approval");
-  };
+  useEffect(() => {
+    let currentUrl = location.pathname;
+    getLabelByUrl(currentUrl);
+  }, []);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -127,7 +131,7 @@ export default function Navbar({ open, setOpen }) {
                     ? "#e2e8f0"
                     : "transparent",
               }}
-              onClick={handleListItemClickHome}
+              onClick={() => handleListItemClick(tabs[0])}
             >
               <ListItemIcon>
                 <HomeIcon />
@@ -146,7 +150,7 @@ export default function Navbar({ open, setOpen }) {
                     ? "#e2e8f0"
                     : "transparent",
               }}
-              onClick={handleListItemClickNewsPostApproval}
+              onClick={() => handleListItemClick(tabs[1])}
             >
               <ListItemIcon>
                 <SettingsIcon />
@@ -165,7 +169,7 @@ export default function Navbar({ open, setOpen }) {
                     ? "#e2e8f0"
                     : "transparent",
               }}
-              onClick={handleListItemClickManageNewsHistory}
+              onClick={() => handleListItemClick(tabs[2])}
             >
               <ListItemIcon>
                 <SettingsIcon />

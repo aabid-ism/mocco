@@ -82,7 +82,12 @@ const NewsPostApprovalForm = ({
     async function getDropDowns() {
       handleLoaderOpen();
       try {
-        const response = await Axios.get("/get-drop-downs");
+        // get bearer token
+        const token = localStorage.getItem("jwt");
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+        const response = await Axios.get("/news/get-drop-downs", { headers });
         response && handleLoaderClose();
         setDropDownList(response.data);
       } catch (err) {
@@ -170,6 +175,12 @@ const NewsPostApprovalForm = ({
     setEditOpen(false);
     handleLoaderOpen();
     let request = data;
+
+    // get bearer token
+    const token = localStorage.getItem("jwt");
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
     if (imageFormData) {
       try {
         imageFormData.append(
@@ -202,7 +213,9 @@ const NewsPostApprovalForm = ({
     }
 
     try {
-      let response = await Axios.post("/edit-unpublished-news", request);
+      let response = await Axios.post("/news/edit-unpublished-news", request, {
+        headers,
+      });
       response && handleLoaderClose();
       setSelectedNews(response.data.value);
       resetForm();
@@ -225,7 +238,14 @@ const NewsPostApprovalForm = ({
     handleLoaderOpen();
 
     try {
-      const response = await Axios.post("/delete-unpublished-news", data);
+      // get bearer token
+      const token = localStorage.getItem("jwt");
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+      const response = await Axios.post("/news/delete-unpublished-news", data, {
+        headers,
+      });
       response && handleLoaderClose();
       setSelectedNews(null);
       resetForm();
@@ -258,6 +278,13 @@ const NewsPostApprovalForm = ({
   const handleApproveConfirm = async (resetForm) => {
     setApproveOpen(false);
     handleLoaderOpen();
+
+    // get bearer token
+    const token = localStorage.getItem("jwt");
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
     let request = data;
     if (imageFormData) {
       try {
@@ -293,7 +320,11 @@ const NewsPostApprovalForm = ({
 
     try {
       if (lifeStyle) {
-        const response = await Axios.post("/approve-lifestyle-news", request);
+        const response = await Axios.post(
+          "/news/approve-lifestyle-news",
+          request,
+          { headers }
+        );
         response && handleLoaderClose();
         setSelectedNews(null);
         resetForm();
@@ -306,7 +337,9 @@ const NewsPostApprovalForm = ({
         }
         handleSubmitFunc(response);
       } else {
-        const response = await Axios.post("/approve-news", request);
+        const response = await Axios.post("/news/approve-news", request, {
+          headers,
+        });
         response && handleLoaderClose();
         setSelectedNews(null);
         resetForm();

@@ -1,8 +1,12 @@
 import conn from "../conn.js";
 import express from "express";
 import { ObjectId } from "mongodb";
+import requireAuth from "../middlewares/requireAuth.js";
 
 const router = express.Router();
+
+// require auth for all workout routes
+router.use(requireAuth);
 
 router.get("/", async (req, res) => {
   try {
@@ -153,7 +157,6 @@ router.post("/push-news", async (req, res) => {
 
     res.status(200).json({ message: "News pushed successfully" });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -213,14 +216,13 @@ router.post("/approve-news", async (req, res) => {
       if (!result) {
         return res.status(404).json({ message: "News not found" });
       }
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
       res.status(500).json({ message: "Internal server error" });
     }
 
     res.status(200).json({ message: "News approved and updated successfully" });
   } catch (error) {
-    console.error(error);
+    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -265,7 +267,6 @@ router.post("/get-news-by-date", async (req, res) => {
 
     res.send(results).status(200);
   } catch (error) {
-    console.log(error);
     res.send(error).status(500);
   }
 });
@@ -291,7 +292,6 @@ router.get("/get-drop-downs", async (req, res) => {
 
     res.send(results).status(200);
   } catch (error) {
-    console.log(error);
     res.send(error).status(500);
   }
 });
@@ -324,7 +324,6 @@ router.post("/edit-unpublished-news", async (req, res) => {
       .status(200)
       .json({ message: "News edited successfully", value: result.value });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -356,7 +355,6 @@ router.post("/edit-news", async (req, res) => {
       .status(200)
       .json({ message: "News edited successfully", value: result.value });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -381,7 +379,6 @@ router.post("/delete-unpublished-news", async (req, res) => {
 
     res.status(200).json({ message: "News deleted successfully" });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -406,7 +403,6 @@ router.post("/delete-news", async (req, res) => {
 
     res.status(200).json({ message: "News deleted successfully" });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -495,13 +491,11 @@ router.post("/approve-lifestyle-news", async (req, res) => {
         return res.status(404).json({ message: "Lifestyle News not found" });
       }
     } catch (error) {
-      console.log(error);
       res.status(500).json({ message: "Internal server error" });
     }
 
     res.status(200).json({ message: "Lifestyle News updated successfully" });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -534,7 +528,6 @@ router.post("/edit-lifestyle-news", async (req, res) => {
       value: result.value,
     });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -559,7 +552,6 @@ router.post("/delete-lifestyle-news", async (req, res) => {
 
     res.status(200).json({ message: "Lifestyle News deleted successfully" });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -594,13 +586,11 @@ router.post("/add-news-to-lifestyle", async (req, res) => {
         return res.status(404).json({ message: "News not found" });
       }
     } catch (error) {
-      console.log(error);
       res.status(500).json({ message: "Internal server error" });
     }
 
     res.status(200).json({ message: "Lifestyle News updated successfully" });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -635,13 +625,11 @@ router.post("/add-lifestyle-to-news", async (req, res) => {
         return res.status(404).json({ message: "Lifestyle News not found" });
       }
     } catch (error) {
-      console.log(error);
       res.status(500).json({ message: "Internal server error" });
     }
 
     res.status(200).json({ message: "News updated successfully" });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 });

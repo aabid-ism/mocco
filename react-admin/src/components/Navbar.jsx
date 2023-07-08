@@ -17,7 +17,9 @@ import ListItemText from "@mui/material/ListItemText";
 import { useNavigate, useLocation } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import SettingsIcon from "@mui/icons-material/Settings";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import { ListItemIcon } from "@mui/material";
+import { useAuthContext } from "../hooks/useAuthContext.js";
 
 const drawerWidth = 240;
 
@@ -44,11 +46,12 @@ const AppBar = styled(MuiAppBar, {
 export default function Navbar({ open, setOpen }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { dispatch } = useAuthContext();
   const [activeItem, setActiveItem] = useState(""); // state to handle the selected tab
   const [pageText, setPageText] = useState(""); // state to set the page headline
 
   const tabs = [
-    { label: "Preliminary Posting", url: "/" },
+    { label: "Preliminary Posting", url: "/preliminary-posting" },
     { label: "News Post Approval", url: "/news-post-approval" },
     { label: "Manage News History", url: "/manage-news-history" },
   ];
@@ -65,6 +68,12 @@ export default function Navbar({ open, setOpen }) {
     setActiveItem(item.label);
     navigate(item.url);
     setPageText(item.label);
+  };
+
+  const handleLogoutClick = () => {
+    localStorage.removeItem("jwt");
+    dispatch({ type: "LOGOUT" });
+    navigate("/");
   };
 
   function getLabelByUrl(url) {
@@ -94,6 +103,15 @@ export default function Navbar({ open, setOpen }) {
           <Typography variant="h6" noWrap component="div">
             {pageText}
           </Typography>
+          <IconButton
+            color="inherit"
+            aria-label="logout"
+            edge="end"
+            sx={{ ml: "auto" }}
+            onClick={handleLogoutClick}
+          >
+            <ExitToAppIcon />
+          </IconButton>
         </Toolbar>
       </AppBar>
       <Drawer

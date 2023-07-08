@@ -87,20 +87,31 @@ const ManageNewsHistory = ({ open }) => {
   useEffect(() => {
     async function getHeadlines() {
       try {
+        // get bearer token
+        const token = localStorage.getItem("jwt");
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+
         const date = new Date(startDate);
         const formattedDate = date.toISOString().split("T")[0];
 
         // get published news from news collection
-        const newsResponse = await Axios.post("/get-news-by-date", {
-          date: formattedDate,
-        });
+        const newsResponse = await Axios.post(
+          "/news/get-news-by-date",
+          {
+            date: formattedDate,
+          },
+          { headers }
+        );
 
         // get published lifestyle news from news collection
         const lifestyleNewsResponse = await Axios.post(
-          "/get-lifestyle-news-by-date",
+          "/news/get-lifestyle-news-by-date",
           {
             date: formattedDate,
-          }
+          },
+          { headers }
         );
 
         const responseArrayList = [

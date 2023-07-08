@@ -49,7 +49,10 @@ router.post("/", uploadStrategy, async (req, res) => {
   if (req.body.imageUrl) {
     // finding previous date in the url.
     const dateRegex = /(\d{4}-\d{2}-\d{2})/;
-    const previousDate = req.body.imageUrl.match(dateRegex);
+    const previousDate =
+      req.body.imageUrl && typeof req.body.imageUrl === "string"
+        ? req.body.imageUrl.match(dateRegex)
+        : null;
     dateOnly = previousDate[1];
   } else {
     const today = new Date();
@@ -77,8 +80,7 @@ router.post("/", uploadStrategy, async (req, res) => {
     const filePath = `https://${process.env.AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${containerName2}/${blobName}`;
     res.send(filePath).status(200);
   } catch (err) {
-    console.log(err);
-    return res.status(404).send(err);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
@@ -111,7 +113,7 @@ router.post("/delete-image", async (req, res) => {
       }
     }
   } catch (err) {
-    console.error(err);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 

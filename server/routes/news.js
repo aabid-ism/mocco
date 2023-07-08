@@ -198,7 +198,7 @@ router.post("/approve-news", async (req, res) => {
     // ******SENDING NOTIFICATION*******
     // ---------------------------------
 
-    await sendNotification(newPostIndex);
+    await sendNotification(newPostIndex, data.title, data.imageUrl);
     // ----------------------------------------
     // ******END OF SENDING NOTIFICATION*******
     // ----------------------------------------

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-async function sendNotification(postIndex) {
+async function sendNotification(postIndex, content, imageUrl) {
   const options = {
     method: "POST",
     url: "https://onesignal.com/api/v1/notifications",
@@ -14,10 +14,11 @@ async function sendNotification(postIndex) {
       included_segments: ["Subscribed Users"],
 
       contents: {
-        en: "Test Message from Express Js",
+        en: `${content}`,
         es: "Spanish Message",
       },
       name: "MOCCO",
+      big_picture: `${imageUrl}`,
       //   send_after: "",
       //   delayed_option: "",
       //   delivery_time_of_day: "",

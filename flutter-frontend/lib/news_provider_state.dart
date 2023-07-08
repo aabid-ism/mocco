@@ -11,6 +11,7 @@ class NewsProvider extends ChangeNotifier {
   List<NewsCard> newsModelsList = [];
   List<NewsCard> lifestyleModelsList = [];
   List<NewsCard> notificationResponse = [];
+  List<NewsCard> tagResponse = [];
   bool isLoading = false;
   NewsScreenUsers notificationFor = NewsScreenUsers.newsScreen;
   // creating a Service object that gives access to a method
@@ -19,17 +20,20 @@ class NewsProvider extends ChangeNotifier {
 
   // get the list of NewsCards from the service and assign to
   // newsModelsList
-  Future<void> fetchNewsFromService(BuildContext context, {int? postIndex}) async {
+  Future<void> fetchNewsFromService(BuildContext context, {int? postIndex, String? tag}) async {
     isLoading = true;
     notifyListeners();
     if (postIndex != null) {
       notificationResponse =
       await newsService.fetchAllNews('$serverUrl/exact-post?postIndex=$postIndex');
     }
+    if (tag != null){
+      tagResponse = await newsService.fetchAllNews('$serverUrl/explore-news?reqTag=$tag');
+    }
     final newsResponse = await newsService.fetchAllNews('$serverUrl/feed');
     final lifestyleResponse =
     await newsService.fetchAllNews('$serverUrl/lifestyle');
-    if (newsResponse.isEmpty || lifestyleResponse.isEmpty) {
+    if (newsResponse.isEmpty || lifestyleResponse.isEmpty || (postIndex != null && notificationResponse.isEmpty) || (tag !=null && tagResponse.isEmpty) ) {
       ScaffoldMessenger.of(context).showSnackBar(
         //Show snack bar msg if failed the launch
         const SnackBar(
@@ -40,7 +44,7 @@ class NewsProvider extends ChangeNotifier {
     }
     newsModelsList = newsResponse;
     lifestyleModelsList = lifestyleResponse;
-
+    
     if (notificationResponse.isNotEmpty) {
       if (notificationResponse[0].typeOfPost == "lifestyle") {
         _updateNotificationPost(lifestyleModelsList, notificationResponse[0]);

@@ -9,7 +9,10 @@ import '../enum.dart';
 
 class NewsContainer extends StatefulWidget {
   final NewsScreenUsers requestSource;
-  const NewsContainer({super.key, required this.requestSource});
+  final String? tag;
+
+  const NewsContainer({Key? key, required this.requestSource, this.tag})
+      : super(key: key);
 
   @override
   State<NewsContainer> createState() => _NewsContainerState();
@@ -21,13 +24,20 @@ class _NewsContainerState extends State<NewsContainer> {
   List<NewsCard> newsList = [];
   @override
   Widget build(BuildContext context) {
+    String? tag = widget.tag;
     _containerReqFrom = widget.requestSource;
     var appState = context.watch<NewsProvider>();
     var preferencesState = context.watch<AppPreferences>();
     preferencesState.init();
-    var newsCards = _containerReqFrom == NewsScreenUsers.newsScreen
-        ? appState.newsModelsList
-        : appState.lifestyleModelsList;
+    List<NewsCard> newsCards = [];
+
+    if (_containerReqFrom == NewsScreenUsers.newsScreen) {
+      newsCards = appState.newsModelsList;
+    } else if (_containerReqFrom == NewsScreenUsers.lifestyleScreen) {
+      newsCards = appState.lifestyleModelsList;
+    } else {
+      newsCards = appState.tagResponse;
+    }
 
     return Scaffold(
       body: PageView.builder(
@@ -159,6 +169,64 @@ class _NewsContainerState extends State<NewsContainer> {
                     ),
                   ),
                 ),
+                Visibility(
+                  visible: _containerReqFrom == NewsScreenUsers.explorerScreen,
+                  child: Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: SafeArea(
+                      child: Stack(
+                        children: [
+                          Container(
+                            height: MediaQuery.of(context).size.height / 8,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: const Alignment(0, .2),
+                                colors: [
+                                  Colors.black.withOpacity(
+                                      0.5), // starting color (20% transparent)
+                                  Colors.black.withOpacity(0), // endinrent)
+                                ],
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(6, 10, 6, 6),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    toPascalCase(tag ?? ""),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.arrow_back_ios_rounded,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
                 Positioned(
                   bottom: 60,
                   left: 0,
@@ -186,4 +254,19 @@ String langProcessor(String eng, String sin, bool isEng) {
     return sin;
   }
   return eng;
+}
+
+String toPascalCase(String text) {
+  try {
+    List<String> words = text.trim().split(' ');
+    String result = '';
+
+    for (String word in words) {
+      result += word[0].toUpperCase() + word.substring(1).toLowerCase();
+    }
+
+    return result;
+  } catch (e) {
+    return text;
+  }
 }

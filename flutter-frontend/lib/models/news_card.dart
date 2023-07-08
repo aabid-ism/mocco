@@ -12,6 +12,7 @@ class NewsCard {
   final DateTime? createdAt;
   final String? sinhalaDescription;
   final String? sinhalaTitle;
+  final int postIndex;
   final String? typeOfPost;
 
   NewsCard({
@@ -28,6 +29,7 @@ class NewsCard {
     this.createdAt,
     this.sinhalaDescription,
     this.sinhalaTitle,
+    required this.postIndex,
     this.typeOfPost,
   });
 }

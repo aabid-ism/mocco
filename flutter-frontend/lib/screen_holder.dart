@@ -4,7 +4,6 @@ import 'package:mocco/news_provider_state.dart';
 import 'package:mocco/screens/explore_screen.dart';
 import 'package:mocco/screens/lifestyle_screen.dart';
 import 'package:mocco/screens/news_screen.dart';
-import 'package:mocco/services/loading_service.dart';
 import 'package:mocco/widgets/top_menu.dart';
 import 'package:provider/provider.dart';
 

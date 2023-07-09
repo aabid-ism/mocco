@@ -1,15 +1,17 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mocco/app_preferences.dart';
 import 'package:mocco/models/news_card.dart';
-import 'package:mocco/widgets/share_bottom_sheet.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 class BottomBar extends StatelessWidget {
   final NewsCard newsCard;
-  BottomBar({super.key, required this.newsCard});
+  const BottomBar({super.key, required this.newsCard});
 
   @override
   Widget build(BuildContext context) {
@@ -38,15 +40,27 @@ class BottomBar extends StatelessWidget {
             GestureDetector(
               // Make whole share column clickable
               onTap: () async {
-                showModalBottomSheet(
-                  // Call custom share widget with data
-                  context: context,
-                  builder: (BuildContext context) {
-                    return ShareBottomSheet(
-                      imageURL: newsCard.imageUrl ?? "",
-                      heading: newsCard.title ?? "",
-                    );
-                  },
+                final newsImgUrl = newsCard.imageUrl;
+                final url = Uri.parse(newsImgUrl ?? "");
+                final response = await http.get(url);
+                final bytes = response.bodyBytes;
+
+                final temp = await getTemporaryDirectory();
+                final shareTempFilePath = '${temp.path}/mocosharetempimg.jpg';
+                File file = File(shareTempFilePath);
+                await file.writeAsBytes(bytes);
+
+                var title = preferencesStateWatcher.isEng
+                    ? newsCard.title
+                    : newsCard.sinhalaTitle;
+                var description = preferencesStateWatcher.isEng
+                    ? newsCard.description
+                    : newsCard.sinhalaDescription;
+                await Share.shareXFiles(
+                  [XFile(shareTempFilePath)],
+                  subject: newsCard.title,
+                  text:
+                      "$title\n\n$description\n\nAuthor - ${newsCard.author}",
                 );
               },
               child: const Column(children: [

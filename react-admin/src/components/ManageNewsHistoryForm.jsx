@@ -78,7 +78,12 @@ const ManageNewsHistoryForm = ({
     async function getDropDowns() {
       handleLoaderOpen();
       try {
-        const response = await Axios.get("/get-drop-downs");
+        // get bearer token
+        const token = localStorage.getItem("jwt");
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+        const response = await Axios.get("/news/get-drop-downs", { headers });
         response && handleLoaderClose();
         setDropDownList(response.data);
       } catch (err) {
@@ -161,6 +166,13 @@ const ManageNewsHistoryForm = ({
     setEditOpen(false);
     handleLoaderOpen();
     let request = data;
+
+    // get bearer token
+    const token = localStorage.getItem("jwt");
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
     if (imageFormData) {
       try {
         imageFormData.append(
@@ -196,10 +208,14 @@ const ManageNewsHistoryForm = ({
     try {
       if (lifeStyle) {
         if (request.typeOfPost === "news") {
-          let response = await Axios.post("/add-news-to-lifestyle", {
-            ...request,
-            typeOfPost: "lifestyle",
-          });
+          let response = await Axios.post(
+            "/news/add-news-to-lifestyle",
+            {
+              ...request,
+              typeOfPost: "lifestyle",
+            },
+            { headers }
+          );
           response && handleLoaderClose();
           setSelectedNews(null);
           resetForm();
@@ -213,7 +229,11 @@ const ManageNewsHistoryForm = ({
           setLifeStyle(false);
           setSelectedSecondaryTags([]);
         } else {
-          let response = await Axios.post("/edit-lifestyle-news", request);
+          let response = await Axios.post(
+            "/news/edit-lifestyle-news",
+            request,
+            { headers }
+          );
           response && handleLoaderClose();
           setSelectedNews(response.data.value);
           resetForm();
@@ -226,10 +246,14 @@ const ManageNewsHistoryForm = ({
         }
       } else {
         if (request.typeOfPost === "lifestyle") {
-          let response = await Axios.post("/add-lifestyle-to-news", {
-            ...request,
-            typeOfPost: "news",
-          });
+          let response = await Axios.post(
+            "/news/add-lifestyle-to-news",
+            {
+              ...request,
+              typeOfPost: "news",
+            },
+            { headers }
+          );
           response && handleLoaderClose();
           setSelectedNews(null);
           resetForm();
@@ -243,7 +267,9 @@ const ManageNewsHistoryForm = ({
           setLifeStyle(false);
           setSelectedSecondaryTags([]);
         } else {
-          let response = await Axios.post("/edit-news", request);
+          let response = await Axios.post("/news/edit-news", request, {
+            headers,
+          });
           response && handleLoaderClose();
           setSelectedNews(response.data.value);
           resetForm();
@@ -265,9 +291,18 @@ const ManageNewsHistoryForm = ({
   const handleDeleteConfirm = async (resetForm) => {
     setDeleteOpen(false);
     handleLoaderOpen();
+
+    // get bearer token
+    const token = localStorage.getItem("jwt");
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
     try {
       if (selectedNews && selectedNews.typeOfPost === "lifestyle") {
-        const response = await Axios.post("/delete-lifestyle-news", data);
+        const response = await Axios.post("/news/delete-lifestyle-news", data, {
+          headers,
+        });
         response && handleLoaderClose();
         setSelectedNews(null);
         resetForm();
@@ -281,7 +316,9 @@ const ManageNewsHistoryForm = ({
         }
         handleSubmitFunc(response);
       } else {
-        const response = await Axios.post("/delete-news", data);
+        const response = await Axios.post("/news/delete-news", data, {
+          headers,
+        });
         response && handleLoaderClose();
         setSelectedNews(null);
         resetForm();

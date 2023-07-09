@@ -7,6 +7,7 @@ import cors from "cors";
 import conn from "./conn.js";
 
 // importing routes
+import auth from "./routes/auth/auth.js";
 import news from "./routes/news.js";
 import image from "./routes/image-pipeline/imagepipeline.js";
 import explorenews from "./routes/get-news/get-news-by-tag.js";
@@ -39,7 +40,8 @@ const swaggerDocumentPath = path.join("./swagger-output.json");
 const jsonObject = await getJsonFromFile(swaggerDocumentPath);
 
 // defining routes
-app.use("/", news);
+app.use("/auth", auth);
+app.use("/news", news);
 app.use("/image", image);
 app.use("/explore-news", explorenews);
 app.use("/loadposts", loadposts);
@@ -47,7 +49,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(jsonObject));
 
 // Global error handling
 app.use((err, _req, res, next) => {
-  console.log(err);
+  console.error(err);
   res.status(500).send("Uh oh! An unexpected error occured.");
 });
 

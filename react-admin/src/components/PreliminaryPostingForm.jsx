@@ -65,7 +65,12 @@ const PreliminaryPostingForm = ({
   useEffect(() => {
     async function getDropDowns() {
       try {
-        const response = await Axios.get("/get-drop-downs");
+        // get bearer token
+        const token = localStorage.getItem("jwt");
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+        const response = await Axios.get("/news/get-drop-downs", { headers });
         setDropDownList(response.data);
       } catch (err) {
         console.error(err);
@@ -134,7 +139,12 @@ const PreliminaryPostingForm = ({
       }
     }
     try {
-      let response = await Axios.post("/push-news", request);
+      // get bearer token
+      const token = localStorage.getItem("jwt");
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+      let response = await Axios.post("/news/push-news", request, { headers });
       response && handleLoaderClose();
       resetForm();
       setLifeStyle(false);

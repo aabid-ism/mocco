@@ -84,7 +84,14 @@ const NewsPostApproval = ({ open }) => {
   useEffect(() => {
     async function getHeadlines() {
       try {
-        const response = await Axios.get("/get-unpublished-news");
+        // get bearer token
+        const token = localStorage.getItem("jwt");
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+        const response = await Axios.get("/news/get-unpublished-news", {
+          headers,
+        });
         setNewsList(response.data);
       } catch (err) {
         console.error(err);

@@ -46,6 +46,7 @@ class _NewsContainerState extends State<NewsContainer> {
     if (newsCards.isNotEmpty) {
       loadingService.addToReadList(newsCards[0].postIndex);
     }
+//    loadingService.clearSharedPrefs();
     return Scaffold(
       body: PageView.builder(
         // Build pages lazily for better performance

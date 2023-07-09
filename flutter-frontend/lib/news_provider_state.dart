@@ -6,8 +6,6 @@ import "package:mocco/services/news_service.dart";
 import "env.dart";
 
 class NewsProvider extends ChangeNotifier {
-  String url = serverUrl;
-
   // declaring state variables
   List<NewsCard> newsModelsList = [];
   List<NewsCard> lifestyleModelsList = [];
@@ -26,7 +24,7 @@ class NewsProvider extends ChangeNotifier {
     //Get Notification Posts
     if (postIndex != null) {
       notificationResponse = await newsService
-          .fetchAllNews('$serverUrl/exact-post?postIndex=$postIndex');
+          .fetchAllNews('$serverUrl/news/exact-post?postIndex=$postIndex');
     }
 
     //Get Tag Posts
@@ -37,9 +35,9 @@ class NewsProvider extends ChangeNotifier {
     }
 
     //Get posts for news & Lifestule
-    final newsResponse = await newsService.fetchAllNews('$serverUrl/feed');
+    final newsResponse = await newsService.fetchAllNews('$serverUrl/news/feed');
     final lifestyleResponse =
-        await newsService.fetchAllNews('$serverUrl/lifestyle');
+        await newsService.fetchAllNews('$serverUrl/news/lifestyle');
 
     //Show error message on empty responds
     if (newsResponse.isEmpty ||

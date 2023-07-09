@@ -31,10 +31,10 @@ function App() {
       path: "/",
       element: !user ? <SignIn /> : <Navigate to="/preliminary-posting" />,
     },
-    {
-      path: "/sign-up",
-      element: !user ? <SignUp /> : <Navigate to="/preliminary-posting" />,
-    },
+    // {
+    //   path: "/sign-up",
+    //   element: !user ? <SignUp /> : <Navigate to="/preliminary-posting" />,
+    // },
     {
       path: "/",
       element: <Layout />,
@@ -44,7 +44,7 @@ function App() {
           element: user ? (
             <PreliminaryPosting open={open} setOpen={setOpen} />
           ) : (
-            <Navigate to="/sign-up" />
+            <Navigate to="/" />
           ),
         },
         {
@@ -52,7 +52,7 @@ function App() {
           element: user ? (
             <NewsPostApproval open={open} setOpen={setOpen} />
           ) : (
-            <Navigate to="/sign-up" />
+            <Navigate to="/" />
           ),
         },
         {
@@ -60,7 +60,7 @@ function App() {
           element: user ? (
             <ManageNewsHistory open={open} setOpen={setOpen} />
           ) : (
-            <Navigate to="/sign-up" />
+            <Navigate to="/" />
           ),
         },
       ],

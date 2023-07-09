@@ -39,7 +39,8 @@ export default function SignIn() {
         theme: "dark",
         onClose: () => {
           setTimeout(() => {
-            navigate("/preliminary-posting");
+            localStorage.setItem("jwt", response.data.token);
+            dispatch({ type: "LOGIN", payload: response.data.token });
           }, 1600);
         },
       });
@@ -55,8 +56,6 @@ export default function SignIn() {
     try {
       let signInResponse = await Axios.post("/auth/sign-in", values);
       if (signInResponse) {
-        localStorage.setItem("jwt", signInResponse.data.token);
-        dispatch({ type: "LOGIN", payload: signInResponse.data.token });
         resetForm();
         handleSubmitFunc(signInResponse);
       }
@@ -73,17 +72,22 @@ export default function SignIn() {
         <Box
           sx={{
             marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+              <LockOutlinedIcon />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              Sign in
+            </Typography>
+          </Box>
 
           <Formik
             initialValues={{
@@ -95,14 +99,6 @@ export default function SignIn() {
           >
             {({ isSubmitting }) => (
               <Form noValidate>
-                <Box
-                  sx={{
-                    marginTop: 8,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                  }}
-                ></Box>
                 <Field
                   as={TextField}
                   variant="outlined"
@@ -171,8 +167,8 @@ export default function SignIn() {
             )}
           </Formik>
         </Box>
-        <ToastContainer />{" "}
         {/* React-toastify container for displaying notifications */}
+        <ToastContainer />
       </Container>
     </ThemeProvider>
   );

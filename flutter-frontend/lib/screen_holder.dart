@@ -4,6 +4,7 @@ import 'package:mocco/news_provider_state.dart';
 import 'package:mocco/screens/explore_screen.dart';
 import 'package:mocco/screens/lifestyle_screen.dart';
 import 'package:mocco/screens/news_screen.dart';
+import 'package:mocco/services/loading_service.dart';
 import 'package:mocco/widgets/top_menu.dart';
 import 'package:provider/provider.dart';
 
@@ -17,8 +18,7 @@ class ScreensHolder extends StatefulWidget {
 class _ScreensHolderState extends State<ScreensHolder> {
   late int _currentPageIndex;
   final PageController _pageController = PageController(
-      initialPage: 1); //Initializr page controlle and set initial page to 1
-
+      initialPage: 1); //Initializer page controller and set initial page to 1
   @override
   void initState() {
     // Fetch news data before NewsScreen build
@@ -38,6 +38,10 @@ class _ScreensHolderState extends State<ScreensHolder> {
 
   @override
   Widget build(BuildContext context) {
+    // var newsState = context.watch<NewsProvider>();
+    // newsState.notificationFor == NewsScreenUsers.newsScreen?
+    // _currentPageIndex = 1
+    //     :_currentPageIndex = 2;
     return Scaffold(
       body: SafeArea(
         child: Stack(

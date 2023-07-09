@@ -1,12 +1,17 @@
 import conn from "../conn.js";
 import express from "express";
 import { ObjectId } from "mongodb";
+
 import requireAuth from "../middlewares/requireAuth.js";
 
 const router = express.Router();
 
 // require auth for all workout routes
 router.use(requireAuth);
+
+
+const router = express.Router();
+import sendNotification from "../services/notifications.js";
 
 router.get("/", async (req, res) => {
   try {
@@ -197,6 +202,15 @@ router.post("/approve-news", async (req, res) => {
 
     data = { ...newData, createdAt: today, postIndex: newPostIndex };
     const result = await newsCollection.insertOne(data);
+
+    // ---------------------------------
+    // ******SENDING NOTIFICATION*******
+    // ---------------------------------
+
+    await sendNotification(newPostIndex, data.title, data.imageUrl);
+    // ----------------------------------------
+    // ******END OF SENDING NOTIFICATION*******
+    // ----------------------------------------
 
     if (!result) {
       return res.status(404).json({ message: "News not found" });

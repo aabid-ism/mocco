@@ -17,7 +17,7 @@ class TopMenu extends StatelessWidget {
                 end: const Alignment(0, .2),
                 colors: [
                   Colors.black
-                      .withOpacity(0.3), // starting color (20% transparent)
+                      .withOpacity(0.5), // starting color (20% transparent)
                   Colors.black.withOpacity(0.0), // endinrent)
                 ],
               ),
@@ -66,8 +66,7 @@ class _TopMenuText extends StatelessWidget {
     return Text(
       text,
       style: TextStyle(
-        color:
-            isActive ? Colors.white : const Color.fromARGB(205, 114, 114, 114),
+        color: isActive ? Colors.white : const Color.fromARGB(195, 139, 139, 139),
         fontSize: 20,
         fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
       ),
@@ -90,7 +89,7 @@ class _TopMenuSeparator extends StatelessWidget {
               ? Colors.white
               : const Color.fromARGB(205, 114, 114, 114),
           fontSize: 35,
-          fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+          fontWeight: isActive ? FontWeight.w900 : FontWeight.w600,
         ),
       ),
     );

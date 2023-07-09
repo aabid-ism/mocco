@@ -1,36 +1,22 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:mocco/app_preferences.dart';
-import 'package:mocco/firebase_options.dart';
 import 'package:mocco/news_provider_state.dart';
 import 'package:mocco/screen_holder.dart';
-import 'package:mocco/services/notification_service.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
-
-bool isFirebaseInitialized() {
-  return Firebase.apps.isNotEmpty;
-}
+import "env.dart";
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  bool initialized = isFirebaseInitialized();
-  if (kDebugMode) {
-    print('Firebase initialized: $initialized');
-  }
-  PushNotificationService.initialize();
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => AppPreferences()),
         ChangeNotifierProvider(create: (context) => NewsProvider()),
       ],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
@@ -49,6 +35,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _appPreferences.init();
+    initPlatformState();
   }
 
   @override
@@ -61,5 +48,30 @@ class _MyAppState extends State<MyApp> {
       ),
       home: const ScreensHolder(),
     );
+  }
+
+  Future<void> initPlatformState() async {
+    OneSignal.shared.setAppId(onSignalAppID);
+
+    var permissionResult =
+    OneSignal.shared.promptUserForPushNotificationPermission();
+    if (await permissionResult) {
+      if (kDebugMode) {
+        print("Notification Access Granted!!!");
+      }
+    }
+
+    OneSignal.shared.setNotificationWillShowInForegroundHandler((event) async{
+      event.complete(event.notification);
+    });
+
+    OneSignal.shared
+        .setNotificationOpenedHandler((OSNotificationOpenedResult result) async {
+      var data = result.notification.additionalData;
+      var postIndex = int.tryParse(data?['postIndex']);
+
+      await Provider.of<NewsProvider>(context, listen: false)
+          .fetchNewsFromService(context, postIndex: postIndex);
+    });
   }
 }

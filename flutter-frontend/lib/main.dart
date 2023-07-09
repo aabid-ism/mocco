@@ -41,6 +41,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Mocco',
       theme: ThemeData(
         useMaterial3: true,
@@ -54,19 +55,19 @@ class _MyAppState extends State<MyApp> {
     OneSignal.shared.setAppId(onSignalAppID);
 
     var permissionResult =
-    OneSignal.shared.promptUserForPushNotificationPermission();
+        OneSignal.shared.promptUserForPushNotificationPermission();
     if (await permissionResult) {
       if (kDebugMode) {
         print("Notification Access Granted!!!");
       }
     }
 
-    OneSignal.shared.setNotificationWillShowInForegroundHandler((event) async{
+    OneSignal.shared.setNotificationWillShowInForegroundHandler((event) async {
       event.complete(event.notification);
     });
 
-    OneSignal.shared
-        .setNotificationOpenedHandler((OSNotificationOpenedResult result) async {
+    OneSignal.shared.setNotificationOpenedHandler(
+        (OSNotificationOpenedResult result) async {
       var data = result.notification.additionalData;
       var postIndex = int.tryParse(data?['postIndex']);
 

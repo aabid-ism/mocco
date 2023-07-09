@@ -4,6 +4,7 @@ import 'package:mocco/news_provider_state.dart';
 import 'package:mocco/screens/explore_screen.dart';
 import 'package:mocco/screens/lifestyle_screen.dart';
 import 'package:mocco/screens/news_screen.dart';
+import 'package:mocco/services/loading_service.dart';
 import 'package:mocco/widgets/top_menu.dart';
 import 'package:provider/provider.dart';
 
@@ -22,10 +23,10 @@ class _ScreensHolderState extends State<ScreensHolder> {
   void initState() {
     // Fetch news data before NewsScreen build
     super.initState();
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-        await Provider.of<NewsProvider>(context, listen: false)
-            .fetchNewsFromService(context);
-      });
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      await Provider.of<NewsProvider>(context, listen: false)
+          .fetchNewsFromService(context);
+    });
     _currentPageIndex = 1;
   }
 

@@ -1,21 +1,21 @@
 // <------------------------ IMPORTS ------------------------------->
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiAppBar from "@mui/material/AppBar";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import { Grid, Typography } from "@mui/material";
-import "react-datepicker/dist/react-datepicker.css";
-import Sidebar from "../components/Sidebar";
-import NewsPostApprovalForm from "../components/NewsPostApprovalForm";
-import "react-datepicker/dist/react-datepicker.css";
-import Chip from "@mui/material/Chip";
-import Axios from "../utils/axios.js";
+import { Grid } from "@mui/material";
+import CreatePostForm from "../components/CreatePostForm";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Typography from "@mui/material/Typography";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const drawerWidth = 240;
 
@@ -51,9 +51,7 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-const NewsPostApproval = ({ open }) => {
-  const [newsList, setNewsList] = useState([]);
-  const [selectedNews, setSelectedNews] = useState([]);
+const CreatePost = ({ open }) => {
   const [loader, setLoader] = useState(false); // state to handle page loader
 
   // function to handle loader close
@@ -66,7 +64,7 @@ const NewsPostApproval = ({ open }) => {
     setLoader(true);
   };
 
-  // function to notify successful edit or delete
+  // function to notify successful upload
   const handleSubmitFunc = (response) => {
     if (response.status === 200) {
       toast.success(response.data.message, {
@@ -81,83 +79,31 @@ const NewsPostApproval = ({ open }) => {
     }
   };
 
-  useEffect(() => {
-    async function getHeadlines() {
-      try {
-        // get bearer token
-        const token = localStorage.getItem("jwt");
-        const headers = {
-          Authorization: `Bearer ${token}`,
-        };
-        const response = await Axios.get("/news/get-unpublished-news", {
-          headers,
-        });
-        setNewsList(response.data);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    getHeadlines();
-  }, [selectedNews]);
-
-  function handleChipClick(item) {
-    setSelectedNews(item);
-  }
-
-  // JSX content for the sidebar specific to NewsPostApprovalForm screen.
   const sideBarContent = (
-    <Box
-      sx={{
-        maxHeight: "475px",
-        overflowY: "auto",
-        scrollbarWidth: "thin",
-        scrollbarColor: "gray lightgray",
-        "&::-webkit-scrollbar": {
-          width: "6px",
-        },
-        "&::-webkit-scrollbar-track": {
-          borderRadius: "8px",
-          background: "lightgray",
-        },
-        "&::-webkit-scrollbar-thumb": {
-          borderRadius: "8px",
-          background: "gray",
-        },
-        paddingLeft: "10px",
-      }}
-    >
-      <Typography component="span" variant="h5" color="black" fontWeight="bold">
-        Unpublished News
-      </Typography>
-      <Box
-        sx={{
-          maxHeight: "300px",
-          overflowY: "auto",
-          "&::-webkit-scrollbar": {
-            width: "6px",
-          },
-          "&::-webkit-scrollbar-track": {
-            borderRadius: "8px",
-            background: "lightgray",
-          },
-          "&::-webkit-scrollbar-thumb": {
-            borderRadius: "8px",
-            background: "gray",
-          },
-        }}
-      >
-        {newsList.map((item) => (
-          <Chip
-            key={item._id}
-            label={item.title}
-            variant="outlined"
-            title={item.title}
-            sx={{ marginBottom: "6px", width: "100%" }}
-            onClick={() => handleChipClick(item)}
-          />
-        ))}
-      </Box>
+    <Box sx={{ padding: "4%" }}>
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1a-content"
+          id="panel1a-header"
+        >
+          <Typography>
+            <b>How to use the Admin Panel</b>
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+            <b>Create a post: </b>Create a news post for the first time News
+            Post
+            <hr />
+            <b>Edit and publish: </b>
+            Publish and Approve a news post that has been created.
+            <hr />
+            <b>Manage News History: </b>
+            Edit or Delete published news posts.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
     </Box>
   );
 
@@ -175,9 +121,7 @@ const NewsPostApproval = ({ open }) => {
             >
               <Card>
                 <CardContent>
-                  <NewsPostApprovalForm
-                    setSelectedNews={setSelectedNews}
-                    selectedNews={selectedNews}
+                  <CreatePostForm
                     handleSubmitFunc={handleSubmitFunc}
                     handleLoaderOpen={handleLoaderOpen}
                     handleLoaderClose={handleLoaderClose}
@@ -187,7 +131,7 @@ const NewsPostApproval = ({ open }) => {
             </Box>
           </Grid>
           <Grid item xs={4}>
-            <Sidebar>{sideBarContent}</Sidebar>
+            {sideBarContent}
           </Grid>
         </Grid>
         <ToastContainer />
@@ -202,4 +146,4 @@ const NewsPostApproval = ({ open }) => {
   );
 };
 
-export default NewsPostApproval;
+export default CreatePost;

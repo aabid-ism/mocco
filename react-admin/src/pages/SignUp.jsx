@@ -41,7 +41,7 @@ export default function SignUp() {
         theme: "dark",
         onClose: () => {
           setTimeout(() => {
-            navigate("/preliminary-posting");
+            navigate("/create-post");
           }, 1600);
         },
       });

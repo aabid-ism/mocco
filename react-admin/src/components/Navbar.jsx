@@ -15,8 +15,9 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import { useNavigate, useLocation } from "react-router-dom";
-import HomeIcon from "@mui/icons-material/Home";
-import SettingsIcon from "@mui/icons-material/Settings";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
+import ManageHistoryIcon from "@mui/icons-material/ManageHistory";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import { ListItemIcon } from "@mui/material";
 import { useAuthContext } from "../hooks/useAuthContext.js";
@@ -51,8 +52,8 @@ export default function Navbar({ open, setOpen }) {
   const [pageText, setPageText] = useState(""); // state to set the page headline
 
   const tabs = [
-    { label: "Preliminary Posting", url: "/preliminary-posting" },
-    { label: "News Post Approval", url: "/news-post-approval" },
+    { label: "Create a post", url: "/create-post" },
+    { label: "Edit and Publish", url: "/edit-and-publish-post" },
     { label: "Manage News History", url: "/manage-news-history" },
   ];
 
@@ -145,16 +146,14 @@ export default function Navbar({ open, setOpen }) {
             <ListItemButton
               sx={{
                 backgroundColor:
-                  activeItem === "Preliminary Posting"
-                    ? "#e2e8f0"
-                    : "transparent",
+                  activeItem === "Create a post" ? "#e2e8f0" : "transparent",
               }}
               onClick={() => handleListItemClick(tabs[0])}
             >
               <ListItemIcon>
-                <HomeIcon />
+                <AddCircleIcon />
               </ListItemIcon>
-              <ListItemText primary={"Preliminary Posting"} />
+              <ListItemText primary={"Create a post"} />
             </ListItemButton>
           </ListItem>
         </List>
@@ -164,16 +163,14 @@ export default function Navbar({ open, setOpen }) {
             <ListItemButton
               sx={{
                 backgroundColor:
-                  activeItem === "News Post Approval"
-                    ? "#e2e8f0"
-                    : "transparent",
+                  activeItem === "Edit and Publish" ? "#e2e8f0" : "transparent",
               }}
               onClick={() => handleListItemClick(tabs[1])}
             >
               <ListItemIcon>
-                <SettingsIcon />
+                <BorderColorIcon />
               </ListItemIcon>
-              <ListItemText primary={"News Post Approval"} />
+              <ListItemText primary={"Edit and Publish"} />
             </ListItemButton>
           </ListItem>
         </List>
@@ -190,7 +187,7 @@ export default function Navbar({ open, setOpen }) {
               onClick={() => handleListItemClick(tabs[2])}
             >
               <ListItemIcon>
-                <SettingsIcon />
+                <ManageHistoryIcon />
               </ListItemIcon>
               <ListItemText primary={"Manage News History"} />
             </ListItemButton>

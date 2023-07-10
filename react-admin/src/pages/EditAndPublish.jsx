@@ -1,13 +1,17 @@
 // <------------------------ IMPORTS ------------------------------->
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiAppBar from "@mui/material/AppBar";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import { Grid } from "@mui/material";
-import PreliminaryPostingForm from "../components/PreliminaryPostingForm";
+import { Grid, Typography } from "@mui/material";
+import "react-datepicker/dist/react-datepicker.css";
 import Sidebar from "../components/Sidebar";
+import EditAndPublishForm from "../components/EditAndPublishForm";
+import "react-datepicker/dist/react-datepicker.css";
+import Chip from "@mui/material/Chip";
+import Axios from "../utils/axios.js";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Backdrop from "@mui/material/Backdrop";
@@ -47,7 +51,9 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-const PreliminaryPosting = ({ open }) => {
+const EditAndPublish = ({ open }) => {
+  const [newsList, setNewsList] = useState([]);
+  const [selectedNews, setSelectedNews] = useState([]);
   const [loader, setLoader] = useState(false); // state to handle page loader
 
   // function to handle loader close
@@ -60,7 +66,7 @@ const PreliminaryPosting = ({ open }) => {
     setLoader(true);
   };
 
-  // function to notify successful upload
+  // function to notify successful edit or delete
   const handleSubmitFunc = (response) => {
     if (response.status === 200) {
       toast.success(response.data.message, {
@@ -75,10 +81,90 @@ const PreliminaryPosting = ({ open }) => {
     }
   };
 
+  useEffect(() => {
+    async function getHeadlines() {
+      try {
+        // get bearer token
+        const token = localStorage.getItem("jwt");
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+        const response = await Axios.get("/news/get-unpublished-news", {
+          headers,
+        });
+        setNewsList(response.data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    getHeadlines();
+  }, [selectedNews]);
+
+  function handleChipClick(item) {
+    setSelectedNews(item);
+  }
+
+  // JSX content for the sidebar specific to EditAndPublishForm screen.
   const sideBarContent = (
-    <>
-      <h2>Preliminary Posting Sidebar Content...</h2>
-    </>
+    <Box
+      sx={{
+        maxHeight: "475px",
+        overflowY: "auto",
+        scrollbarWidth: "thin",
+        scrollbarColor: "gray lightgray",
+        "&::-webkit-scrollbar": {
+          width: "6px",
+        },
+        "&::-webkit-scrollbar-track": {
+          borderRadius: "8px",
+          background: "lightgray",
+        },
+        "&::-webkit-scrollbar-thumb": {
+          borderRadius: "8px",
+          background: "gray",
+        },
+        paddingLeft: "10px",
+      }}
+    >
+      <Typography component="span" variant="h5" color="black" fontWeight="bold">
+        Unpublished News
+      </Typography>
+      <Box
+        sx={{
+          maxHeight: "300px",
+          overflowY: "auto",
+          "&::-webkit-scrollbar": {
+            width: "6px",
+          },
+          "&::-webkit-scrollbar-track": {
+            borderRadius: "8px",
+            background: "lightgray",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            borderRadius: "8px",
+            background: "gray",
+          },
+        }}
+      >
+        {newsList.length != 0 ? (
+          newsList.map((item) => (
+            <Chip
+              key={item._id}
+              label={item.title}
+              variant="outlined"
+              title={item.title}
+              sx={{ marginBottom: "6px", width: "100%" }}
+              onClick={() => handleChipClick(item)}
+            />
+          ))
+        ) : (
+          <Box sx={{ margin: "4%" }}>
+            <Typography color="red">No unpublished news available !</Typography>
+          </Box>
+        )}
+      </Box>
+    </Box>
   );
 
   return (
@@ -95,7 +181,9 @@ const PreliminaryPosting = ({ open }) => {
             >
               <Card>
                 <CardContent>
-                  <PreliminaryPostingForm
+                  <EditAndPublishForm
+                    setSelectedNews={setSelectedNews}
+                    selectedNews={selectedNews}
                     handleSubmitFunc={handleSubmitFunc}
                     handleLoaderOpen={handleLoaderOpen}
                     handleLoaderClose={handleLoaderClose}
@@ -120,4 +208,4 @@ const PreliminaryPosting = ({ open }) => {
   );
 };
 
-export default PreliminaryPosting;
+export default EditAndPublish;

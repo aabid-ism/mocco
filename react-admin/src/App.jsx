@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
-import PreliminaryPosting from "./pages/PreliminaryPosting";
+import CreatePost from "./pages/CreatePost";
 import ManageNewsHistory from "./pages/ManageNewsHistory";
-import NewsPostApproval from "./pages/NewsPostApproval";
+import EditAndPublish from "./pages/EditAndPublish";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -10,7 +10,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import SignIn from "./pages/SignIn";
-import SignUp from "./pages/SignUp";
+// import SignUp from "./pages/SignUp";
 import { useAuthContext } from "./hooks/useAuthContext";
 
 function App() {
@@ -29,28 +29,28 @@ function App() {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: !user ? <SignIn /> : <Navigate to="/preliminary-posting" />,
+      element: !user ? <SignIn /> : <Navigate to="/create-post" />,
     },
     // {
     //   path: "/sign-up",
-    //   element: !user ? <SignUp /> : <Navigate to="/preliminary-posting" />,
+    //   element: !user ? <SignUp /> : <Navigate to="/create-post" />,
     // },
     {
       path: "/",
       element: <Layout />,
       children: [
         {
-          path: "/preliminary-posting",
+          path: "/create-post",
           element: user ? (
-            <PreliminaryPosting open={open} setOpen={setOpen} />
+            <CreatePost open={open} setOpen={setOpen} />
           ) : (
             <Navigate to="/" />
           ),
         },
         {
-          path: "/news-post-approval",
+          path: "/edit-and-publish-post",
           element: user ? (
-            <NewsPostApproval open={open} setOpen={setOpen} />
+            <EditAndPublish open={open} setOpen={setOpen} />
           ) : (
             <Navigate to="/" />
           ),

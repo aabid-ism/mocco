@@ -54,7 +54,7 @@ const Fade = forwardRef(function Fade(props, ref) {
   );
 });
 
-const NewsPostApprovalForm = ({
+const EditAndPublishForm = ({
   setSelectedNews,
   selectedNews,
   handleSubmitFunc,
@@ -776,7 +776,7 @@ const NewsPostApprovalForm = ({
                   setIsApproveMode(false);
                 }}
               >
-                Edit
+                Save
               </Button>
               <Button
                 variant="contained"
@@ -972,4 +972,4 @@ const NewsPostApprovalForm = ({
   );
 };
 
-export default NewsPostApprovalForm;
+export default EditAndPublishForm;

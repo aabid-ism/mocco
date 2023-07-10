@@ -47,7 +47,7 @@ const Fade = forwardRef(function Fade(props, ref) {
   );
 });
 
-const PreliminaryPostingForm = ({
+const CreatePostForm = ({
   handleSubmitFunc,
   handleLoaderOpen,
   handleLoaderClose,
@@ -565,4 +565,4 @@ const PreliminaryPostingForm = ({
   );
 };
 
-export default PreliminaryPostingForm;
+export default CreatePostForm;

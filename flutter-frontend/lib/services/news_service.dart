@@ -4,15 +4,21 @@ import 'package:http/http.dart' as http;
 import 'package:mocco/models/news_card.dart';
 
 class NewsService {
-  Future<List<NewsCard>> fetchAllNews(String reqUrl) async {
+  Future<List<NewsCard>> fetchAllNews(String reqUrl, {String? reqBody}) async {
     // get request to api
     final uri = Uri.parse(reqUrl);
     try {
-      final response = await http.get(uri);
+      var headers = {'Content-Type': 'application/json'};
+      var request = http.Request('GET', uri);
+      request.body = reqBody ?? "";
+      request.headers.addAll(headers);
+      http.StreamedResponse response = await request.send();
+
       if (response.statusCode == 200) {
         // create a list of NewsCard models
-        final jsonResponse = jsonDecode(response.body) as List;
-        final newsModals = jsonResponse.map((obj) {
+        final jsonResponse = await response.stream.bytesToString();
+        final decodedResponse = jsonDecode(jsonResponse) as List;
+        final newsModals = decodedResponse.map((obj) {
           // print("-------------------------------------------");
           // print((obj['description']));
           return NewsCard(
@@ -32,6 +38,7 @@ class NewsService {
               postIndex: obj['postIndex'],
               typeOfPost: obj['typeOfPost']);
         }).toList();
+
         //newsModals.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
         return newsModals;
       } else {

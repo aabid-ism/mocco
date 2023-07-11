@@ -386,23 +386,48 @@ const EditAndPublishForm = ({
 
   // validation schema to define the error message.
   const validationSchema = Yup.object({
-    title: Yup.string().required("News Headline is required"),
+    title:
+      !isEditMode &&
+      !isDeleteMode &&
+      Yup.string().required("News Headline is required"),
     sinhalaTitle:
-      !isDeleteMode && Yup.string().required("Sinhala News Title is required"),
-    description: Yup.string().required("News Description is required"),
+      !isEditMode &&
+      !isDeleteMode &&
+      Yup.string().required("Sinhala News Title is required"),
+    description:
+      !isEditMode &&
+      !isDeleteMode &&
+      Yup.string().required("News Description is required"),
     imageUrl:
+      !isEditMode &&
       !isDeleteMode &&
       imageUrlChip.length === 0 &&
       !imageUpload &&
       Yup.string().required("Image URL is required"),
     sinhalaDescription:
+      !isEditMode &&
       !isDeleteMode &&
       Yup.string().required("Sinhala News Description is required"),
-    sourceName: Yup.string().required("Source Name is required"),
-    sourceUrl: Yup.string().required("Source URL is required"),
-    author: Yup.string().required("Author is required"),
-    mainTag: Yup.string().required("Main News Tags are required"),
-    locality: Yup.string().required("Locality is required"),
+    sourceName:
+      !isEditMode &&
+      !isDeleteMode &&
+      Yup.string().required("Source Name is required"),
+    sourceUrl:
+      !isEditMode &&
+      !isDeleteMode &&
+      Yup.string().required("Source URL is required"),
+    author:
+      !isEditMode &&
+      !isDeleteMode &&
+      Yup.string().required("Author is required"),
+    mainTag:
+      !isEditMode &&
+      !isDeleteMode &&
+      Yup.string().required("Main News Tags are required"),
+    locality:
+      !isEditMode &&
+      !isDeleteMode &&
+      Yup.string().required("Locality is required"),
   });
 
   // function to handle the secondary news tag drop down
@@ -778,7 +803,7 @@ const EditAndPublishForm = ({
                 variant="contained"
                 type="submit"
                 onClick={() => {
-                  valid && setEditOpen(true);
+                  setEditOpen(true);
                   setIsEditMode(true);
                   setIsDeleteMode(false);
                   setIsApproveMode(false);
@@ -796,7 +821,7 @@ const EditAndPublishForm = ({
                   },
                 }}
                 onClick={() => {
-                  valid && setDeleteOpen(true);
+                  setDeleteOpen(true);
                   setIsDeleteMode(true);
                   setIsEditMode(false);
                   setIsApproveMode(false);

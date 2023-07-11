@@ -52,6 +52,7 @@ const CreatePostForm = ({
   handleLoaderOpen,
   handleLoaderClose,
   handleImageSize,
+  handleHeadline,
 }) => {
   const fileInputRef = useRef(); // useRef to reference the image upload component and reset after submit.
   const [open, setOpen] = useState(false); // state used to manipulate the opening and closing of modal.
@@ -120,10 +121,16 @@ const CreatePostForm = ({
       secondaryTags: selectedSecondaryTags,
       typeOfPost: lifeStyle ? "lifestyle" : "news",
     };
-    try {
-      setData(updatedObject);
-    } catch (error) {
-      console.error(error);
+
+    if (updatedObject.sinhalaTitle === "" && updatedObject.title === "") {
+      setOpen(false);
+      handleHeadline();
+    } else {
+      try {
+        setData(updatedObject);
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -182,13 +189,7 @@ const CreatePostForm = ({
 
   // validation schema to define the error message.
   const validationSchema = Yup.object({
-    title: Yup.string().required("News Headline is required"),
-    description: Yup.string().required("News Description is required"),
-    sourceName: Yup.string().required("Source Name is required"),
-    sourceUrl: Yup.string().required("Source URL is required"),
     author: Yup.string().required("Author is required"),
-    mainTag: Yup.string().required("Tags are required"),
-    locality: Yup.string().required("Locality is required"),
   });
 
   return (

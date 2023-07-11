@@ -60,6 +60,7 @@ const ManageNewsHistoryForm = ({
   handleSubmitFunc,
   handleLoaderOpen,
   handleLoaderClose,
+  handleImageSize,
 }) => {
   const [editOpen, setEditOpen] = useState(false); // state used to manipulate the opening and closing of edit modal.
   const [deleteOpen, setDeleteOpen] = useState(false); // state used to manipulate the opening and closing of delete modal.
@@ -158,7 +159,14 @@ const ManageNewsHistoryForm = ({
 
   // function to add the image upload to a state
   const handleFileChange = (event) => {
-    setImageUpload(event.target.files[0]);
+    const file = event.target.files[0];
+    const maxSize = 1 * 1024 * 1024; // 1MB (in bytes)
+
+    if (file && file.size > maxSize) {
+      handleImageSize(fileInputRef);
+    } else {
+      setImageUpload(file);
+    }
   };
 
   // function that sends updated form data to the backend after confirmation from the pop up.
@@ -459,6 +467,7 @@ const ManageNewsHistoryForm = ({
                 as={TextareaAutosize}
                 id="description"
                 name="description"
+                maxLength={25}
                 minRows={3}
                 maxRows={5}
                 placeholder="Enter text here..."
@@ -467,9 +476,6 @@ const ManageNewsHistoryForm = ({
                   padding: "20px",
                   resize: "none",
                   border: "1px solid #ccc",
-                }}
-                inputProps={{
-                  maxLength: 350,
                 }}
               />
               <ErrorMessage
@@ -492,6 +498,7 @@ const ManageNewsHistoryForm = ({
                 as={TextareaAutosize}
                 id="sinhalaDescription"
                 name="sinhalaDescription"
+                maxLength={25}
                 minRows={3}
                 maxRows={5}
                 placeholder="Enter text here..."
@@ -500,9 +507,6 @@ const ManageNewsHistoryForm = ({
                   padding: "20px",
                   resize: "none",
                   border: "1px solid #ccc",
-                }}
-                inputProps={{
-                  maxLength: 350,
                 }}
               />
               <ErrorMessage

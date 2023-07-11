@@ -59,6 +59,17 @@ const CreatePost = ({ open }) => {
     setLoader(false);
   };
 
+  const handleImageSize = (fileInputRef) => {
+    toast.error("Image size should be less than 1MB", {
+      autoClose: 1500,
+      theme: "dark",
+    });
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   // function to handle loader open
   const handleLoaderOpen = () => {
     setLoader(true);
@@ -125,6 +136,7 @@ const CreatePost = ({ open }) => {
                     handleSubmitFunc={handleSubmitFunc}
                     handleLoaderOpen={handleLoaderOpen}
                     handleLoaderClose={handleLoaderClose}
+                    handleImageSize={handleImageSize}
                   />
                 </CardContent>
               </Card>

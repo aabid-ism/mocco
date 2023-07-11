@@ -66,6 +66,17 @@ const EditAndPublish = ({ open }) => {
     setLoader(true);
   };
 
+  const handleImageSize = (fileInputRef) => {
+    toast.error("Image size should be less than 1MB", {
+      autoClose: 1500,
+      theme: "dark",
+    });
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   // function to notify successful edit or delete
   const handleSubmitFunc = (response) => {
     if (response.status === 200) {
@@ -187,6 +198,7 @@ const EditAndPublish = ({ open }) => {
                     handleSubmitFunc={handleSubmitFunc}
                     handleLoaderOpen={handleLoaderOpen}
                     handleLoaderClose={handleLoaderClose}
+                    handleImageSize={handleImageSize}
                   />
                 </CardContent>
               </Card>

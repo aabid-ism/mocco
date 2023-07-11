@@ -51,6 +51,7 @@ const CreatePostForm = ({
   handleSubmitFunc,
   handleLoaderOpen,
   handleLoaderClose,
+  handleImageSize,
 }) => {
   const fileInputRef = useRef(); // useRef to reference the image upload component and reset after submit.
   const [open, setOpen] = useState(false); // state used to manipulate the opening and closing of modal.
@@ -60,7 +61,7 @@ const CreatePostForm = ({
   const [selectedSecondaryTags, setSelectedSecondaryTags] = useState([]); // state to store selected secondary tags.
   const [imageUpload, setImageUpload] = useState(null); // state to store uploaded image.
   const [imageFormData, setImageFormData] = useState(null); // state to store form data of the uploaded image.
-  const [lifeStyle, setLifeStyle] = useState(false);
+  const [lifeStyle, setLifeStyle] = useState(false); // boolean to set if lifestyle toggle is on or not.
 
   useEffect(() => {
     async function getDropDowns() {
@@ -97,7 +98,14 @@ const CreatePostForm = ({
 
   // function to add the image upload to a state
   const handleFileChange = (event) => {
-    setImageUpload(event.target.files[0]);
+    const file = event.target.files[0];
+    const maxSize = 1 * 1024 * 1024; // 1MB (in bytes)
+
+    if (file && file.size > maxSize) {
+      handleImageSize(fileInputRef);
+    } else {
+      setImageUpload(file);
+    }
   };
 
   // function to set the submitted form data to the state.
@@ -257,7 +265,7 @@ const CreatePostForm = ({
                 as={TextareaAutosize}
                 id="description"
                 name="description"
-                maxLength={350}
+                maxLength={25}
                 minRows={3}
                 maxRows={5}
                 placeholder="Enter text here..."
@@ -288,7 +296,7 @@ const CreatePostForm = ({
                 as={TextareaAutosize}
                 id="sinhalaDescription"
                 name="sinhalaDescription"
-                maxLength={350}
+                maxLength={25}
                 minRows={3}
                 maxRows={5}
                 placeholder="Enter text here..."

@@ -60,6 +60,7 @@ const EditAndPublishForm = ({
   handleSubmitFunc,
   handleLoaderClose,
   handleLoaderOpen,
+  handleImageSize,
 }) => {
   const [editOpen, setEditOpen] = useState(false); // state used to manipulate the opening and closing of edit modal.
   const [deleteOpen, setDeleteOpen] = useState(false); // state used to manipulate the opening and closing of delete modal.
@@ -361,7 +362,14 @@ const EditAndPublishForm = ({
 
   // function to add the image upload to a state
   const handleFileChange = (event) => {
-    setImageUpload(event.target.files[0]);
+    const file = event.target.files[0];
+    const maxSize = 1 * 1024 * 1024; // 1MB (in bytes)
+
+    if (file && file.size > maxSize) {
+      handleImageSize(fileInputRef);
+    } else {
+      setImageUpload(file);
+    }
   };
 
   // function used to set state based on if the if the validation is passed.
@@ -479,7 +487,7 @@ const EditAndPublishForm = ({
                 as={TextareaAutosize}
                 id="description"
                 name="description"
-                maxLength={350}
+                maxLength={25}
                 minRows={3}
                 maxRows={5}
                 placeholder="Enter text here..."
@@ -510,7 +518,7 @@ const EditAndPublishForm = ({
                 as={TextareaAutosize}
                 id="sinhalaDescription"
                 name="sinhalaDescription"
-                maxLength={350}
+                maxLength={25}
                 minRows={3}
                 maxRows={5}
                 placeholder="Enter text here..."

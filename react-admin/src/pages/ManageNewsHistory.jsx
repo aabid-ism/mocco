@@ -74,6 +74,17 @@ const ManageNewsHistory = ({ open }) => {
     }
   };
 
+  const handleImageSize = (fileInputRef) => {
+    toast.error("Image size should be less than 1MB", {
+      autoClose: 1500,
+      theme: "dark",
+    });
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   // function to handle loader close
   const handleLoaderClose = () => {
     setLoader(false);
@@ -221,6 +232,7 @@ const ManageNewsHistory = ({ open }) => {
                     handleSubmitFunc={handleSubmitFunc}
                     handleLoaderOpen={handleLoaderOpen}
                     handleLoaderClose={handleLoaderClose}
+                    handleImageSize={handleImageSize}
                   />
                 </CardContent>
               </Card>

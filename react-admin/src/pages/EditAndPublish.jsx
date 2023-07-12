@@ -162,9 +162,9 @@ const EditAndPublish = ({ open }) => {
           newsList.map((item) => (
             <Chip
               key={item._id}
-              label={item.title}
+              label={item.title ? item.title : item.sinhalaTitle}
               variant="outlined"
-              title={item.title}
+              title={item.title ? item.title : item.sinhalaTitle}
               sx={{ marginBottom: "6px", width: "100%" }}
               onClick={() => handleChipClick(item)}
             />

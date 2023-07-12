@@ -59,6 +59,23 @@ const CreatePost = ({ open }) => {
     setLoader(false);
   };
 
+
+  // function to handle entry of atleast one title (english or sinhala)
+  const handleHeadline = (fileInputRef) => {
+    toast.error(
+      "Either English Headline or Sinhala Headline should be entered",
+      {
+        autoClose: 1500,
+        theme: "dark",
+      }
+    );
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  // function to handle image size
   const handleImageSize = (fileInputRef) => {
     toast.error("Image size should be less than 1MB", {
       autoClose: 1500,
@@ -137,6 +154,8 @@ const CreatePost = ({ open }) => {
                     handleLoaderOpen={handleLoaderOpen}
                     handleLoaderClose={handleLoaderClose}
                     handleImageSize={handleImageSize}
+                    handleHeadline={handleHeadline}
+
                   />
                 </CardContent>
               </Card>

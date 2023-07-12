@@ -59,8 +59,7 @@ class BottomBar extends StatelessWidget {
                 await Share.shareXFiles(
                   [XFile(shareTempFilePath)],
                   subject: newsCard.title,
-                  text:
-                      "$title\n\n$description\n\nAuthor - ${newsCard.author}",
+                  text: "$title\n\n$description\n\nAuthor - ${newsCard.author}",
                 );
               },
               child: const Column(children: [
@@ -139,20 +138,17 @@ class BottomBar extends StatelessWidget {
                 preferencesStateWatcher.toggleLang();
               },
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   // Source Icon Buttom
                   IconButton(
                     onPressed: null,
                     icon: Column(children: [
-                      const Icon(Icons.language, color: Colors.black),
-                      const SizedBox(
-                        height: 4,
-                      ),
                       Text(
                         preferencesStateWatcher.isEng ? "ENG" : "SIN",
                         style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ]),

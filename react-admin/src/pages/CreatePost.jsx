@@ -59,6 +59,7 @@ const CreatePost = ({ open }) => {
     setLoader(false);
   };
 
+
   // function to handle entry of atleast one title (english or sinhala)
   const handleHeadline = (fileInputRef) => {
     toast.error(
@@ -154,6 +155,7 @@ const CreatePost = ({ open }) => {
                     handleLoaderClose={handleLoaderClose}
                     handleImageSize={handleImageSize}
                     handleHeadline={handleHeadline}
+
                   />
                 </CardContent>
               </Card>

@@ -59,7 +59,6 @@ const CreatePost = ({ open }) => {
     setLoader(false);
   };
 
-
   // function to handle entry of atleast one title (english or sinhala)
   const handleHeadline = (fileInputRef) => {
     toast.error(
@@ -121,11 +120,12 @@ const CreatePost = ({ open }) => {
         </AccordionSummary>
         <AccordionDetails>
           <Typography>
-            <b>Create a post: </b>Create a news post for the first time News
-            Post
+            <b>Create a post: </b>Push a news post for the first time.
             <hr />
-            <b>Edit and publish: </b>
-            Publish and Approve a news post that has been created.
+            <b>Edit and publish: </b> <br></br>
+            Edit, translate, add an image, add tags to a post that has been
+            pushed.<br></br>Publish and Approve a news post that has been
+            pushed.
             <hr />
             <b>Manage News History: </b>
             Edit or Delete published news posts.
@@ -155,7 +155,6 @@ const CreatePost = ({ open }) => {
                     handleLoaderClose={handleLoaderClose}
                     handleImageSize={handleImageSize}
                     handleHeadline={handleHeadline}
-
                   />
                 </CardContent>
               </Card>

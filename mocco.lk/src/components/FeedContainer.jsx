@@ -15,8 +15,8 @@ function FeedContainer() {
   const isLoadingMorePostsRef = useRef(false);
   // ref is needed to directly access and mutate a state variable from the handlescroll event handler
   const metaDataForLoading = useRef({
-    feedtag: "NEWS",
-    newstag: null,
+    feedTag: "NEWS",
+    newsTag: null,
     lastPostIndex: null,
   });
 
@@ -35,21 +35,21 @@ function FeedContainer() {
 
       let morePosts;
       console.log(metaDataForLoading.current);
-      if (metaDataForLoading.current.feedtag == "NEWS") {
+      if (metaDataForLoading.current.feedTag == "NEWS") {
         morePosts = await loadMorePosts(
           "ALL",
           metaDataForLoading.current.lastPostIndex
         );
-      } else if (metaDataForLoading.current.feedtag == "LIFESTYLE") {
+      } else if (metaDataForLoading.current.feedTag == "LIFESTYLE") {
         morePosts = await loadMorePosts(
           "LIFESTYLE",
           metaDataForLoading.current.lastPostIndex
         );
-      } else if (metaDataForLoading.current.feedtag == "TAG") {
+      } else if (metaDataForLoading.current.feedTag == "TAG") {
         morePosts = await loadMorePosts(
           "TAG",
           metaDataForLoading.current.lastPostIndex,
-          metaDataForLoading.current.newstag
+          metaDataForLoading.current.newsTag
         );
       }
       if (morePosts) {
@@ -101,10 +101,21 @@ function FeedContainer() {
       lang={appState.language}
     />
   ));
-  if (appState.postFeed.length > 1) {
-    metaDataForLoading.current.lastPostIndex =
-      appState.postFeed[appState.postFeed.length - 1].postIndex;
+
+  // updating useRefs when the Feed Container Re-Renders
+  function handleRefs() {
+    // handle lastPostIndex
+    if (appState.postFeed.length > 1) {
+      console.log("This just ran");
+      metaDataForLoading.current.lastPostIndex =
+        appState.postFeed[appState.postFeed.length - 1].postIndex;
+      metaDataForLoading.current.feedTag = appState.feedTag;
+      metaDataForLoading.current.newsTag = appState.newsTag;
+    }
   }
+
+  handleRefs();
+
   let feed = newsCardsList;
   // THE FEED
   return (

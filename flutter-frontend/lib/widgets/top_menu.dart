@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class TopMenu extends StatelessWidget {
   final int currentPageIndex;
-  const TopMenu({Key? key, required this.currentPageIndex});
+  const TopMenu({super.key, required this.currentPageIndex});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class TopMenu extends StatelessWidget {
           ),
           Positioned(
             child: Padding(
-              padding: const EdgeInsets.all(6.0),
+              padding: const EdgeInsets.fromLTRB(6, 14, 6, 6),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -34,14 +34,12 @@ class TopMenu extends StatelessWidget {
                     text: 'Explore',
                     isActive: currentPageIndex == 0,
                   ),
-                  _TopMenuSeparator(
-                      isActive: currentPageIndex == 0 || currentPageIndex == 1),
+                  const SizedBox(width: 16),
                   _TopMenuText(
                     text: 'News',
                     isActive: currentPageIndex == 1,
                   ),
-                  _TopMenuSeparator(
-                      isActive: currentPageIndex == 1 || currentPageIndex == 2),
+                  const SizedBox(width: 16),
                   _TopMenuText(
                     text: 'Lifestyle',
                     isActive: currentPageIndex == 2,
@@ -63,35 +61,36 @@ class _TopMenuText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: TextStyle(
-        color: isActive ? Colors.white : const Color.fromARGB(195, 139, 139, 139),
-        fontSize: 20,
-        fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-      ),
-    );
-  }
-}
-
-class _TopMenuSeparator extends StatelessWidget {
-  final bool isActive;
-  const _TopMenuSeparator({required this.isActive});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
-      child: Text(
-        "|",
-        style: TextStyle(
-          color: isActive
-              ? Colors.white
-              : const Color.fromARGB(205, 114, 114, 114),
-          fontSize: 35,
-          fontWeight: isActive ? FontWeight.w900 : FontWeight.w600,
+    return Column(
+      children: [
+        Text(
+          text,
+          style: TextStyle(
+            color: isActive
+                ? Colors.white
+                : const Color.fromARGB(195, 139, 139, 139),
+            fontSize: 20,
+            fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+          ),
         ),
-      ),
+        Visibility(
+          visible: isActive,
+          child: Container(
+            height: 4,
+            width: 40,
+            decoration: BoxDecoration(
+                border: Border.all(
+                  color: isActive
+                      ? Colors.white
+                      : const Color.fromARGB(195, 139, 139, 139),
+                ),
+                color: isActive
+                    ? Colors.white
+                    : const Color.fromARGB(195, 139, 139, 139),
+                borderRadius: const BorderRadius.all(Radius.circular(10))),
+          ),
+        )
+      ],
     );
   }
 }

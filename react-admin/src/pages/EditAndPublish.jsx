@@ -8,7 +8,7 @@ import CardContent from "@mui/material/CardContent";
 import { Grid, Typography } from "@mui/material";
 import "react-datepicker/dist/react-datepicker.css";
 import Sidebar from "../components/Sidebar";
-import NewsPostApprovalForm from "../components/NewsPostApprovalForm";
+import EditAndPublishForm from "../components/EditAndPublishForm";
 import "react-datepicker/dist/react-datepicker.css";
 import Chip from "@mui/material/Chip";
 import Axios from "../utils/axios.js";
@@ -51,7 +51,7 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-const NewsPostApproval = ({ open }) => {
+const EditAndPublish = ({ open }) => {
   const [newsList, setNewsList] = useState([]);
   const [selectedNews, setSelectedNews] = useState([]);
   const [loader, setLoader] = useState(false); // state to handle page loader
@@ -64,6 +64,17 @@ const NewsPostApproval = ({ open }) => {
   // function to handle loader open
   const handleLoaderOpen = () => {
     setLoader(true);
+  };
+
+  const handleImageSize = (fileInputRef) => {
+    toast.error("Image size should be less than 1MB", {
+      autoClose: 1500,
+      theme: "dark",
+    });
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   // function to notify successful edit or delete
@@ -105,7 +116,7 @@ const NewsPostApproval = ({ open }) => {
     setSelectedNews(item);
   }
 
-  // JSX content for the sidebar specific to NewsPostApprovalForm screen.
+  // JSX content for the sidebar specific to EditAndPublishForm screen.
   const sideBarContent = (
     <Box
       sx={{
@@ -147,16 +158,22 @@ const NewsPostApproval = ({ open }) => {
           },
         }}
       >
-        {newsList.map((item) => (
-          <Chip
-            key={item._id}
-            label={item.title}
-            variant="outlined"
-            title={item.title}
-            sx={{ marginBottom: "6px", width: "100%" }}
-            onClick={() => handleChipClick(item)}
-          />
-        ))}
+        {newsList.length != 0 ? (
+          newsList.map((item) => (
+            <Chip
+              key={item._id}
+              label={item.title ? item.title : item.sinhalaTitle}
+              variant="outlined"
+              title={item.title ? item.title : item.sinhalaTitle}
+              sx={{ marginBottom: "6px", width: "100%" }}
+              onClick={() => handleChipClick(item)}
+            />
+          ))
+        ) : (
+          <Box sx={{ margin: "4%" }}>
+            <Typography color="red">No unpublished news available !</Typography>
+          </Box>
+        )}
       </Box>
     </Box>
   );
@@ -175,12 +192,13 @@ const NewsPostApproval = ({ open }) => {
             >
               <Card>
                 <CardContent>
-                  <NewsPostApprovalForm
+                  <EditAndPublishForm
                     setSelectedNews={setSelectedNews}
                     selectedNews={selectedNews}
                     handleSubmitFunc={handleSubmitFunc}
                     handleLoaderOpen={handleLoaderOpen}
                     handleLoaderClose={handleLoaderClose}
+                    handleImageSize={handleImageSize}
                   />
                 </CardContent>
               </Card>
@@ -202,4 +220,4 @@ const NewsPostApproval = ({ open }) => {
   );
 };
 
-export default NewsPostApproval;
+export default EditAndPublish;

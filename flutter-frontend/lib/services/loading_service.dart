@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
 import 'package:mocco/enum.dart';
 import 'package:mocco/env.dart';
 import 'package:mocco/models/news_card.dart';
@@ -29,22 +32,28 @@ class LoadingService {
     sharedPrefs.setStringList(_readPostListName, _readPostList);
   }
 
+  Future<List<int>> getReadPostList() async {
+    sharedPrefs = await SharedPreferences.getInstance();
+    _readPostList = sharedPrefs.getStringList(_readPostListName) ?? [];
+    return _readPostList.map((str) => int.parse(str)).toList();
+  }
+
   //Only use for testing uses
   Future<void> clearSharedPrefs() async {
     sharedPrefs = await SharedPreferences.getInstance();
     sharedPrefs.clear();
   }
 
-  Future<List<NewsCard>> removeReadPost(List<NewsCard> newsList) async {
-    sharedPrefs = await SharedPreferences.getInstance();
-    _readPostList = sharedPrefs.getStringList(_readPostListName) ?? [];
-    _readPostListInt = _readPostList
-        .map((readPostIndexSting) => int.tryParse(readPostIndexSting))
-        .toList();
-    return newsList
-        .where((newsCard) => !_readPostListInt.contains(newsCard.postIndex))
-        .toList();
-  }
+  // Future<List<NewsCard>> removeReadPost(List<NewsCard> newsList) async {
+  //   sharedPrefs = await SharedPreferences.getInstance();
+  //   _readPostList = sharedPrefs.getStringList(_readPostListName) ?? [];
+  //   _readPostListInt = _readPostList
+  //       .map((readPostIndexSting) => int.tryParse(readPostIndexSting))
+  //       .toList();
+  //   return newsList
+  //       .where((newsCard) => !_readPostListInt.contains(newsCard.postIndex))
+  //       .toList();
+  // }
 
   Future<List<NewsCard>> loadNextPosts(
     NewsScreenUsers postFor,
@@ -53,23 +62,25 @@ class LoadingService {
   ) async {
     final newsService = NewsService();
     var postPath = "";
-
+    var readPostReqBody =
+        jsonEncode({'readPostIndices': await getReadPostList()});
     switch (postFor) {
       case NewsScreenUsers.newsScreen:
-        postPath = "loadposts/news/?ref_postIndex=$lastPostIndex";
+        postPath = "/news/";
         break;
       case NewsScreenUsers.lifestyleScreen:
-        postPath = "loadposts/lifestyle/?ref_postIndex=$lastPostIndex";
+        postPath = "/lifestyle/";
         break;
       case NewsScreenUsers.explorerScreen:
         if (tag != null && tag.isNotEmpty) {
-          postPath = "loadposts/tag/?ref_postIndex=$lastPostIndex&req_tag=$tag";
+          postPath = "/tag/?reqTag=$tag";
         }
         break;
     }
 
-    var nextPostList = await newsService.fetchAllNews("$serverUrl/$postPath");
-    var filteredNextPostList = removeReadPost(nextPostList);
-    return filteredNextPostList;
+    var nextPostList = await newsService.fetchAllNews(
+        "$serverUrl/handleloading$postPath",
+        reqBody: readPostReqBody);
+    return nextPostList;
   }
 }

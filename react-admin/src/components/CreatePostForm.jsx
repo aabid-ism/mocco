@@ -47,10 +47,12 @@ const Fade = forwardRef(function Fade(props, ref) {
   );
 });
 
-const PreliminaryPostingForm = ({
+const CreatePostForm = ({
   handleSubmitFunc,
   handleLoaderOpen,
   handleLoaderClose,
+  handleImageSize,
+  handleHeadline,
 }) => {
   const fileInputRef = useRef(); // useRef to reference the image upload component and reset after submit.
   const [open, setOpen] = useState(false); // state used to manipulate the opening and closing of modal.
@@ -60,7 +62,7 @@ const PreliminaryPostingForm = ({
   const [selectedSecondaryTags, setSelectedSecondaryTags] = useState([]); // state to store selected secondary tags.
   const [imageUpload, setImageUpload] = useState(null); // state to store uploaded image.
   const [imageFormData, setImageFormData] = useState(null); // state to store form data of the uploaded image.
-  const [lifeStyle, setLifeStyle] = useState(false);
+  const [lifeStyle, setLifeStyle] = useState(false); // boolean to set if lifestyle toggle is on or not.
 
   useEffect(() => {
     async function getDropDowns() {
@@ -97,7 +99,14 @@ const PreliminaryPostingForm = ({
 
   // function to add the image upload to a state
   const handleFileChange = (event) => {
-    setImageUpload(event.target.files[0]);
+    const file = event.target.files[0];
+    const maxSize = 1 * 1024 * 1024; // 1MB (in bytes)
+
+    if (file && file.size > maxSize) {
+      handleImageSize(fileInputRef);
+    } else {
+      setImageUpload(file);
+    }
   };
 
   // function to set the submitted form data to the state.
@@ -112,10 +121,16 @@ const PreliminaryPostingForm = ({
       secondaryTags: selectedSecondaryTags,
       typeOfPost: lifeStyle ? "lifestyle" : "news",
     };
-    try {
-      setData(updatedObject);
-    } catch (error) {
-      console.error(error);
+
+    if (updatedObject.sinhalaTitle === "" && updatedObject.title === "") {
+      setOpen(false);
+      handleHeadline();
+    } else {
+      try {
+        setData(updatedObject);
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -174,13 +189,7 @@ const PreliminaryPostingForm = ({
 
   // validation schema to define the error message.
   const validationSchema = Yup.object({
-    title: Yup.string().required("News Headline is required"),
-    description: Yup.string().required("News Description is required"),
-    sourceName: Yup.string().required("Source Name is required"),
-    sourceUrl: Yup.string().required("Source URL is required"),
     author: Yup.string().required("Author is required"),
-    mainTag: Yup.string().required("Tags are required"),
-    locality: Yup.string().required("Locality is required"),
   });
 
   return (
@@ -257,7 +266,7 @@ const PreliminaryPostingForm = ({
                 as={TextareaAutosize}
                 id="description"
                 name="description"
-                maxLength={350}
+                maxLength={25}
                 minRows={3}
                 maxRows={5}
                 placeholder="Enter text here..."
@@ -288,7 +297,7 @@ const PreliminaryPostingForm = ({
                 as={TextareaAutosize}
                 id="sinhalaDescription"
                 name="sinhalaDescription"
-                maxLength={350}
+                maxLength={25}
                 minRows={3}
                 maxRows={5}
                 placeholder="Enter text here..."
@@ -565,4 +574,4 @@ const PreliminaryPostingForm = ({
   );
 };
 
-export default PreliminaryPostingForm;
+export default CreatePostForm;

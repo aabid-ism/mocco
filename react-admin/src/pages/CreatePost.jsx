@@ -6,12 +6,16 @@ import MuiAppBar from "@mui/material/AppBar";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import { Grid } from "@mui/material";
-import PreliminaryPostingForm from "../components/PreliminaryPostingForm";
-import Sidebar from "../components/Sidebar";
+import CreatePostForm from "../components/CreatePostForm";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Typography from "@mui/material/Typography";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const drawerWidth = 240;
 
@@ -47,12 +51,39 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-const PreliminaryPosting = ({ open }) => {
+const CreatePost = ({ open }) => {
   const [loader, setLoader] = useState(false); // state to handle page loader
 
   // function to handle loader close
   const handleLoaderClose = () => {
     setLoader(false);
+  };
+
+  // function to handle entry of atleast one title (english or sinhala)
+  const handleHeadline = (fileInputRef) => {
+    toast.error(
+      "Either English Headline or Sinhala Headline should be entered",
+      {
+        autoClose: 1500,
+        theme: "dark",
+      }
+    );
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  // function to handle image size
+  const handleImageSize = (fileInputRef) => {
+    toast.error("Image size should be less than 1MB", {
+      autoClose: 1500,
+      theme: "dark",
+    });
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   // function to handle loader open
@@ -76,9 +107,32 @@ const PreliminaryPosting = ({ open }) => {
   };
 
   const sideBarContent = (
-    <>
-      <h2>Preliminary Posting Sidebar Content...</h2>
-    </>
+    <Box sx={{ padding: "4%" }}>
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1a-content"
+          id="panel1a-header"
+        >
+          <Typography>
+            <b>How to use the Admin Panel</b>
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>
+            <b>Create a post: </b>Push a news post for the first time.
+            <hr />
+            <b>Edit and publish: </b> <br></br>
+            Edit, translate, add an image, add tags to a post that has been
+            pushed.<br></br>Publish and Approve a news post that has been
+            pushed.
+            <hr />
+            <b>Manage News History: </b>
+            Edit or Delete published news posts.
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+    </Box>
   );
 
   return (
@@ -95,17 +149,19 @@ const PreliminaryPosting = ({ open }) => {
             >
               <Card>
                 <CardContent>
-                  <PreliminaryPostingForm
+                  <CreatePostForm
                     handleSubmitFunc={handleSubmitFunc}
                     handleLoaderOpen={handleLoaderOpen}
                     handleLoaderClose={handleLoaderClose}
+                    handleImageSize={handleImageSize}
+                    handleHeadline={handleHeadline}
                   />
                 </CardContent>
               </Card>
             </Box>
           </Grid>
           <Grid item xs={4}>
-            <Sidebar>{sideBarContent}</Sidebar>
+            {sideBarContent}
           </Grid>
         </Grid>
         <ToastContainer />
@@ -120,4 +176,4 @@ const PreliminaryPosting = ({ open }) => {
   );
 };
 
-export default PreliminaryPosting;
+export default CreatePost;

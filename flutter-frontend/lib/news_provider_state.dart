@@ -1,3 +1,4 @@
+import "dart:convert";
 import "package:flutter/material.dart";
 import "package:mocco/enum.dart";
 import "package:mocco/models/news_card.dart";
@@ -12,14 +13,19 @@ class NewsProvider extends ChangeNotifier {
   List<NewsCard> notificationResponse = [];
   List<NewsCard> tagResponse = [];
   NewsScreenUsers notificationFor = NewsScreenUsers.newsScreen;
-  
+
   // creating a Service object that gives access to a method to get the news from server
   final newsService = NewsService();
   final LoadingService loadingService = LoadingService();
-  
+
   // fetch newsModelsLists
   Future<void> fetchNewsFromService(BuildContext context,
       {int? postIndex, String? tag}) async {
+    //loadingService.clearSharedPrefs();
+
+    //Get read post list
+    var readPostList = await loadingService.getReadPostList();
+    var readPostReqBody = jsonEncode({'readPostIndices': readPostList});
 
     //Get Notification Posts
     if (postIndex != null) {
@@ -29,19 +35,23 @@ class NewsProvider extends ChangeNotifier {
 
     //Get Tag Posts
     if (tag != null) {
-      var tagNews =
-          await newsService.fetchAllNews('$serverUrl/explore-news?reqTag=$tag');
-      tagResponse = await loadingService.removeReadPost(tagNews);
+      tagResponse = await newsService.fetchAllNews(
+          '$serverUrl/handleloading/tag?reqTag=$tag',
+          reqBody: readPostReqBody);
+      ;
     }
 
     //Get posts for news & Lifestule
-    final newsResponse = await newsService.fetchAllNews('$serverUrl/news/feed');
-    final lifestyleResponse =
-        await newsService.fetchAllNews('$serverUrl/news/lifestyle');
+    newsModelsList = await newsService.fetchAllNews(
+        '$serverUrl/handleloading/news',
+        reqBody: readPostReqBody);
+    lifestyleModelsList = await newsService.fetchAllNews(
+        '$serverUrl/handleloading/lifestyle',
+        reqBody: readPostReqBody);
 
     //Show error message on empty responds
-    if (newsResponse.isEmpty ||
-        lifestyleResponse.isEmpty ||
+    if (newsModelsList.isEmpty ||
+        newsModelsList.isEmpty ||
         (postIndex != null && notificationResponse.isEmpty) ||
         (tag != null && tagResponse.isEmpty)) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -51,11 +61,6 @@ class NewsProvider extends ChangeNotifier {
         ),
       );
     }
-
-    //Purge already read posts
-    newsModelsList = await loadingService.removeReadPost(newsResponse);
-    lifestyleModelsList =
-        await loadingService.removeReadPost(lifestyleResponse);
 
     if (notificationResponse.isNotEmpty) {
       if (notificationResponse[0].typeOfPost == "lifestyle") {

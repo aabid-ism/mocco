@@ -15,6 +15,7 @@ import loadposts from "./routes/get-news/loadposts.js";
 import handleloading from "./routes/get-news/handleloading.js";
 import swaggerUi from "swagger-ui-express";
 import * as path from "path";
+import { load } from "firebase-tools/lib/commands/index.js";
 
 const app = express();
 const PORT = process.env.PORT || 5555;
@@ -46,6 +47,7 @@ app.use("/news", news);
 app.use("/image", image);
 app.use("/explore-news", explorenews);
 app.use("/handleloading", handleloading);
+app.use("/loadposts", loadposts);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(jsonObject));
 
 // Global error handling

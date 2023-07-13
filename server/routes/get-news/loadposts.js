@@ -1,8 +1,6 @@
-// Loading more posts for News, Extra and TagFeed
-
+// Loading more posts for News, Extra and TagFeed. Needed for the mocco.lk webapp
 import conn from "../../conn.js";
 import express from "express";
-import { ObjectId } from "mongodb";
 
 const router = express.Router();
 /* 
@@ -13,7 +11,7 @@ const router = express.Router();
 */
 router.get("/news/", async (req, res) => {
   const ref_postIndex = parseInt(req.query.ref_postIndex);
-  const OUTPUT = 2;
+  const OUTPUT = 20;
 
   if (!ref_postIndex) {
     return res.send("ref_postIndex is required").status(400);
@@ -54,7 +52,7 @@ router.get("/news/", async (req, res) => {
 */
 router.get("/lifestyle/", async (req, res) => {
   const ref_postIndex = parseInt(req.query.ref_postIndex);
-  const OUTPUT = 2;
+  const OUTPUT = 20;
 
   if (!ref_postIndex) {
     return res.send("ref_postIndex is required").status(400);
@@ -96,7 +94,7 @@ router.get("/lifestyle/", async (req, res) => {
 router.get("/tag/", async (req, res) => {
   const ref_postIndex = parseInt(req.query.ref_postIndex);
   const req_tag = req.query.req_tag;
-  const OUTPUT = 2;
+  const OUTPUT = 20;
 
   if (!ref_postIndex) {
     return res.send("ref_postIndex is required").status(400);

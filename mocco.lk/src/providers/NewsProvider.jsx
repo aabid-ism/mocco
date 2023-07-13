@@ -42,7 +42,7 @@ function moccoReducer(state, action) {
       // console.log(action.payload);
       return {
         ...state,
-        feedTag: FeedType.YESTERDAY,
+        feedTag: FeedType.NEWS,
         newsTag: NewsType.EMPTY,
         postFeed: action.payload,
         is_loading: false,
@@ -53,7 +53,7 @@ function moccoReducer(state, action) {
       // console.log(action.payload);
       return {
         ...state,
-        feedTag: FeedType.YESTERDAY,
+        feedTag: FeedType.NEWS,
         newsTag: NewsType.EMPTY,
         postFeed: [...state.postFeed, ...action.payload],
         is_loading: false,
@@ -80,7 +80,7 @@ function moccoReducer(state, action) {
 const initialState = {
   language: "English",
   is_loading: true,
-  feedTag: FeedType.ALL,
+  feedTag: FeedType.NEWS,
   newsTag: NewsType.EMPTY,
   postFeed: [],
 };

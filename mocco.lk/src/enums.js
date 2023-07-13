@@ -4,8 +4,9 @@ export const Language = {
 };
 
 export const FeedType = {
-  ALL: "All",
-  YESTERDAY: "Yesterday",
+  NEWS: "NEWS",
+  LIFESTYLE: "LIFESTYLE",
+  TAG: "TAG",
 };
 
 export const NewsType = {
@@ -17,7 +18,6 @@ export const NewsType = {
   ENTERTAINMENT: "Entertainment",
   ENVIRONMENT: "Environment",
   HEALTH: "Health",
-  INTERNATIONAL: "International",
   LIFESTYLE: "Lifestyle",
   OPINION: "Opinion",
   POLITICS: "Politics",

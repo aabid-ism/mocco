@@ -138,6 +138,7 @@ class BottomBar extends StatelessWidget {
                 preferencesStateWatcher.toggleLang();
               },
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Source Icon Buttom
                   IconButton(
@@ -147,16 +148,6 @@ class BottomBar extends StatelessWidget {
                         preferencesStateWatcher.isEng ? "ENG" : "SIN",
                         style: const TextStyle(
                           fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 4,
-                      ),
-                      Text(
-                        preferencesStateWatcher.isEng ? "ENG" : "SIN",
-                        style: const TextStyle(
-                          fontSize: 15,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

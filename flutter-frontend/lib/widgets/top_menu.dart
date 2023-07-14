@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class TopMenu extends StatelessWidget {
   final int currentPageIndex;
-  const TopMenu({super.key, required this.currentPageIndex});
+  final Function(int) changeTab;
+  const TopMenu({super.key, required this.currentPageIndex, required this.changeTab});
 
   @override
   Widget build(BuildContext context) {
@@ -30,19 +31,28 @@ class TopMenu extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _TopMenuText(
-                    text: 'Explore',
-                    isActive: currentPageIndex == 0,
+                  GestureDetector(
+                    onTap: () => changeTab(0),
+                    child: _TopMenuText(
+                      text: 'Explore',
+                      isActive: currentPageIndex == 0,
+                    ),
                   ),
                   const SizedBox(width: 16),
-                  _TopMenuText(
-                    text: 'News',
-                    isActive: currentPageIndex == 1,
+                  GestureDetector(
+                    onTap: () => changeTab(1),
+                    child: _TopMenuText(
+                      text: 'News',
+                      isActive: currentPageIndex == 1,
+                    ),
                   ),
                   const SizedBox(width: 16),
-                  _TopMenuText(
-                    text: 'Lifestyle',
-                    isActive: currentPageIndex == 2,
+                  GestureDetector(
+                    onTap: () => changeTab(2),
+                    child: _TopMenuText(
+                      text: 'Lifestyle',
+                      isActive: currentPageIndex == 2,
+                    ),
                   ),
                 ],
               ),

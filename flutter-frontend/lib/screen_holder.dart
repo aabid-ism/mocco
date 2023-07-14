@@ -66,11 +66,18 @@ class _ScreensHolderState extends State<ScreensHolder> {
               right: 0,
               child: TopMenu(
                 currentPageIndex: _currentPageIndex,
+                changeTab: changeTab,
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  void changeTab(int tabIndex) {
+    _pageController.animateToPage(tabIndex,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.fastEaseInToSlowEaseOut);
   }
 }

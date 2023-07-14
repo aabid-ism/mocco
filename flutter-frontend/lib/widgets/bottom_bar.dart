@@ -17,8 +17,8 @@ class BottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     var preferencesStateWatcher = context.watch<AppPreferences>();
     return Container(
-      height: 70,
-      width: 220,
+      height: 65,
+      width: 190,
       decoration: BoxDecoration(
         color: const Color(0xFFD9D9D9),
         borderRadius: BorderRadius.circular(35),
@@ -59,29 +59,24 @@ class BottomBar extends StatelessWidget {
                 await Share.shareXFiles(
                   [XFile(shareTempFilePath)],
                   subject: newsCard.title,
-                  text:
-                      "$title\n\n$description\n\nAuthor - ${newsCard.author}",
+                  text: "$title\n\n$description\n\nAuthor - ${newsCard.author}",
                 );
               },
-              child: const Column(children: [
-                // Share Icon Button
-                IconButton(
-                  onPressed: null,
-                  icon: Column(children: [
-                    Icon(FontAwesomeIcons.share, color: Colors.black),
-                    SizedBox(
-                      height: 4,
-                    ),
-                    Text(
-                      "Share",
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
+              child: const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Source Icon Buttom
+                  IconButton(
+                    onPressed: null,
+                    icon: Column(children: [
+                      Icon(FontAwesomeIcons.share, color: Colors.black),
+                      SizedBox(
+                        height: 4,
                       ),
-                    ),
-                  ]),
-                ),
-              ]),
+                    ]),
+                  ),
+                ],
+              ),
             ),
             // Source Button
             GestureDetector(
@@ -97,6 +92,7 @@ class BottomBar extends StatelessWidget {
                     : null;
               },
               child: const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Source Icon Buttom
                   IconButton(
@@ -105,13 +101,6 @@ class BottomBar extends StatelessWidget {
                       Icon(Icons.info_outline, color: Colors.black),
                       SizedBox(
                         height: 4,
-                      ),
-                      Text(
-                        "Source",
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                        ),
                       ),
                     ]),
                   ),
@@ -139,21 +128,21 @@ class BottomBar extends StatelessWidget {
                 preferencesStateWatcher.toggleLang();
               },
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Source Icon Buttom
                   IconButton(
                     onPressed: null,
                     icon: Column(children: [
-                      const Icon(Icons.language, color: Colors.black),
-                      const SizedBox(
-                        height: 4,
-                      ),
                       Text(
                         preferencesStateWatcher.isEng ? "ENG" : "SIN",
                         style: const TextStyle(
-                          fontSize: 15,
+                          fontSize: 18,
                           fontWeight: FontWeight.w600,
                         ),
+                      ),
+                      const SizedBox(
+                        height: 4,
                       ),
                     ]),
                   ),

@@ -1,25 +1,24 @@
-// load environment variables
+// Load environment variables
 import("./loadEnv.js");
 
-// load packages
+// Load packages
 import express from "express";
 import cors from "cors";
 import conn from "./conn.js";
 
-// importing routes
+// Importing routes
 import auth from "./routes/auth/auth.js";
-import news from "./routes/news.js";
+import news from "./routes/news/news.js";
 import image from "./routes/image-pipeline/imagepipeline.js";
-import explorenews from "./routes/get-news/get-news-by-tag.js";
-import loadposts from "./routes/get-news/loadposts.js";
-import handleloading from "./routes/get-news/handleloading.js";
+import loadposts from "./routes/loadPosts/loadPosts.js";
+import handleLoading from "./routes/handleLoading/handleLoading.js";
 import swaggerUi from "swagger-ui-express";
 import * as path from "path";
 
 const app = express();
 const PORT = process.env.PORT || 5555;
 
-//  middleware
+//  Middlewares
 const corsOptions = {
   origin: "*",
 };
@@ -40,12 +39,11 @@ const getJsonFromFile = async (filePath) => {
 const swaggerDocumentPath = path.join("./swagger-output.json");
 const jsonObject = await getJsonFromFile(swaggerDocumentPath);
 
-// defining routes
+// Defining routes
 app.use("/auth", auth);
 app.use("/news", news);
 app.use("/image", image);
-app.use("/explore-news", explorenews);
-app.use("/handleloading", handleloading);
+app.use("/handleLoading", handleLoading);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(jsonObject));
 
 // Global error handling

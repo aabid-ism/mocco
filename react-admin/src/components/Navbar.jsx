@@ -18,8 +18,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import ManageHistoryIcon from "@mui/icons-material/ManageHistory";
-import ExitToAppIcon from "@mui/icons-material/ExitToApp";
-import { ListItemIcon } from "@mui/material";
+import { Button, ListItemIcon } from "@mui/material";
 import { useAuthContext } from "../hooks/useAuthContext.js";
 
 const drawerWidth = 240;
@@ -50,6 +49,7 @@ export default function Navbar({ open, setOpen }) {
   const { dispatch } = useAuthContext();
   const [activeItem, setActiveItem] = useState(""); // state to handle the selected tab
   const [pageText, setPageText] = useState(""); // state to set the page headline
+  const { user } = useAuthContext();
 
   const tabs = [
     { label: "Create a post", url: "/create-post" },
@@ -72,7 +72,7 @@ export default function Navbar({ open, setOpen }) {
   };
 
   const handleLogoutClick = () => {
-    localStorage.removeItem("jwt");
+    localStorage.removeItem("user");
     dispatch({ type: "LOGOUT" });
     navigate("/");
   };
@@ -104,15 +104,30 @@ export default function Navbar({ open, setOpen }) {
           <Typography variant="h6" noWrap component="div">
             {pageText}
           </Typography>
-          <IconButton
-            color="inherit"
-            aria-label="logout"
-            edge="end"
-            sx={{ ml: "auto" }}
-            onClick={handleLogoutClick}
-          >
-            <ExitToAppIcon />
-          </IconButton>
+          <Box sx={{ ml: "auto", display: "flex", gap: 3 }}>
+            <Box>
+              <Typography variant="h6">
+                {user ? user.username : null}
+              </Typography>
+            </Box>
+            <Box>
+              <Button
+                edge="end"
+                onClick={handleLogoutClick}
+                variant="contained"
+                size="small"
+                sx={{
+                  backgroundColor: "red",
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "darkred",
+                  },
+                }}
+              >
+                Logout
+              </Button>
+            </Box>
+          </Box>
         </Toolbar>
       </AppBar>
       <Drawer

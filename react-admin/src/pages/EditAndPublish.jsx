@@ -96,7 +96,8 @@ const EditAndPublish = ({ open }) => {
     async function getHeadlines() {
       try {
         // get bearer token
-        const token = localStorage.getItem("jwt");
+        const storedUser = localStorage.getItem("user");
+        const token = storedUser ? JSON.parse(storedUser).token : null;
         const headers = {
           Authorization: `Bearer ${token}`,
         };

@@ -75,7 +75,7 @@ const EditAndPublishForm = ({
   const [imageUrlChip, setImageUrlChip] = useState(""); // state to track the image url chip.
   const [imageUpload, setImageUpload] = useState(null); // state to store uploaded image.
   const [imageFormData, setImageFormData] = useState(null); // state to store form data of the uploaded image.
-  const [lifeStyle, setLifeStyle] = useState(false); // state to track the lifestyle toggle.
+  const [extra, setExtra] = useState(false); // state to track the extra toggle.
   const fileInputRef = useRef(); // useRef to reference the image upload component and reset after submit.
   const formikRef = useRef(null); // useRef to reference the form data of formik.
 
@@ -84,7 +84,8 @@ const EditAndPublishForm = ({
       handleLoaderOpen();
       try {
         // get bearer token
-        const token = localStorage.getItem("jwt");
+        const storedUser = localStorage.getItem("user");
+        const token = storedUser ? JSON.parse(storedUser).token : null;
         const headers = {
           Authorization: `Bearer ${token}`,
         };
@@ -104,9 +105,9 @@ const EditAndPublishForm = ({
       let temp = selectedNews.secondaryTags;
       setSelectedSecondaryTags(temp);
       setImageUrlChip(selectedNews ? selectedNews.imageUrl : "");
-      setLifeStyle(
+      setExtra(
         selectedNews
-          ? selectedNews.typeOfPost === "lifestyle"
+          ? selectedNews.typeOfPost === "extra"
             ? true
             : false
           : false
@@ -155,7 +156,7 @@ const EditAndPublishForm = ({
       ...values,
       secondaryTags: selectedSecondaryTags ? selectedSecondaryTags : [],
       imageUrl: imageUrlChip ? imageUrlChip : "",
-      typeOfPost: lifeStyle ? "lifestyle" : "news",
+      typeOfPost: extra ? "extra" : "essential",
     });
 
     if (isDeleteMode) {
@@ -178,7 +179,8 @@ const EditAndPublishForm = ({
     let request = data;
 
     // get bearer token
-    const token = localStorage.getItem("jwt");
+    const storedUser = localStorage.getItem("user");
+    const token = storedUser ? JSON.parse(storedUser).token : null;
     const headers = {
       Authorization: `Bearer ${token}`,
     };
@@ -240,7 +242,8 @@ const EditAndPublishForm = ({
 
     try {
       // get bearer token
-      const token = localStorage.getItem("jwt");
+      const storedUser = localStorage.getItem("user");
+      const token = storedUser ? JSON.parse(storedUser).token : null;
       const headers = {
         Authorization: `Bearer ${token}`,
       };
@@ -253,7 +256,7 @@ const EditAndPublishForm = ({
       setImageUpload(null);
       setSelectedSecondaryTags([]);
       setValid(false);
-      setLifeStyle(false);
+      setExtra(false);
       setImageUrlChip("");
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -281,7 +284,8 @@ const EditAndPublishForm = ({
     handleLoaderOpen();
 
     // get bearer token
-    const token = localStorage.getItem("jwt");
+    const storedUser = localStorage.getItem("user");
+    const token = storedUser ? JSON.parse(storedUser).token : null;
     const headers = {
       Authorization: `Bearer ${token}`,
     };
@@ -320,9 +324,9 @@ const EditAndPublishForm = ({
     }
 
     try {
-      if (lifeStyle) {
+      if (data && data.locality === "international") {
         const response = await Axios.post(
-          "/news/approve-lifestyle-news",
+          "/news/approve-international-news",
           request,
           { headers }
         );
@@ -331,14 +335,14 @@ const EditAndPublishForm = ({
         resetForm();
         setImageUpload(null);
         setSelectedSecondaryTags([]);
-        setLifeStyle(false);
+        setExtra(false);
         setImageUrlChip("");
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
         handleSubmitFunc(response);
       } else {
-        const response = await Axios.post("/news/approve-news", request, {
+        const response = await Axios.post("/news/approve-local-news", request, {
           headers,
         });
         response && handleLoaderClose();
@@ -346,7 +350,7 @@ const EditAndPublishForm = ({
         resetForm();
         setImageUpload(null);
         setSelectedSecondaryTags([]);
-        setLifeStyle(false);
+        setExtra(false);
         setValid(false);
         setImageUrlChip("");
         if (fileInputRef.current) {
@@ -416,10 +420,10 @@ const EditAndPublishForm = ({
       !isEditMode &&
       !isDeleteMode &&
       Yup.string().required("Source URL is required"),
-    author:
-      !isEditMode &&
-      !isDeleteMode &&
-      Yup.string().required("Author is required"),
+    // author:
+    //   !isEditMode &&
+    //   !isDeleteMode &&
+    //   Yup.string().required("Author is required"),
     mainTag:
       !isEditMode &&
       !isDeleteMode &&
@@ -680,27 +684,12 @@ const EditAndPublishForm = ({
                 </label>
                 <Field
                   as={TextField}
-                  select
                   id="author"
                   name="author"
                   variant="outlined"
                   fullWidth
-                  children={
-                    dropDownList && dropDownList.authors
-                      ? dropDownList.authors.map((item) => (
-                          <MenuItem key={item._id} value={item.name}>
-                            {item.name}
-                          </MenuItem>
-                        ))
-                      : []
-                  }
-                />
-                <ErrorMessage
-                  name="author"
-                  component="div"
-                  style={{
-                    color: "red",
-                    fontSize: "0.8rem",
+                  inputProps={{
+                    readOnly: true,
                   }}
                 />
               </Box>
@@ -765,10 +754,10 @@ const EditAndPublishForm = ({
 
               <FormControlLabel
                 sx={{ marginLeft: "10px" }}
-                label="Lifestyle"
+                label="Extra"
                 control={<Switch />}
-                checked={lifeStyle}
-                onChange={() => setLifeStyle(!lifeStyle)}
+                checked={extra}
+                onChange={() => setExtra(!extra)}
               />
             </Box>
 

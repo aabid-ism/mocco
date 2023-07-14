@@ -56,19 +56,19 @@ const CreatePostForm = ({
 }) => {
   const fileInputRef = useRef(); // useRef to reference the image upload component and reset after submit.
   const [open, setOpen] = useState(false); // state used to manipulate the opening and closing of modal.
-  const [valid, setValid] = useState(false); // state to check if form has passed validation.
   const [data, setData] = useState({}); // state to store the data that has been submitted by form.
   const [dropDownList, setDropDownList] = useState(); // state to store the data return of the dropdown values from the api.
   const [selectedSecondaryTags, setSelectedSecondaryTags] = useState([]); // state to store selected secondary tags.
   const [imageUpload, setImageUpload] = useState(null); // state to store uploaded image.
   const [imageFormData, setImageFormData] = useState(null); // state to store form data of the uploaded image.
-  const [lifeStyle, setLifeStyle] = useState(false); // boolean to set if lifestyle toggle is on or not.
+  const [extra, setExtra] = useState(false); // boolean to set if extra toggle is on or not.
 
   useEffect(() => {
     async function getDropDowns() {
       try {
         // get bearer token
-        const token = localStorage.getItem("jwt");
+        const storedUser = localStorage.getItem("user");
+        const token = storedUser ? JSON.parse(storedUser).token : null;
         const headers = {
           Authorization: `Bearer ${token}`,
         };
@@ -91,7 +91,6 @@ const CreatePostForm = ({
     imageUrl: "",
     sourceName: "",
     sourceUrl: "",
-    author: "",
     mainTag: "",
     secondaryTags: [],
     locality: "",
@@ -119,7 +118,7 @@ const CreatePostForm = ({
     const updatedObject = {
       ...values,
       secondaryTags: selectedSecondaryTags,
-      typeOfPost: lifeStyle ? "lifestyle" : "news",
+      typeOfPost: extra ? "extra" : "essential",
     };
 
     if (updatedObject.sinhalaTitle === "" && updatedObject.title === "") {
@@ -155,14 +154,15 @@ const CreatePostForm = ({
     }
     try {
       // get bearer token
-      const token = localStorage.getItem("jwt");
+      const storedUser = localStorage.getItem("user");
+      const token = storedUser ? JSON.parse(storedUser).token : null;
       const headers = {
         Authorization: `Bearer ${token}`,
       };
       let response = await Axios.post("/news/push-news", request, { headers });
       response && handleLoaderClose();
       resetForm();
-      setLifeStyle(false);
+      setExtra(false);
       setSelectedSecondaryTags([]);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -175,30 +175,8 @@ const CreatePostForm = ({
     }
   };
 
-  // function used to set state based on if the if the validation is passed.
-  const isValidationPassed = (values) => {
-    try {
-      validationSchema.validateSync(values);
-      setValid(true);
-      return true;
-    } catch (error) {
-      setValid(false);
-      return false;
-    }
-  };
-
-  // validation schema to define the error message.
-  const validationSchema = Yup.object({
-    author: Yup.string().required("Author is required"),
-  });
-
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      validate={isValidationPassed}
-      onSubmit={handleSubmit}
-    >
+    <Formik initialValues={initialValues} onSubmit={handleSubmit}>
       {(formProps) => {
         return (
           <Form>
@@ -392,37 +370,6 @@ const CreatePostForm = ({
 
             <Box sx={{ display: "flex" }}>
               <Box sx={{ marginRight: "10px", width: "25%" }}>
-                <label htmlFor="author">
-                  <Typography fontWeight="bold">Author</Typography>
-                </label>
-                <Field
-                  as={TextField}
-                  id="author"
-                  name="author"
-                  select
-                  variant="outlined"
-                  fullWidth
-                  children={
-                    dropDownList && dropDownList.authors
-                      ? dropDownList.authors.map((item) => (
-                          <MenuItem key={item._id} value={item.name}>
-                            {item.name}
-                          </MenuItem>
-                        ))
-                      : []
-                  }
-                />
-                <ErrorMessage
-                  name="author"
-                  component="div"
-                  style={{
-                    color: "red",
-                    fontSize: "0.8rem",
-                  }}
-                />
-              </Box>
-
-              <Box sx={{ marginRight: "10px", width: "25%" }}>
                 <label htmlFor="mainTag">
                   <Typography fontWeight="bold">Main News Tags</Typography>
                 </label>
@@ -482,10 +429,10 @@ const CreatePostForm = ({
 
               <FormControlLabel
                 sx={{ marginLeft: "10px" }}
-                label="Lifestyle"
+                label="Extra"
                 control={<Switch />}
-                checked={lifeStyle}
-                onChange={() => setLifeStyle(!lifeStyle)}
+                checked={extra}
+                onChange={() => setExtra(!extra)}
               />
             </Box>
 
@@ -519,7 +466,7 @@ const CreatePostForm = ({
                 variant="contained"
                 type="submit"
                 onClick={() => {
-                  valid && setOpen(true);
+                  setOpen(true);
                 }}
               >
                 Push

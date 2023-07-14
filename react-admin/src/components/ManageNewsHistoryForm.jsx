@@ -68,11 +68,11 @@ const ManageNewsHistoryForm = ({
   const [data, setData] = useState([]); // state to store the data that has been submitted by form (edit or delete).
   const [dropDownList, setDropDownList] = useState(); // state to store the data return of the dropdown values from the api.
   const [imageUrlChip, setImageUrlChip] = useState(""); // state to track the image url chip.
-  const [isDeleteMode, setIsDeleteMode] = useState(false);
-  const [selectedSecondaryTags, setSelectedSecondaryTags] = useState([]);
+  const [isDeleteMode, setIsDeleteMode] = useState(false); // state to track the delete button.
+  const [selectedSecondaryTags, setSelectedSecondaryTags] = useState([]); // state to set all the selected secondary tags.
   const [imageUpload, setImageUpload] = useState(null); // state to store uploaded image.
   const [imageFormData, setImageFormData] = useState(null); // state to store form data of the uploaded image.
-  const [lifeStyle, setLifeStyle] = useState(false); // state to track the lifestyle toggle.
+  const [extra, setExtra] = useState(false); // state to track the extra toggle.
   const fileInputRef = useRef(); // useRef to reference the image upload component and reset after submit.
 
   useEffect(() => {
@@ -80,7 +80,8 @@ const ManageNewsHistoryForm = ({
       handleLoaderOpen();
       try {
         // get bearer token
-        const token = localStorage.getItem("jwt");
+        const storedUser = localStorage.getItem("user");
+        const token = storedUser ? JSON.parse(storedUser).token : null;
         const headers = {
           Authorization: `Bearer ${token}`,
         };
@@ -100,9 +101,9 @@ const ManageNewsHistoryForm = ({
       let temp = selectedNews.secondaryTags;
       setSelectedSecondaryTags(temp);
       setImageUrlChip(selectedNews.imageUrl);
-      setLifeStyle(
+      setExtra(
         selectedNews
-          ? selectedNews.typeOfPost === "lifestyle"
+          ? selectedNews.typeOfPost === "extra"
             ? true
             : false
           : false
@@ -176,7 +177,8 @@ const ManageNewsHistoryForm = ({
     let request = data;
 
     // get bearer token
-    const token = localStorage.getItem("jwt");
+    const storedUser = localStorage.getItem("user");
+    const token = storedUser ? JSON.parse(storedUser).token : null;
     const headers = {
       Authorization: `Bearer ${token}`,
     };
@@ -214,13 +216,15 @@ const ManageNewsHistoryForm = ({
     }
 
     try {
-      if (lifeStyle) {
-        if (request.typeOfPost === "news") {
+      // statement to check the new property change
+      if (data && data.locality === "international") {
+        // statement to check the original change
+        if (selectedNews && selectedNews.locality === "local") {
           let response = await Axios.post(
-            "/news/add-news-to-lifestyle",
+            "/news/add-local-to-international",
             {
               ...request,
-              typeOfPost: "lifestyle",
+              locality: "international",
             },
             { headers }
           );
@@ -234,11 +238,11 @@ const ManageNewsHistoryForm = ({
           setValid(false);
           handleSubmitFunc(response);
           setImageUrlChip("");
-          setLifeStyle(false);
+          setExtra(false);
           setSelectedSecondaryTags([]);
         } else {
           let response = await Axios.post(
-            "/news/edit-lifestyle-news",
+            "/news/edit-international-news",
             request,
             { headers }
           );
@@ -252,13 +256,14 @@ const ManageNewsHistoryForm = ({
           setValid(false);
           handleSubmitFunc(response);
         }
-      } else {
-        if (request.typeOfPost === "lifestyle") {
+      } else if (data && data.locality === "local") {
+        // statement to check the original change
+        if (selectedNews && selectedNews.locality === "international") {
           let response = await Axios.post(
-            "/news/add-lifestyle-to-news",
+            "/news/add-international-to-local",
             {
               ...request,
-              typeOfPost: "news",
+              locality: "local",
             },
             { headers }
           );
@@ -272,10 +277,10 @@ const ManageNewsHistoryForm = ({
           setValid(false);
           handleSubmitFunc(response);
           setImageUrlChip("");
-          setLifeStyle(false);
+          setExtra(false);
           setSelectedSecondaryTags([]);
         } else {
-          let response = await Axios.post("/news/edit-news", request, {
+          let response = await Axios.post("/news/edit-local-news", request, {
             headers,
           });
           response && handleLoaderClose();
@@ -301,20 +306,25 @@ const ManageNewsHistoryForm = ({
     handleLoaderOpen();
 
     // get bearer token
-    const token = localStorage.getItem("jwt");
+    const storedUser = localStorage.getItem("user");
+    const token = storedUser ? JSON.parse(storedUser).token : null;
     const headers = {
       Authorization: `Bearer ${token}`,
     };
 
     try {
-      if (selectedNews && selectedNews.typeOfPost === "lifestyle") {
-        const response = await Axios.post("/news/delete-lifestyle-news", data, {
-          headers,
-        });
+      if (selectedNews && selectedNews.locality === "international") {
+        const response = await Axios.post(
+          "/news/delete-international-news",
+          data,
+          {
+            headers,
+          }
+        );
         response && handleLoaderClose();
         setSelectedNews(null);
         resetForm();
-        setLifeStyle(false);
+        setExtra(false);
         setImageUpload(null);
         setSelectedSecondaryTags([]);
         setValid(false);
@@ -324,7 +334,7 @@ const ManageNewsHistoryForm = ({
         }
         handleSubmitFunc(response);
       } else {
-        const response = await Axios.post("/news/delete-news", data, {
+        const response = await Axios.post("/news/delete-local-news", data, {
           headers,
         });
         response && handleLoaderClose();
@@ -381,7 +391,6 @@ const ManageNewsHistoryForm = ({
       Yup.string().required("Image URL is required"),
     sourceName: Yup.string().required("Source Name is required"),
     sourceUrl: Yup.string().required("Source URL is required"),
-    author: Yup.string().required("Author is required"),
     mainTag: Yup.string().required("Main News Tags are required"),
     locality: Yup.string().required("Locality is required"),
   });
@@ -635,27 +644,12 @@ const ManageNewsHistoryForm = ({
                 </label>
                 <Field
                   as={TextField}
-                  select
                   id="author"
                   name="author"
                   variant="outlined"
                   fullWidth
-                  children={
-                    dropDownList && dropDownList.authors
-                      ? dropDownList.authors.map((item) => (
-                          <MenuItem key={item._id} value={item.name}>
-                            {item.name}
-                          </MenuItem>
-                        ))
-                      : []
-                  }
-                />
-                <ErrorMessage
-                  name="author"
-                  component="div"
-                  style={{
-                    color: "red",
-                    fontSize: "0.8rem",
+                  inputProps={{
+                    readOnly: true,
                   }}
                 />
               </Box>
@@ -720,10 +714,10 @@ const ManageNewsHistoryForm = ({
 
               <FormControlLabel
                 sx={{ marginLeft: "10px" }}
-                label="Lifestyle"
+                label="Extra"
                 control={<Switch />}
-                checked={lifeStyle}
-                onChange={() => setLifeStyle(!lifeStyle)}
+                checked={extra}
+                onChange={() => setExtra(!extra)}
               />
             </Box>
 

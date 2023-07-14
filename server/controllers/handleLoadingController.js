@@ -1,22 +1,13 @@
-// Loading more posts for News, Extra and TagFeed
-import conn from "../../conn.js";
-import express from "express";
+import conn from "../conn.js";
 
-const router = express.Router();
-
-/* 
-    @route GET /handleloading/news/
-    @vars body: readPostIndices (list of read postIndexes)
-    @desc gets the next OUTPUT number of unread posts from the news collection
-    @returns OUTPUT number or remaining number of unread posts
-*/
-router.get("/news/", async (req, res) => {
+// <-------------------- GET UNREAD LOCAL NEWS POSTS -------------------->
+export const getLocalNewsLoading = async (req, res) => {
   const readPostIndices = req.body.readPostIndices || [];
 
   try {
     // getting references to database and collection
     const db = conn.getDb();
-    const newsCollection = await db.collection("news");
+    const newsCollection = await db.collection("local");
 
     // Query for unread news objects
     const unreadNews = await newsCollection
@@ -29,21 +20,16 @@ router.get("/news/", async (req, res) => {
   } catch (error) {
     res.send(error).status(500);
   }
-});
+};
 
-/* 
-    @route GET /handleloading/lifestyle/
-    @vars body: readPostIndices
-    @desc gets next 50 unread posts from lifestyle collection
-    @returns OUTPUT number or remaining number of unread posts
-*/
-router.get("/lifestyle/", async (req, res) => {
+// <-------------------- GET UNREAD INTERNATIONAL NEWS POSTS -------------------->
+export const getInternationalNewsLoading = async (req, res) => {
   const readPostIndices = req.body.readPostIndices || [];
 
   try {
     // getting references to database and collection
     const db = conn.getDb();
-    const newsCollection = await db.collection("lifestyle");
+    const newsCollection = await db.collection("international");
 
     // Query for unread news objects
     const unreadNews = await newsCollection
@@ -56,15 +42,10 @@ router.get("/lifestyle/", async (req, res) => {
   } catch (error) {
     res.send(error).status(500);
   }
-});
+};
 
-/* 
-    @route GET /handleloading/tag/
-    @vars body: readPostIndices, query: reqTag
-    @desc gets next 50 unread posts with the maintag of reqTag (from both news and lifestyle collections)
-    @returns OUTPUT number or remaining number of posts, 400 if parameters are not provided
-*/
-router.get("/tag/", async (req, res) => {
+// <-------------------- GET REMAINING NUMBER OF POSTS -------------------->
+export const getNewsTags = async (req, res) => {
   const readPostIndices = req.body.readPostIndices || [];
   const reqTag = req.query.reqTag;
   if (!reqTag) {
@@ -74,10 +55,10 @@ router.get("/tag/", async (req, res) => {
   try {
     // getting references to database and collection
     const db = conn.getDb();
-    const lifestyleCollection = await db.collection("lifestyle");
+    const internationalNewsCollection = await db.collection("international");
 
-    // Query for unread posts from lifestyle collection with reqTag
-    const unreadLifestyle = await lifestyleCollection
+    // Query for unread posts from international news collection with reqTag
+    const unreadInternationalNews = await internationalNewsCollection
       .find({
         $and: [
           { postIndex: { $nin: readPostIndices } }, // Exclude read post indexes
@@ -88,10 +69,10 @@ router.get("/tag/", async (req, res) => {
       .limit(50) // Limit to 50 news objects
       .toArray();
 
-    const newsCollection = await db.collection("news");
+    const localNewsCollection = await db.collection("local");
 
-    // Query for unread posts from news collection with reqTag
-    const unreadNews = await newsCollection
+    // Query for unread posts from local news collection with reqTag
+    const unreadLocalNews = await localNewsCollection
       .find({
         $and: [
           { postIndex: { $nin: readPostIndices } }, // Exclude read post indexes
@@ -103,7 +84,7 @@ router.get("/tag/", async (req, res) => {
       .toArray();
 
     // combine two unread results and sort on postIndex
-    let combinedResult = [...unreadNews, ...unreadLifestyle];
+    let combinedResult = [...unreadLocalNews, ...unreadInternationalNews];
     combinedResult.sort(
       (a, b) => new Date(b.postIndex) - new Date(a.postIndex)
     );
@@ -112,6 +93,4 @@ router.get("/tag/", async (req, res) => {
   } catch (error) {
     res.send(error).status(500);
   }
-});
-
-export default router;
+};

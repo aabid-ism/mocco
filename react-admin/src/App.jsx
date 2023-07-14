@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Navbar from "./components/Navbar";
 import CreatePost from "./pages/CreatePost";
 import ManageNewsHistory from "./pages/ManageNewsHistory";

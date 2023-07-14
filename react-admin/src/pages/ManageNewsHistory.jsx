@@ -99,7 +99,8 @@ const ManageNewsHistory = ({ open }) => {
     async function getHeadlines() {
       try {
         // get bearer token
-        const token = localStorage.getItem("jwt");
+        const storedUser = localStorage.getItem("user");
+        const token = storedUser ? JSON.parse(storedUser).token : null;
         const headers = {
           Authorization: `Bearer ${token}`,
         };
@@ -109,7 +110,7 @@ const ManageNewsHistory = ({ open }) => {
 
         // get published news from news collection
         const newsResponse = await Axios.post(
-          "/news/get-news-by-date",
+          "/news/get-local-news-by-date",
           {
             date: formattedDate,
           },
@@ -118,7 +119,7 @@ const ManageNewsHistory = ({ open }) => {
 
         // get published lifestyle news from news collection
         const lifestyleNewsResponse = await Axios.post(
-          "/news/get-lifestyle-news-by-date",
+          "/news/get-international-news-by-date",
           {
             date: formattedDate,
           },

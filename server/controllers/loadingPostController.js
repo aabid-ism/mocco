@@ -1,17 +1,7 @@
-// Loading more posts for News, Extra and TagFeed
+import conn from "../conn.js";
 
-import conn from "../../conn.js";
-import express from "express";
-import { ObjectId } from "mongodb";
-
-const router = express.Router();
-/* 
-    @route GET /loadposts/news/
-    @query vars: ref_postIndex
-    @desc gets the next OUTPUT number of posts with postIndex lower than ref_postIndex from the news collection
-    @returns OUTPUT number or remaining number of posts, 400 if ref_postIndex not provided
-*/
-router.get("/news/", async (req, res) => {
+// <-------------------- GET REMAINING NUMBER OF LOCAL NEWS POSTS -------------------->
+export const getLocalNews = async (req, res) => {
   const ref_postIndex = parseInt(req.query.ref_postIndex);
   const OUTPUT = 2;
 
@@ -22,9 +12,9 @@ router.get("/news/", async (req, res) => {
   try {
     // getting references to database and collection
     const db = conn.getDb();
-    const newsCollection = await db.collection("news");
+    const localNewsCollection = await db.collection("local");
 
-    const result = await newsCollection
+    const result = await localNewsCollection
       .aggregate([
         {
           $match: {
@@ -44,15 +34,10 @@ router.get("/news/", async (req, res) => {
   } catch (error) {
     res.send(error).status(500);
   }
-});
+};
 
-/* 
-    @route GET /loadposts/lifestyle/
-    @query vars: ref_postIndex
-    @desc gets next 20 posts with postIndex lower than ref_postIndex from the lifestyle collection
-    @returns OUTPUT numberor remaining number of posts, 400 if ref_postIndex not provided
-*/
-router.get("/lifestyle/", async (req, res) => {
+// <-------------------- GET REMAINING NUMBER OF INTERNATIONAL NEWS POSTS -------------------->
+export const getInternationalNews = async (req, res) => {
   const ref_postIndex = parseInt(req.query.ref_postIndex);
   const OUTPUT = 2;
 
@@ -62,9 +47,9 @@ router.get("/lifestyle/", async (req, res) => {
   try {
     // getting references to database and collection
     const db = conn.getDb();
-    const lifesStyleCollection = await db.collection("lifestyle");
+    const internationalNewsCollection = await db.collection("international");
 
-    const result = await lifesStyleCollection
+    const result = await internationalNewsCollection
       .aggregate([
         {
           // objID should be replaced by postIndex
@@ -85,15 +70,10 @@ router.get("/lifestyle/", async (req, res) => {
   } catch (error) {
     res.send(error).status(500);
   }
-});
+};
 
-/* 
-    @route GET /loadposts/tag/
-    @query vars: ref_postIndex, req_tag
-    @desc gets next 20 posts with postIndex lower than ref_postIndex and matches req_tag from both collections
-    @returns OUTPUT number or remaining number of posts, 400 if parameters are not provided
-*/
-router.get("/tag/", async (req, res) => {
+// <-------------------- GET REMAINING NUMBER OF POSTS -------------------->
+export const getNewsTags = async (req, res) => {
   const ref_postIndex = parseInt(req.query.ref_postIndex);
   const req_tag = req.query.req_tag;
   const OUTPUT = 2;
@@ -109,11 +89,11 @@ router.get("/tag/", async (req, res) => {
   try {
     // getting references to database and collection
     const db = await conn.getDb();
-    const lifeStyleCollection = await db.collection("lifestyle");
-    const newsCollection = await db.collection("news");
+    const internationalNewsCollection = await db.collection("international");
+    const localNewsCollection = await db.collection("local");
 
     // finding top  posts from news collection
-    const newsResult = await newsCollection
+    const localNewsResult = await localNewsCollection
       .aggregate([
         {
           // objID should be replaced by postIndex
@@ -131,7 +111,7 @@ router.get("/tag/", async (req, res) => {
       ])
       .toArray();
     // finding top  posts from life collection
-    const lifestyleResults = await lifeStyleCollection
+    const internationalNewsResult = await internationalNewsCollection
       .aggregate([
         {
           // objID should be replaced by postIndex
@@ -151,7 +131,7 @@ router.get("/tag/", async (req, res) => {
 
     // filtering out the top posts from the two results
     // Sort the documents based on the 'createdAt' field
-    let combinedResult = [...newsResult, ...lifestyleResults];
+    let combinedResult = [...localNewsResult, ...internationalNewsResult];
     combinedResult.sort(
       (a, b) => new Date(b.postIndex) - new Date(a.postIndex)
     );
@@ -163,6 +143,4 @@ router.get("/tag/", async (req, res) => {
   } catch (error) {
     res.send(error).status(500);
   }
-});
-
-export default router;
+};

@@ -7,12 +7,12 @@ import Typography from "@mui/material/Typography";
 import { Autocomplete, MenuItem, TextareaAutosize } from "@mui/material";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import Axios from "../utils/axios.js";
-import * as Yup from "yup";
 import Backdrop from "@mui/material/Backdrop";
 import { useSpring, animated } from "@react-spring/web";
 import Modal from "@mui/material/Modal";
 import Switch from "@mui/material/Switch";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import { useAuthContext } from "../hooks/useAuthContext.js";
 
 // function used for smooth transitioning of the modal
 const Fade = forwardRef(function Fade(props, ref) {
@@ -62,6 +62,7 @@ const CreatePostForm = ({
   const [imageUpload, setImageUpload] = useState(null); // state to store uploaded image.
   const [imageFormData, setImageFormData] = useState(null); // state to store form data of the uploaded image.
   const [extra, setExtra] = useState(false); // boolean to set if extra toggle is on or not.
+  const { user } = useAuthContext();
 
   useEffect(() => {
     async function getDropDowns() {
@@ -119,6 +120,7 @@ const CreatePostForm = ({
       ...values,
       secondaryTags: selectedSecondaryTags,
       typeOfPost: extra ? "extra" : "essential",
+      author: user ? user.username : "",
     };
 
     if (updatedObject.sinhalaTitle === "" && updatedObject.title === "") {

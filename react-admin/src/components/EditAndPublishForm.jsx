@@ -61,6 +61,7 @@ const EditAndPublishForm = ({
   handleLoaderClose,
   handleLoaderOpen,
   handleImageSize,
+  setHandleWordLimit,
 }) => {
   const [editOpen, setEditOpen] = useState(false); // state used to manipulate the opening and closing of edit modal.
   const [deleteOpen, setDeleteOpen] = useState(false); // state used to manipulate the opening and closing of delete modal.
@@ -146,29 +147,41 @@ const EditAndPublishForm = ({
 
   // function to set the submitted form data to the state.
   const handleSubmit = async (values) => {
-    if (imageUpload) {
-      const formData = new FormData();
-      formData.append("image", imageUpload);
-      setImageFormData(formData);
-    }
+    if (
+      (values.description.length > 0 && values.description.length < 25) ||
+      (values.sinhalaDescription.length > 0 &&
+        values.sinhalaDescription.length < 25)
+    ) {
+      if (!isDeleteMode) {
+        isEditMode && setEditOpen(false);
+        isApproveMode && setApproveOpen(false);
+        setHandleWordLimit(true);
+      }
+    } else {
+      if (imageUpload) {
+        const formData = new FormData();
+        formData.append("image", imageUpload);
+        setImageFormData(formData);
+      }
 
-    setData({
-      ...values,
-      secondaryTags: selectedSecondaryTags ? selectedSecondaryTags : [],
-      imageUrl: imageUrlChip ? imageUrlChip : "",
-      typeOfPost: extra ? "extra" : "essential",
-    });
+      setData({
+        ...values,
+        secondaryTags: selectedSecondaryTags ? selectedSecondaryTags : [],
+        imageUrl: imageUrlChip ? imageUrlChip : "",
+        typeOfPost: extra ? "extra" : "essential",
+      });
 
-    if (isDeleteMode) {
-      setDeleteOpen(true);
-    }
+      if (isDeleteMode) {
+        setDeleteOpen(true);
+      }
 
-    if (isEditMode) {
-      setEditOpen(true);
-    }
+      if (isEditMode) {
+        setEditOpen(true);
+      }
 
-    if (isApproveMode) {
-      setApproveOpen(true);
+      if (isApproveMode) {
+        setApproveOpen(true);
+      }
     }
   };
 
@@ -420,10 +433,6 @@ const EditAndPublishForm = ({
       !isEditMode &&
       !isDeleteMode &&
       Yup.string().required("Source URL is required"),
-    // author:
-    //   !isEditMode &&
-    //   !isDeleteMode &&
-    //   Yup.string().required("Author is required"),
     mainTag:
       !isEditMode &&
       !isDeleteMode &&
@@ -516,7 +525,7 @@ const EditAndPublishForm = ({
                 as={TextareaAutosize}
                 id="description"
                 name="description"
-                maxLength={25}
+                maxLength={350}
                 minRows={3}
                 maxRows={5}
                 placeholder="Enter text here..."
@@ -547,7 +556,7 @@ const EditAndPublishForm = ({
                 as={TextareaAutosize}
                 id="sinhalaDescription"
                 name="sinhalaDescription"
-                maxLength={25}
+                maxLength={350}
                 minRows={3}
                 maxRows={5}
                 placeholder="Enter text here..."
@@ -716,7 +725,7 @@ const EditAndPublishForm = ({
                   }
                 />
                 <ErrorMessage
-                  name="mainTags"
+                  name="mainTag"
                   component="div"
                   style={{
                     color: "red",

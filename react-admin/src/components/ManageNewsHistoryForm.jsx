@@ -61,6 +61,7 @@ const ManageNewsHistoryForm = ({
   handleLoaderOpen,
   handleLoaderClose,
   handleImageSize,
+  setHandleWordLimit,
 }) => {
   const [editOpen, setEditOpen] = useState(false); // state used to manipulate the opening and closing of edit modal.
   const [deleteOpen, setDeleteOpen] = useState(false); // state used to manipulate the opening and closing of delete modal.
@@ -138,23 +139,33 @@ const ManageNewsHistoryForm = ({
 
   // function to set the submitted form data to the state.
   const handleSubmit = async (values) => {
-    if (imageUpload) {
-      const formData = new FormData();
-      formData.append("image", imageUpload);
-      setImageFormData(formData);
-    }
-
-    setData({
-      ...values,
-      secondaryTags: selectedSecondaryTags ? selectedSecondaryTags : [],
-      imageUrl: imageUrlChip ? imageUrlChip : "",
-      typeOfPost: selectedNews ? selectedNews.typeOfPost : "",
-      postIndex: selectedNews ? selectedNews.postIndex : "",
-    });
-    if (isDeleteMode) {
-      setDeleteOpen(true);
+    if (
+      values.description.length < 25 ||
+      values.sinhalaDescription.length < 25
+    ) {
+      if (!isDeleteMode) {
+        setEditOpen(false);
+        setHandleWordLimit(true);
+      }
     } else {
-      setEditOpen(true);
+      if (imageUpload) {
+        const formData = new FormData();
+        formData.append("image", imageUpload);
+        setImageFormData(formData);
+      }
+
+      setData({
+        ...values,
+        secondaryTags: selectedSecondaryTags ? selectedSecondaryTags : [],
+        imageUrl: imageUrlChip ? imageUrlChip : "",
+        typeOfPost: extra ? "extra" : "essential",
+        postIndex: selectedNews ? selectedNews.postIndex : "",
+      });
+      if (isDeleteMode) {
+        setDeleteOpen(true);
+      } else {
+        setEditOpen(true);
+      }
     }
   };
 
@@ -175,7 +186,6 @@ const ManageNewsHistoryForm = ({
     setEditOpen(false);
     handleLoaderOpen();
     let request = data;
-
     // get bearer token
     const storedUser = localStorage.getItem("user");
     const token = storedUser ? JSON.parse(storedUser).token : null;
@@ -476,7 +486,7 @@ const ManageNewsHistoryForm = ({
                 as={TextareaAutosize}
                 id="description"
                 name="description"
-                maxLength={25}
+                maxLength={350}
                 minRows={3}
                 maxRows={5}
                 placeholder="Enter text here..."
@@ -507,7 +517,7 @@ const ManageNewsHistoryForm = ({
                 as={TextareaAutosize}
                 id="sinhalaDescription"
                 name="sinhalaDescription"
-                maxLength={25}
+                maxLength={350}
                 minRows={3}
                 maxRows={5}
                 placeholder="Enter text here..."

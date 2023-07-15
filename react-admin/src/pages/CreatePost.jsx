@@ -106,6 +106,13 @@ const CreatePost = ({ open }) => {
     }
   };
 
+  const handleWordLimit = () => {
+    toast.error("Description word count should be greater than 25", {
+      autoClose: 1500,
+      theme: "dark",
+    });
+  };
+
   const sideBarContent = (
     <Box sx={{ padding: "4%" }}>
       <Accordion>
@@ -155,6 +162,7 @@ const CreatePost = ({ open }) => {
                     handleLoaderClose={handleLoaderClose}
                     handleImageSize={handleImageSize}
                     handleHeadline={handleHeadline}
+                    handleWordLimit={handleWordLimit}
                   />
                 </CardContent>
               </Card>

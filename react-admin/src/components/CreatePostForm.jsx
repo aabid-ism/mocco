@@ -5,7 +5,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { Autocomplete, MenuItem, TextareaAutosize } from "@mui/material";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field } from "formik";
 import Axios from "../utils/axios.js";
 import Backdrop from "@mui/material/Backdrop";
 import { useSpring, animated } from "@react-spring/web";
@@ -53,6 +53,7 @@ const CreatePostForm = ({
   handleLoaderClose,
   handleImageSize,
   handleHeadline,
+  handleWordLimit,
 }) => {
   const fileInputRef = useRef(); // useRef to reference the image upload component and reset after submit.
   const [open, setOpen] = useState(false); // state used to manipulate the opening and closing of modal.
@@ -62,7 +63,7 @@ const CreatePostForm = ({
   const [imageUpload, setImageUpload] = useState(null); // state to store uploaded image.
   const [imageFormData, setImageFormData] = useState(null); // state to store form data of the uploaded image.
   const [extra, setExtra] = useState(false); // boolean to set if extra toggle is on or not.
-  const { user } = useAuthContext();
+  const { user } = useAuthContext(); // accessing the global state of the current of the user.
 
   useEffect(() => {
     async function getDropDowns() {
@@ -111,26 +112,35 @@ const CreatePostForm = ({
 
   // function to set the submitted form data to the state.
   const handleSubmit = async (values) => {
-    if (imageUpload) {
-      const formData = new FormData();
-      formData.append("image", imageUpload);
-      setImageFormData(formData);
-    }
-    const updatedObject = {
-      ...values,
-      secondaryTags: selectedSecondaryTags,
-      typeOfPost: extra ? "extra" : "essential",
-      author: user ? user.username : "",
-    };
-
-    if (updatedObject.sinhalaTitle === "" && updatedObject.title === "") {
+    if (
+      (values.description.length > 0 && values.description.length < 25) ||
+      (values.sinhalaDescription.length > 0 &&
+        values.sinhalaDescription.length < 25)
+    ) {
       setOpen(false);
-      handleHeadline();
+      handleWordLimit();
     } else {
-      try {
-        setData(updatedObject);
-      } catch (error) {
-        console.error(error);
+      if (imageUpload) {
+        const formData = new FormData();
+        formData.append("image", imageUpload);
+        setImageFormData(formData);
+      }
+      const updatedObject = {
+        ...values,
+        secondaryTags: selectedSecondaryTags,
+        typeOfPost: extra ? "extra" : "essential",
+        author: user ? user.username : "",
+      };
+
+      if (updatedObject.sinhalaTitle === "" && updatedObject.title === "") {
+        setOpen(false);
+        handleHeadline();
+      } else {
+        try {
+          setData(updatedObject);
+        } catch (error) {
+          console.error(error);
+        }
       }
     }
   };
@@ -199,14 +209,6 @@ const CreatePostForm = ({
                   maxLength: 100,
                 }}
               />
-              <ErrorMessage
-                name="title"
-                component="div"
-                style={{
-                  color: "red",
-                  fontSize: "0.8rem",
-                }}
-              />
             </Box>
 
             <Box sx={{ marginBottom: "2%" }}>
@@ -228,14 +230,6 @@ const CreatePostForm = ({
                   maxLength: 100,
                 }}
               />
-              <ErrorMessage
-                name="sinhalaTitle"
-                component="div"
-                style={{
-                  color: "red",
-                  fontSize: "0.8rem",
-                }}
-              />
             </Box>
 
             <Box sx={{ marginBottom: "2%" }}>
@@ -246,7 +240,7 @@ const CreatePostForm = ({
                 as={TextareaAutosize}
                 id="description"
                 name="description"
-                maxLength={25}
+                maxLength={350}
                 minRows={3}
                 maxRows={5}
                 placeholder="Enter text here..."
@@ -255,14 +249,6 @@ const CreatePostForm = ({
                   padding: "20px",
                   resize: "none",
                   border: "1px solid #ccc",
-                }}
-              />
-              <ErrorMessage
-                name="description"
-                component="div"
-                style={{
-                  color: "red",
-                  fontSize: "0.8rem",
                 }}
               />
             </Box>
@@ -277,7 +263,7 @@ const CreatePostForm = ({
                 as={TextareaAutosize}
                 id="sinhalaDescription"
                 name="sinhalaDescription"
-                maxLength={25}
+                maxLength={350}
                 minRows={3}
                 maxRows={5}
                 placeholder="Enter text here..."
@@ -286,14 +272,6 @@ const CreatePostForm = ({
                   padding: "20px",
                   resize: "none",
                   border: "1px solid #ccc",
-                }}
-              />
-              <ErrorMessage
-                name="sinhalaDescription"
-                component="div"
-                style={{
-                  color: "red",
-                  fontSize: "0.8rem",
                 }}
               />
             </Box>
@@ -334,14 +312,6 @@ const CreatePostForm = ({
                   maxLength: 100,
                 }}
               />
-              <ErrorMessage
-                name="sourceName"
-                component="div"
-                style={{
-                  color: "red",
-                  fontSize: "0.8rem",
-                }}
-              />
             </Box>
 
             <Box sx={{ marginBottom: "2%" }}>
@@ -358,14 +328,6 @@ const CreatePostForm = ({
                   style: {
                     padding: "10px",
                   },
-                }}
-              />
-              <ErrorMessage
-                name="sourceUrl"
-                component="div"
-                style={{
-                  color: "red",
-                  fontSize: "0.8rem",
                 }}
               />
             </Box>
@@ -392,14 +354,6 @@ const CreatePostForm = ({
                       : []
                   }
                 />
-                <ErrorMessage
-                  name="mainTag"
-                  component="div"
-                  style={{
-                    color: "red",
-                    fontSize: "0.8rem",
-                  }}
-                />
               </Box>
 
               <Box sx={{ marginBottom: "10px", width: "25%" }}>
@@ -419,14 +373,6 @@ const CreatePostForm = ({
                   <MenuItem value="local">Local</MenuItem>
                   <MenuItem value="international">International</MenuItem>
                 </Field>
-                <ErrorMessage
-                  name="locality"
-                  component="div"
-                  style={{
-                    color: "red",
-                    fontSize: "0.8rem",
-                  }}
-                />
               </Box>
 
               <FormControlLabel

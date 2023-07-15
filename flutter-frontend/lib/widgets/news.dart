@@ -46,7 +46,7 @@ class _NewsContainerState extends State<NewsContainer> {
     if (newsCards.isNotEmpty) {
       loadingService.addToReadList(newsCards[0].postIndex);
     }
-//    loadingService.clearSharedPrefs();
+// loadingService.clearSharedPrefs();
     return Scaffold(
       body: PageView.builder(
         // Build pages lazily for better performance
@@ -172,8 +172,12 @@ class _NewsContainerState extends State<NewsContainer> {
                                     newsCards[index].title,
                                 preferencesState.isEng),
                             key: Key('$index-title'),
-                            style: const TextStyle(
-                              fontSize: 24,
+                            style: TextStyle(
+                              fontSize: preferencesState.isEng
+                                  ? 24
+                                  : (newsCards[index].sinhalaTitle == ""
+                                      ? 24
+                                      : 22),
                               color: Colors.black,
                               fontWeight: FontWeight.w500,
                             ),
@@ -188,8 +192,14 @@ class _NewsContainerState extends State<NewsContainer> {
                                     newsCards[index].description,
                                 preferencesState.isEng),
                             key: Key('$index-description'),
-                            style: const TextStyle(
-                                fontSize: 18, color: Colors.black87),
+                            style: TextStyle(
+                              fontSize: preferencesState.isEng
+                                  ? 18
+                                  : (newsCards[index].sinhalaTitle == ""
+                                      ? 18
+                                      : 17),
+                              color: Colors.black87,
+                            ),
                           ),
                         ],
                       ),

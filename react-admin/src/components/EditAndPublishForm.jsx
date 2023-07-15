@@ -155,6 +155,7 @@ const EditAndPublishForm = ({
       if (!isDeleteMode) {
         isEditMode && setEditOpen(false);
         isApproveMode && setApproveOpen(false);
+        setValid(false);
         setHandleWordLimit(true);
       }
     } else {

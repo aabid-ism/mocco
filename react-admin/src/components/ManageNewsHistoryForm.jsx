@@ -139,11 +139,11 @@ const ManageNewsHistoryForm = ({
 
   // function to set the submitted form data to the state.
   const handleSubmit = async (values) => {
-    if (
-      values.description.length < 25 ||
-      values.sinhalaDescription.length < 25
-    ) {
-      if (!isDeleteMode) {
+    if (!isDeleteMode) {
+      if (
+        values.description.length < 25 ||
+        values.sinhalaDescription.length < 25
+      ) {
         setEditOpen(false);
         setHandleWordLimit(true);
       }

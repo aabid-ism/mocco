@@ -9,20 +9,20 @@ import {
 const router = express.Router();
 
 /* 
-    @route GET /loadposts/news/
+    @route GET /loadposts/local-news/
     @query vars: ref_postIndex
-    @desc gets the next OUTPUT number of posts with postIndex lower than ref_postIndex from the news collection
+    @desc gets the next OUTPUT number of posts with postIndex lower than ref_postIndex from the local collection
     @returns OUTPUT number or remaining number of posts, 400 if ref_postIndex not provided
 */
-router.get("/news/", getLocalNews);
+router.get("/local-news/", getLocalNews);
 
 /* 
-    @route GET /loadposts/lifestyle/
+    @route GET /loadposts/international-news/
     @query vars: ref_postIndex
-    @desc gets next 20 posts with postIndex lower than ref_postIndex from the lifestyle collection
+    @desc gets next 20 posts with postIndex lower than ref_postIndex from the international collection
     @returns OUTPUT numberor remaining number of posts, 400 if ref_postIndex not provided
 */
-router.get("/lifestyle/", getInternationalNews);
+router.get("/international-news/", getInternationalNews);
 
 /* 
     @route GET /loadposts/tag/

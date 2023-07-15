@@ -55,6 +55,7 @@ const EditAndPublish = ({ open }) => {
   const [newsList, setNewsList] = useState([]);
   const [selectedNews, setSelectedNews] = useState([]);
   const [loader, setLoader] = useState(false); // state to handle page loader
+  const [handleWordLimit, setHandleWordLimit] = useState(false);
 
   // function to handle loader close
   const handleLoaderClose = () => {
@@ -96,7 +97,8 @@ const EditAndPublish = ({ open }) => {
     async function getHeadlines() {
       try {
         // get bearer token
-        const token = localStorage.getItem("jwt");
+        const storedUser = localStorage.getItem("user");
+        const token = storedUser ? JSON.parse(storedUser).token : null;
         const headers = {
           Authorization: `Bearer ${token}`,
         };
@@ -111,6 +113,16 @@ const EditAndPublish = ({ open }) => {
 
     getHeadlines();
   }, [selectedNews]);
+
+  useEffect(() => {
+    if (handleWordLimit) {
+      toast.error("Word count for description should be more than 25", {
+        autoClose: 1500,
+        theme: "dark",
+      });
+      setHandleWordLimit(false);
+    }
+  }, [handleWordLimit]);
 
   function handleChipClick(item) {
     setSelectedNews(item);
@@ -199,6 +211,7 @@ const EditAndPublish = ({ open }) => {
                     handleLoaderOpen={handleLoaderOpen}
                     handleLoaderClose={handleLoaderClose}
                     handleImageSize={handleImageSize}
+                    setHandleWordLimit={setHandleWordLimit}
                   />
                 </CardContent>
               </Card>

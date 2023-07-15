@@ -5,14 +5,14 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { Autocomplete, MenuItem, TextareaAutosize } from "@mui/material";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field } from "formik";
 import Axios from "../utils/axios.js";
-import * as Yup from "yup";
 import Backdrop from "@mui/material/Backdrop";
 import { useSpring, animated } from "@react-spring/web";
 import Modal from "@mui/material/Modal";
 import Switch from "@mui/material/Switch";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import { useAuthContext } from "../hooks/useAuthContext.js";
 
 // function used for smooth transitioning of the modal
 const Fade = forwardRef(function Fade(props, ref) {
@@ -53,22 +53,24 @@ const CreatePostForm = ({
   handleLoaderClose,
   handleImageSize,
   handleHeadline,
+  handleWordLimit,
 }) => {
   const fileInputRef = useRef(); // useRef to reference the image upload component and reset after submit.
   const [open, setOpen] = useState(false); // state used to manipulate the opening and closing of modal.
-  const [valid, setValid] = useState(false); // state to check if form has passed validation.
   const [data, setData] = useState({}); // state to store the data that has been submitted by form.
   const [dropDownList, setDropDownList] = useState(); // state to store the data return of the dropdown values from the api.
   const [selectedSecondaryTags, setSelectedSecondaryTags] = useState([]); // state to store selected secondary tags.
   const [imageUpload, setImageUpload] = useState(null); // state to store uploaded image.
   const [imageFormData, setImageFormData] = useState(null); // state to store form data of the uploaded image.
-  const [lifeStyle, setLifeStyle] = useState(false); // boolean to set if lifestyle toggle is on or not.
+  const [extra, setExtra] = useState(false); // boolean to set if extra toggle is on or not.
+  const { user } = useAuthContext(); // accessing the global state of the current of the user.
 
   useEffect(() => {
     async function getDropDowns() {
       try {
         // get bearer token
-        const token = localStorage.getItem("jwt");
+        const storedUser = localStorage.getItem("user");
+        const token = storedUser ? JSON.parse(storedUser).token : null;
         const headers = {
           Authorization: `Bearer ${token}`,
         };
@@ -91,7 +93,6 @@ const CreatePostForm = ({
     imageUrl: "",
     sourceName: "",
     sourceUrl: "",
-    author: "",
     mainTag: "",
     secondaryTags: [],
     locality: "",
@@ -111,25 +112,35 @@ const CreatePostForm = ({
 
   // function to set the submitted form data to the state.
   const handleSubmit = async (values) => {
-    if (imageUpload) {
-      const formData = new FormData();
-      formData.append("image", imageUpload);
-      setImageFormData(formData);
-    }
-    const updatedObject = {
-      ...values,
-      secondaryTags: selectedSecondaryTags,
-      typeOfPost: lifeStyle ? "lifestyle" : "news",
-    };
-
-    if (updatedObject.sinhalaTitle === "" && updatedObject.title === "") {
+    if (
+      (values.description.length > 0 && values.description.length < 25) ||
+      (values.sinhalaDescription.length > 0 &&
+        values.sinhalaDescription.length < 25)
+    ) {
       setOpen(false);
-      handleHeadline();
+      handleWordLimit();
     } else {
-      try {
-        setData(updatedObject);
-      } catch (error) {
-        console.error(error);
+      if (imageUpload) {
+        const formData = new FormData();
+        formData.append("image", imageUpload);
+        setImageFormData(formData);
+      }
+      const updatedObject = {
+        ...values,
+        secondaryTags: selectedSecondaryTags,
+        typeOfPost: extra ? "extra" : "essential",
+        author: user ? user.username : "",
+      };
+
+      if (updatedObject.sinhalaTitle === "" && updatedObject.title === "") {
+        setOpen(false);
+        handleHeadline();
+      } else {
+        try {
+          setData(updatedObject);
+        } catch (error) {
+          console.error(error);
+        }
       }
     }
   };
@@ -155,14 +166,15 @@ const CreatePostForm = ({
     }
     try {
       // get bearer token
-      const token = localStorage.getItem("jwt");
+      const storedUser = localStorage.getItem("user");
+      const token = storedUser ? JSON.parse(storedUser).token : null;
       const headers = {
         Authorization: `Bearer ${token}`,
       };
       let response = await Axios.post("/news/push-news", request, { headers });
       response && handleLoaderClose();
       resetForm();
-      setLifeStyle(false);
+      setExtra(false);
       setSelectedSecondaryTags([]);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -175,30 +187,8 @@ const CreatePostForm = ({
     }
   };
 
-  // function used to set state based on if the if the validation is passed.
-  const isValidationPassed = (values) => {
-    try {
-      validationSchema.validateSync(values);
-      setValid(true);
-      return true;
-    } catch (error) {
-      setValid(false);
-      return false;
-    }
-  };
-
-  // validation schema to define the error message.
-  const validationSchema = Yup.object({
-    author: Yup.string().required("Author is required"),
-  });
-
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      validate={isValidationPassed}
-      onSubmit={handleSubmit}
-    >
+    <Formik initialValues={initialValues} onSubmit={handleSubmit}>
       {(formProps) => {
         return (
           <Form>
@@ -217,14 +207,6 @@ const CreatePostForm = ({
                     padding: "10px",
                   },
                   maxLength: 100,
-                }}
-              />
-              <ErrorMessage
-                name="title"
-                component="div"
-                style={{
-                  color: "red",
-                  fontSize: "0.8rem",
                 }}
               />
             </Box>
@@ -248,14 +230,6 @@ const CreatePostForm = ({
                   maxLength: 100,
                 }}
               />
-              <ErrorMessage
-                name="sinhalaTitle"
-                component="div"
-                style={{
-                  color: "red",
-                  fontSize: "0.8rem",
-                }}
-              />
             </Box>
 
             <Box sx={{ marginBottom: "2%" }}>
@@ -275,14 +249,6 @@ const CreatePostForm = ({
                   padding: "20px",
                   resize: "none",
                   border: "1px solid #ccc",
-                }}
-              />
-              <ErrorMessage
-                name="description"
-                component="div"
-                style={{
-                  color: "red",
-                  fontSize: "0.8rem",
                 }}
               />
             </Box>
@@ -306,14 +272,6 @@ const CreatePostForm = ({
                   padding: "20px",
                   resize: "none",
                   border: "1px solid #ccc",
-                }}
-              />
-              <ErrorMessage
-                name="sinhalaDescription"
-                component="div"
-                style={{
-                  color: "red",
-                  fontSize: "0.8rem",
                 }}
               />
             </Box>
@@ -354,14 +312,6 @@ const CreatePostForm = ({
                   maxLength: 100,
                 }}
               />
-              <ErrorMessage
-                name="sourceName"
-                component="div"
-                style={{
-                  color: "red",
-                  fontSize: "0.8rem",
-                }}
-              />
             </Box>
 
             <Box sx={{ marginBottom: "2%" }}>
@@ -380,48 +330,9 @@ const CreatePostForm = ({
                   },
                 }}
               />
-              <ErrorMessage
-                name="sourceUrl"
-                component="div"
-                style={{
-                  color: "red",
-                  fontSize: "0.8rem",
-                }}
-              />
             </Box>
 
             <Box sx={{ display: "flex" }}>
-              <Box sx={{ marginRight: "10px", width: "25%" }}>
-                <label htmlFor="author">
-                  <Typography fontWeight="bold">Author</Typography>
-                </label>
-                <Field
-                  as={TextField}
-                  id="author"
-                  name="author"
-                  select
-                  variant="outlined"
-                  fullWidth
-                  children={
-                    dropDownList && dropDownList.authors
-                      ? dropDownList.authors.map((item) => (
-                          <MenuItem key={item._id} value={item.name}>
-                            {item.name}
-                          </MenuItem>
-                        ))
-                      : []
-                  }
-                />
-                <ErrorMessage
-                  name="author"
-                  component="div"
-                  style={{
-                    color: "red",
-                    fontSize: "0.8rem",
-                  }}
-                />
-              </Box>
-
               <Box sx={{ marginRight: "10px", width: "25%" }}>
                 <label htmlFor="mainTag">
                   <Typography fontWeight="bold">Main News Tags</Typography>
@@ -443,14 +354,6 @@ const CreatePostForm = ({
                       : []
                   }
                 />
-                <ErrorMessage
-                  name="mainTag"
-                  component="div"
-                  style={{
-                    color: "red",
-                    fontSize: "0.8rem",
-                  }}
-                />
               </Box>
 
               <Box sx={{ marginBottom: "10px", width: "25%" }}>
@@ -470,22 +373,14 @@ const CreatePostForm = ({
                   <MenuItem value="local">Local</MenuItem>
                   <MenuItem value="international">International</MenuItem>
                 </Field>
-                <ErrorMessage
-                  name="locality"
-                  component="div"
-                  style={{
-                    color: "red",
-                    fontSize: "0.8rem",
-                  }}
-                />
               </Box>
 
               <FormControlLabel
                 sx={{ marginLeft: "10px" }}
-                label="Lifestyle"
+                label="Extra"
                 control={<Switch />}
-                checked={lifeStyle}
-                onChange={() => setLifeStyle(!lifeStyle)}
+                checked={extra}
+                onChange={() => setExtra(!extra)}
               />
             </Box>
 
@@ -519,7 +414,7 @@ const CreatePostForm = ({
                 variant="contained"
                 type="submit"
                 onClick={() => {
-                  valid && setOpen(true);
+                  setOpen(true);
                 }}
               >
                 Push

@@ -58,6 +58,7 @@ const ManageNewsHistory = ({ open }) => {
   const [newsList, setNewsList] = useState([]);
   const [selectedNews, setSelectedNews] = useState([]);
   const [loader, setLoader] = useState(false); // state to handle page loader
+  const [handleWordLimit, setHandleWordLimit] = useState(false);
 
   // function to notify successful edit or delete
   const handleSubmitFunc = (response) => {
@@ -99,7 +100,8 @@ const ManageNewsHistory = ({ open }) => {
     async function getHeadlines() {
       try {
         // get bearer token
-        const token = localStorage.getItem("jwt");
+        const storedUser = localStorage.getItem("user");
+        const token = storedUser ? JSON.parse(storedUser).token : null;
         const headers = {
           Authorization: `Bearer ${token}`,
         };
@@ -109,7 +111,7 @@ const ManageNewsHistory = ({ open }) => {
 
         // get published news from news collection
         const newsResponse = await Axios.post(
-          "/news/get-news-by-date",
+          "/news/get-local-news-by-date",
           {
             date: formattedDate,
           },
@@ -118,7 +120,7 @@ const ManageNewsHistory = ({ open }) => {
 
         // get published lifestyle news from news collection
         const lifestyleNewsResponse = await Axios.post(
-          "/news/get-lifestyle-news-by-date",
+          "/news/get-international-news-by-date",
           {
             date: formattedDate,
           },
@@ -142,6 +144,16 @@ const ManageNewsHistory = ({ open }) => {
   function handleChipClick(item) {
     setSelectedNews(item);
   }
+
+  useEffect(() => {
+    if (handleWordLimit) {
+      toast.error("Word count for description should be more than 25", {
+        autoClose: 1500,
+        theme: "dark",
+      });
+      setHandleWordLimit(false);
+    }
+  }, [handleWordLimit]);
 
   // JSX content for the sidebar specific to ManageNewsHistory screen.
   const sideBarContent = (
@@ -233,6 +245,7 @@ const ManageNewsHistory = ({ open }) => {
                     handleLoaderOpen={handleLoaderOpen}
                     handleLoaderClose={handleLoaderClose}
                     handleImageSize={handleImageSize}
+                    setHandleWordLimit={setHandleWordLimit}
                   />
                 </CardContent>
               </Card>

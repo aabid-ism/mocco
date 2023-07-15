@@ -39,8 +39,8 @@ export default function SignIn() {
         theme: "dark",
         onClose: () => {
           setTimeout(() => {
-            localStorage.setItem("jwt", response.data.token);
-            dispatch({ type: "LOGIN", payload: response.data.token });
+            localStorage.setItem("user", JSON.stringify(response.data));
+            dispatch({ type: "LOGIN", payload: response.data });
           }, 1600);
         },
       });

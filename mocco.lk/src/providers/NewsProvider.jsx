@@ -53,8 +53,26 @@ function moccoReducer(state, action) {
       // console.log(action.payload);
       return {
         ...state,
-        feedTag: FeedType.NEWS,
-        newsTag: NewsType.EMPTY,
+        postFeed: [...state.postFeed, ...action.payload],
+        is_loading: false,
+      };
+    }
+
+    case "SET_TAG_FEED": {
+      // console.log(action.payload);
+      return {
+        ...state,
+        feedTag: FeedType.TAG,
+        newsTag: NewsType[action.payload.tag],
+        postFeed: [...action.payload.data],
+        is_loading: false,
+      };
+    }
+
+    case "LOAD_TO_TAG_FEED": {
+      // console.log(action.payload);
+      return {
+        ...state,
         postFeed: [...state.postFeed, ...action.payload],
         is_loading: false,
       };

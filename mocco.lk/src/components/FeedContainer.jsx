@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import NewsCard from "./NewsCard";
+import NewsCard from "./NewsCard/NewsCard";
 import {
   useMoccoNewsFeedContext,
   useMoccoNewsFeedDispatchContext,
@@ -14,12 +14,21 @@ function FeedContainer() {
   // ref is needed to directly access and mutate loading state within handlescroll
   const isLoadingMorePostsRef = useRef(false);
   // ref is needed to directly access and mutate a state variable from the handlescroll event handler
-  const metaDataForLoading = useRef({
+  let metaDataForLoading = useRef({
     feedTag: "NEWS",
     newsTag: null,
     lastPostIndex: null,
   });
-
+  // updating useRefs when the Feed Container Re-Renders
+  function handleRefs() {
+    // handle lastPostIndex
+    if (appState.postFeed.length > 1) {
+      metaDataForLoading.current.lastPostIndex =
+        appState.postFeed[appState.postFeed.length - 1].postIndex;
+      metaDataForLoading.current.feedTag = appState.feedTag;
+      metaDataForLoading.current.newsTag = appState.newsTag;
+    }
+  }
   const handleScroll = async (event) => {
     const scrollY = window.scrollY; // scrolled position relative to the top
     const windowHeight = window.innerHeight; // height of viewport
@@ -34,12 +43,16 @@ function FeedContainer() {
       isLoadingMorePostsRef.current = true;
 
       let morePosts;
-      console.log(metaDataForLoading.current);
+
       if (metaDataForLoading.current.feedTag == "NEWS") {
         morePosts = await loadMorePosts(
           "ALL",
           metaDataForLoading.current.lastPostIndex
         );
+        dispatch({
+          type: "LOAD_TO_FEED",
+          payload: morePosts,
+        });
       } else if (metaDataForLoading.current.feedTag == "LIFESTYLE") {
         morePosts = await loadMorePosts(
           "LIFESTYLE",
@@ -51,10 +64,8 @@ function FeedContainer() {
           metaDataForLoading.current.lastPostIndex,
           metaDataForLoading.current.newsTag
         );
-      }
-      if (morePosts) {
         dispatch({
-          type: "LOAD_TO_FEED",
+          type: "LOAD_TO_TAG_FEED",
           payload: morePosts,
         });
       }
@@ -65,6 +76,10 @@ function FeedContainer() {
       }, 1000);
     }
   };
+
+  useEffect(() => {
+    handleRefs();
+  });
   useEffect(() => {
     // dispatch({ type: "SET_LOADING" });
     // Fetching the latest news
@@ -83,9 +98,7 @@ function FeedContainer() {
     window.addEventListener("scroll", handleScroll);
 
     return () => {
-      window.removeEventListener("scroll", () =>
-        console.log("handle scroll destroyed!")
-      );
+      window.removeEventListener("scroll", handleScroll);
     };
   });
 
@@ -95,24 +108,15 @@ function FeedContainer() {
       key={newsObj._id}
       heading={newsObj.title}
       sinhalaHeading={newsObj.sinhalaTitle}
+      tag={newsObj.mainTag}
       description={newsObj.description}
       sinhalaDescription={newsObj.sinhalaDescription}
+      source={newsObj.sourceName}
+      sourceUrl={newsObj.sourceUrl}
       imageUrl={newsObj.imageUrl}
       lang={appState.language}
     />
   ));
-
-  // updating useRefs when the Feed Container Re-Renders
-  function handleRefs() {
-    // handle lastPostIndex
-    if (appState.postFeed.length > 1) {
-      console.log("This just ran");
-      metaDataForLoading.current.lastPostIndex =
-        appState.postFeed[appState.postFeed.length - 1].postIndex;
-      metaDataForLoading.current.feedTag = appState.feedTag;
-      metaDataForLoading.current.newsTag = appState.newsTag;
-    }
-  }
 
   handleRefs();
 

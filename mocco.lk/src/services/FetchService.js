@@ -26,7 +26,7 @@ export async function loadMorePosts(post_type, ref_postIndex, tag = null) {
   } else if (post_type == "TAG") {
     try {
       const response = await baseAxios.get(
-        `/loadposts/news/?ref_postIndex=${ref_postIndex}`
+        `/loadposts/tag/?ref_postIndex=${ref_postIndex}&req_tag=${tag.toLowerCase()}`
       );
       // console.log(response.data);
       return response.data;

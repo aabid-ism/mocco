@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import { ButtonGroup, Button, ToggleButton } from "react-bootstrap";
-import {
-  useMoccoNewsFeedContext,
-  useMoccoNewsFeedDispatchContext,
-} from "../../providers/NewsProvider";
+import { useMoccoNewsFeedDispatchContext } from "../../providers/NewsProvider";
 
 function LanguageToggle() {
   const [checked, setChecked] = useState(true);
@@ -28,7 +25,7 @@ function LanguageToggle() {
     <div>
       <ButtonGroup>
         <ToggleButton
-          variant="secondary"
+          variant="light"
           type="checkbox"
           checked={checked}
           onClick={(e) => toggle("English")}
@@ -37,7 +34,7 @@ function LanguageToggle() {
           English
         </ToggleButton>
         <ToggleButton
-          variant="secondary"
+          variant="light"
           type="checkbox"
           checked={!checked}
           onClick={(e) => toggle("Sinhala")}

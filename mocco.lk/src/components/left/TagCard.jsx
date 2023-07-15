@@ -1,41 +1,51 @@
 import React from "react";
-import sportsimg from "../../assets/sports.svg";
-import { Button } from "react-bootstrap";
+import { Button, ToggleButton } from "react-bootstrap";
+import { loadMorePosts } from "../../services/FetchService";
+import { useMoccoNewsFeedDispatchContext } from "../../providers/NewsProvider";
+import "./TagCard.css";
+import "../../assets/tagIcons/Politics.svg";
 
 function TagCard(props) {
-  // return (
-  //   <>
-  //     <Card style={{ borderRadius: "10px", margin: "10px" }}>
-  //       <Card.Header>
-  //         <div
-  //           style={{
-  //             display: "flex",
-  //             alignItems: "center",
-  //             justifyContent: "center",
-  //           }}
-  //         >
-  //           <img
-  //             src={sportsimg}
-  //             alt="Example"
-  //             style={{ width: "24px", marginRight: "8px" }}
-  //           />
-  //           <h5>{props.tag}</h5>
-  //         </div>
-  //       </Card.Header>
-  //     </Card>
-  //   </>
-  // );
+  const dispatch = useMoccoNewsFeedDispatchContext();
+
+  async function sendTagFeedRequest() {
+    // fetch
+    const postData = await loadMorePosts("TAG", 999999, props.tag);
+    console.log(postData);
+    // dispatch
+    dispatch({
+      type: "SET_TAG_FEED",
+      // toUpperCase because in the provider we use enums.js
+      payload: { tag: props.tag.toUpperCase(), data: postData },
+    });
+  }
 
   return (
-    <div style={{ margin: "10px" }}>
-      <Button style={{ width: "200px" }} variant="outline-secondary">
-        <img
+    <div>
+      <Button
+        style={{
+          display: "flex",
+          justifyContent: "flex-start",
+          width: "200px",
+          padding: "10px",
+          // backgroundColor: "#F1F2F5",
+          borderWidth: "0",
+        }}
+        variant="light"
+        className="tag-button"
+        size="lg"
+        onClick={sendTagFeedRequest}
+        active={props.focus}
+      >
+        {/* <img
           src={sportsimg}
           alt="Example"
-          style={{ width: "24px", marginRight: "8px" }}
-        />
+          style={{ width: "24px", marginRight: "8px", marginTop: "5px" }}
+        /> */}
+        {props.children}
         {props.tag}
       </Button>{" "}
+      {/* <Button className="purple-button">Hello Again</Button> */}
     </div>
   );
 }

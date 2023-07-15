@@ -11,16 +11,16 @@ class ExploreScreen extends StatelessWidget {
   static const items = [
     "Today",
     "Accidents",
-    "Economy",
     "Crime",
+    "Economy",
     "Education",
     "Entertainment",
     "Environment",
+    "Health",
     "Humanitarian",
-    " Health",
     "Politics",
-    "Technology",
     "Sports"
+    "Technology",
   ];
 
   @override

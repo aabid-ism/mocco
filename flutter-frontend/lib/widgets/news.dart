@@ -44,9 +44,12 @@ class _NewsContainerState extends State<NewsContainer> {
       newsCards = appState.tagResponse;
     }
     if (newsCards.isNotEmpty) {
-      loadingService.addToReadList(newsCards[0].postIndex);
+      loadingService.addToReadList(newsCards[0].postIndex, tag);
     }
-// loadingService.clearSharedPrefs();
+
+    //Clear application cache for testing
+    //loadingService.clearSharedPrefs();
+
     return Scaffold(
       body: PageView.builder(
         // Build pages lazily for better performance
@@ -56,15 +59,11 @@ class _NewsContainerState extends State<NewsContainer> {
         onPageChanged: (index) async {
           if (currentPageIndex < index) {
             currentPageIndex = index;
-            loadingService.addToReadList(newsCards[index].postIndex);
+            loadingService.addToReadList(newsCards[index].postIndex, tag);
           }
           if (newsCards.length - loadPostBefore == index) {
             var nextPostList = await loadingService.loadNextPosts(
-                _containerReqFrom,
-                newsCards.last.postIndex,
-                _containerReqFrom == NewsScreenUsers.explorerScreen
-                    ? tag
-                    : null);
+                _containerReqFrom, newsCards.getPostIndexAfter(index), tag);
             if (nextPostList != []) {
               setState(() {
                 newsCards.addAll(nextPostList);

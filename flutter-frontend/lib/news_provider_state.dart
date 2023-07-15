@@ -24,7 +24,7 @@ class NewsProvider extends ChangeNotifier {
     //loadingService.clearSharedPrefs();
 
     //Get read post list
-    var readPostList = await loadingService.getReadPostList();
+    var readPostList = await loadingService.getReadPostList(tag);
     var readPostReqBody = jsonEncode({'readPostIndices': readPostList});
 
     //Get Notification Posts
@@ -38,7 +38,6 @@ class NewsProvider extends ChangeNotifier {
       tagResponse = await newsService.fetchAllNews(
           '$serverUrl/handleloading/tag?reqTag=$tag',
           reqBody: readPostReqBody);
-      ;
     }
 
     //Get posts for news & Lifestule

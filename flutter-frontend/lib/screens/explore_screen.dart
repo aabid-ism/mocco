@@ -19,7 +19,7 @@ class ExploreScreen extends StatelessWidget {
     "Health",
     "Humanitarian",
     "Politics",
-    "Sports"
+    "Sports",
     "Technology",
   ];
 

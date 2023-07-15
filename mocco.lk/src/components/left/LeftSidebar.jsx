@@ -7,8 +7,9 @@ import LanguageToggle from "./LanguageToggle";
 function LeftSidebar() {
   return (
     <div>
-      <LanguageToggle />
-      <DatePicker />
+      {/* <DatePicker /> */}
+      <h3>Discover</h3>
+      <hr></hr>
       <TagCardList />
     </div>
   );

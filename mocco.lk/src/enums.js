@@ -11,19 +11,15 @@ export const FeedType = {
 
 export const NewsType = {
   EMPTY: "",
-  ARTS_AND_CULTURE: "Arts and Culture",
-  BUSINESS: "Business",
+  ACCIDENTS: "Accidents",
+  ECONOMY: "Economy",
   CRIME: "Crime",
   EDUCATION: "Education",
   ENTERTAINMENT: "Entertainment",
   ENVIRONMENT: "Environment",
+  HUMANITARIAN: "Humanitarian",
   HEALTH: "Health",
-  LIFESTYLE: "Lifestyle",
-  OPINION: "Opinion",
   POLITICS: "Politics",
-  RELIGION: "Religion",
-  SCIENCE: "Science",
   SPORTS: "Sports",
-  TRAVEL_AND_TOURISM: "Travel and Tourism",
   TECHNOLOGY: "Technology",
 };

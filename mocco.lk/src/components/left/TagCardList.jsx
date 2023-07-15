@@ -1,33 +1,47 @@
 import React from "react";
 import TagCard from "./TagCard";
 import { NewsType } from "../../enums";
+import { useMoccoNewsFeedContext } from "../../providers/NewsProvider";
 
-// All Tags Array
-const news_categories = [
-  "Arts and Culture",
-  "Business and Finance",
-  "Crime",
-  "Education",
-  "Entertainment",
-  "Environment",
-  "Health and Medicine",
-  "International",
-  "Lifestyle",
-  "Opinion",
-  "Politics",
-  "Religion",
-  "Science",
-  "Sports",
-  "Travel and Tourism",
-  "Technology",
-];
-const newsTagsList = Object.values(NewsType);
-const filteredNewsTagsList = newsTagsList.filter((tag) => tag !== "");
-const tagCardList = filteredNewsTagsList.map((tag) => (
-  <TagCard tag={tag} key={tag} />
-));
+// importing Icons
+import { AccidentsIcon } from "./TagIcons/TagIcons";
+import { CrimeIcon } from "./TagIcons/TagIcons";
+import { EconomyIcon } from "./TagIcons/TagIcons";
+import { EducationIcon } from "./TagIcons/TagIcons";
+import { EntertainmentIcon } from "./TagIcons/TagIcons";
+import { EnvironmentIcon } from "./TagIcons/TagIcons";
+import { HealthIcon } from "./TagIcons/TagIcons";
+import { HumanitarianIcon } from "./TagIcons/TagIcons";
+import { PoliticsIcon } from "./TagIcons/TagIcons";
+import { SportsIcon } from "./TagIcons/TagIcons";
+import { TechnologyIcon } from "./TagIcons/TagIcons";
 
 function TagCardList() {
+  const newsTagsList = Object.values(NewsType);
+  const appState = useMoccoNewsFeedContext();
+  let focusTag = appState.newsTag;
+  const filteredNewsTagsList = newsTagsList.filter((tag) => tag !== "");
+
+  const tagToIconMap = {
+    Accidents: <AccidentsIcon />,
+    Crime: <CrimeIcon />,
+    Education: <EducationIcon />,
+    Economy: <EconomyIcon />,
+    Entertainment: <EntertainmentIcon />,
+    Environment: <EnvironmentIcon />,
+    Health: <HealthIcon />,
+    Humanitarian: <HumanitarianIcon />,
+    Politics: <PoliticsIcon />,
+    Sports: <SportsIcon />,
+    Technology: <TechnologyIcon />,
+  };
+
+  // spawning TagCards
+  const tagCardList = filteredNewsTagsList.map((tag) => (
+    <TagCard tag={tag} key={tag} focus={tag == focusTag}>
+      {tagToIconMap[`${tag}`]}
+    </TagCard>
+  ));
   return <>{tagCardList}</>;
 }
 

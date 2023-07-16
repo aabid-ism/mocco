@@ -3,7 +3,7 @@ import baseAxios from "../utility/baseAxios.js";
 // fetches and returns a list of news objects from MongoDB
 export async function fetchDefaultFeed() {
   try {
-    const response = await baseAxios.get("news/feed");
+    const response = await baseAxios.get("news/local-news");
     // console.log(response.data);
     return response.data;
   } catch (error) {
@@ -16,7 +16,7 @@ export async function loadMorePosts(post_type, ref_postIndex, tag = null) {
   if (post_type == "ALL") {
     try {
       const response = await baseAxios.get(
-        `/loadposts/news/?ref_postIndex=${ref_postIndex}`
+        `/loadposts/local-news/?ref_postIndex=${ref_postIndex}`
       );
       // console.log(response.data);
       return response.data;

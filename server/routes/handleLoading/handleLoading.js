@@ -4,6 +4,7 @@ import {
   getLocalNewsLoading,
   getInternationalNewsLoading,
   getNewsTags,
+  getTodayNews
 } from "../../controllers/handleLoadingController.js";
 
 const router = express.Router();
@@ -31,5 +32,13 @@ router.get("/international-news/", getInternationalNewsLoading);
     @returns OUTPUT number or remaining number of posts, 400 if parameters are not provided
 */
 router.get("/tag/", getNewsTags);
+
+/* 
+    @route GET /handleloading/today-news/
+    @vars body: None
+    @desc gets all news published since 00:00 
+    @returns news posts published today
+*/
+router.get("/today/", getTodayNews);
 
 export default router;

@@ -33,3 +33,17 @@ class NewsCard {
     this.typeOfPost,
   });
 }
+
+extension NewsCardListExtensions on List<NewsCard> {
+  List<int> getPostIndexAfter(int x) {
+    if (x < 0 || x >= length - 1) {
+      throw ArgumentError('Index out of bounds');
+    }
+
+    List<int> postIndices = [];
+    for (int i = x + 1; i < length; i++) {
+      postIndices.add(this[i].postIndex);
+    }
+    return postIndices;
+  }
+}

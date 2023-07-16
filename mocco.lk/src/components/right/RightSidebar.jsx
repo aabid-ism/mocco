@@ -1,11 +1,12 @@
 import React from "react";
 import TodayEvents from "./TodayEvents";
 import TodayQuote from "./TodayQuote";
+import DateString from "./DateString";
 
 function RightSidebar() {
   return (
     <>
-      <h3>Today</h3>
+      <DateString />
       <hr></hr>
       <TodayEvents />
       <h4>Today's Quote</h4>

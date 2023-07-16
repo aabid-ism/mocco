@@ -1,5 +1,5 @@
-enum NewsScreenUsers{
-  newsScreen,
-  lifestyleScreen,
-  explorerScreen
+enum NewsScreenUsers {
+  localScreen,
+  internationalScreen,
+  explorerScreen,
 }

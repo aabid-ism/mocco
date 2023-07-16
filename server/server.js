@@ -5,6 +5,7 @@ import("./loadEnv.js");
 import express from "express";
 import cors from "cors";
 import conn from "./conn.js";
+import rateLimit from "express-rate-limit";
 
 // Importing routes
 import auth from "./routes/auth/auth.js";
@@ -22,6 +23,14 @@ const PORT = process.env.PORT || 5555;
 const corsOptions = {
   origin: "*",
 };
+
+// Limit requests from a single IP to 100 requests per hour
+const limiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 200,
+});
+
+app.use(limiter);
 app.use(cors(corsOptions));
 app.use(express.json());
 const getJsonFromFile = async (filePath) => {

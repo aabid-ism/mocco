@@ -5,8 +5,9 @@ import {
   useMoccoNewsFeedDispatchContext,
 } from "../providers/NewsProvider";
 import { fetchDefaultFeed, loadMorePosts } from "../services/FetchService";
-import Lottie from "react-lottie";
-import hook from "../assets/hook.json";
+import LoadingSpinner from "./loadspinner";
+// import Lottie from "react-lottie";
+// import hook from "../assets/hook.json";
 function FeedContainer() {
   // getting references for the dispatch function and appState(moccoContext)
   const dispatch = useMoccoNewsFeedDispatchContext();
@@ -123,23 +124,29 @@ function FeedContainer() {
 
   let feed = newsCardsList;
 
-  const defaultOptions = {
-    loop: true, // Set this to false if you don't want the animation to loop
-    autoplay: true, // Set this to false if you don't want the animation to play automatically
-    animationData: hook,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice", // Adjust the animation's position
-    },
-  };
+  // const defaultOptions = {
+  //   loop: true, // Set this to false if you don't want the animation to loop
+  //   autoplay: true, // Set this to false if you don't want the animation to play automatically
+  //   animationData: hook,
+  //   rendererSettings: {
+  //     preserveAspectRatio: "xMidYMid slice", // Adjust the animation's position
+  //   },
+  // };
 
   // THE FEED
   return (
     <div style={{ padding: "80px" }}>
       {/* <img src="MOCCO.svg"></img> */}
-      {feed}
-      {appState.is_loading && (
-        <Lottie options={defaultOptions} height={100} width={100} />
-      )}
+      {
+        appState.is_loading ? (
+          <div>
+            <LoadingSpinner />
+          </div>
+        ) : (
+          feed
+        )
+        // <Lottie options={defaultOptions} height={100} width={100} />
+      }
     </div>
   );
 }

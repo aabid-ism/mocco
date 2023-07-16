@@ -1,7 +1,16 @@
 import React from "react";
 
+
 function TodayEvents() {
-  return <div></div>;
+
+  // Fetch Events
+
+  // Convert EventData into Event Buttons
+  return (
+    <div>
+      
+    </div>
+  );
 }
 
 export default TodayEvents;

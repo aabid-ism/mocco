@@ -9,10 +9,10 @@ import "env.dart";
 class NewsProvider extends ChangeNotifier {
   // declaring state variables
   List<NewsCard> newsModelsList = [];
-  List<NewsCard> lifestyleModelsList = [];
+  List<NewsCard> internationalModelsList = [];
   List<NewsCard> notificationResponse = [];
   List<NewsCard> tagResponse = [];
-  NewsScreenUsers notificationFor = NewsScreenUsers.newsScreen;
+  NewsScreenUsers notificationFor = NewsScreenUsers.localScreen;
 
   // creating a Service object that gives access to a method to get the news from server
   final newsService = NewsService();
@@ -36,16 +36,16 @@ class NewsProvider extends ChangeNotifier {
     //Get Tag Posts
     if (tag != null) {
       tagResponse = await newsService.fetchAllNews(
-          '$serverUrl/handleloading/tag?reqTag=$tag',
+          '$serverUrl/handleLoading/tag?reqTag=$tag',
           reqBody: readPostReqBody);
     }
 
     //Get posts for news & Lifestule
     newsModelsList = await newsService.fetchAllNews(
-        '$serverUrl/handleloading/news',
+        '$serverUrl/handleLoading/local-news',
         reqBody: readPostReqBody);
-    lifestyleModelsList = await newsService.fetchAllNews(
-        '$serverUrl/handleloading/lifestyle',
+    internationalModelsList = await newsService.fetchAllNews(
+        '$serverUrl/handleLoading/international-news',
         reqBody: readPostReqBody);
 
     //Show error message on empty responds
@@ -62,12 +62,13 @@ class NewsProvider extends ChangeNotifier {
     }
 
     if (notificationResponse.isNotEmpty) {
-      if (notificationResponse[0].typeOfPost == "lifestyle") {
-        _updateNotificationPost(lifestyleModelsList, notificationResponse[0]);
-        notificationFor = NewsScreenUsers.lifestyleScreen;
+      if (notificationResponse[0].typeOfPost == "international") {
+        _updateNotificationPost(
+            internationalModelsList, notificationResponse[0]);
+        notificationFor = NewsScreenUsers.internationalScreen;
       } else {
         _updateNotificationPost(newsModelsList, notificationResponse[0]);
-        notificationFor = NewsScreenUsers.newsScreen;
+        notificationFor = NewsScreenUsers.localScreen;
       }
     }
     notifyListeners();

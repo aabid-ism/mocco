@@ -1,23 +1,28 @@
 import "./App.css";
-import NewsCard from "./components/NewsCard/NewsCard";
 import NavigatorBar from "./components/Navigator/NavigatorBar";
-import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-
 import { Container } from "react-bootstrap";
 import LeftSidebar from "./components/Left/LeftSidebar";
 import RightSidebar from "./components/Right/RightSidebar";
 import FeedContainer from "./components/FeedContainer";
 import { MoccoNewsFeedProvider } from "./providers/NewsProvider";
-import { useEffect } from "react";
-import { fetchDefaultFeed } from "./services/FetchService";
+import backgroundImage from "./assets/MOCCO.svg";
+
 function App() {
   return (
     <>
       <MoccoNewsFeedProvider>
         <NavigatorBar />
-
-        <Container fluid style={{ backgroundColor: "#F1F2F5" }}>
+        <Container
+          fluid
+          style={{
+            backgroundColor: "#F1F2F5",
+            // backgroundImage: `url(backgroundImage)`,
+            // backgroundSize: "cover",
+            // backgroundRepeat: "no-repeat",
+            // backgroundPosition: "center",
+          }}
+        >
           <div
             style={{
               display: "flex",

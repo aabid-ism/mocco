@@ -1,7 +1,7 @@
 import React from "react";
 import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
 import "./Navigator.css";
-import LanguageToggle from "../Left/LanguageToggle";
+import LanguageToggle from "../left/LanguageToggle";
 
 function NavigatorBar() {
   function handleSelect(eventKey) {

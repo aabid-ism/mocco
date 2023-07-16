@@ -1,9 +1,9 @@
 import axios from "axios";
 
-const BACKEND_URL = "http://localhost:5555";
+const BACKEND_URL = "https://mocco.onrender.com";
 const baseAxios = axios.create({
-  baseURL: `${BACKEND_URL}`,
-  timeout: 10000, // timeout of 10 seconds
+  baseURL: BACKEND_URL,
+  timeout: 50000, // timeout of 10 seconds
   headers: {
     "Content-Type": "application/json",
   },

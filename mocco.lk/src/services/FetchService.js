@@ -16,7 +16,7 @@ export async function loadMorePosts(post_type, ref_postIndex, tag = null) {
   if (post_type == "ALL") {
     try {
       const response = await baseAxios.get(
-        `/loadposts/local-news/?ref_postIndex=${ref_postIndex}`
+        `/loadposts/local-news/?ref_postIndex=${ref_postIndex}/`
       );
       // console.log(response.data);
       return response.data;
@@ -26,7 +26,7 @@ export async function loadMorePosts(post_type, ref_postIndex, tag = null) {
   } else if (post_type == "TAG") {
     try {
       const response = await baseAxios.get(
-        `/loadposts/tag/?ref_postIndex=${ref_postIndex}&req_tag=${tag.toLowerCase()}`
+        `/loadPosts/tag/?ref_postIndex=${ref_postIndex}&req_tag=${tag.toLowerCase()}`
       );
       // console.log(response.data);
       return response.data;
@@ -38,5 +38,5 @@ export async function loadMorePosts(post_type, ref_postIndex, tag = null) {
 
 // ------UNIT TESTS ---------
 
-const posts = await fetchDefaultFeed();
-console.log(posts);
+// const posts = await fetchDefaultFeed();
+// console.log(posts);

@@ -11,7 +11,7 @@ function TagCard(props) {
   async function sendTagFeedRequest() {
     // fetch
     const postData = await loadMorePosts("TAG", 999999, props.tag);
-    console.log(postData);
+    // console.log(postData);
     // dispatch
     dispatch({
       type: "SET_TAG_FEED",

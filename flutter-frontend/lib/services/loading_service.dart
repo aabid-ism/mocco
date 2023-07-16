@@ -11,7 +11,9 @@ class LoadingService {
   List<int?> _readPostListInt = [];
 
   Future<void> addToReadList(int postIndex, String? currentScreenTag) async {
-    String readPostListName = (currentScreenTag == null) ? "readPostIndex" : "readPostIndex-$currentScreenTag";
+    String readPostListName = (currentScreenTag == null)
+        ? "readPostIndex"
+        : "readPostIndex-$currentScreenTag";
     sharedPrefs = await SharedPreferences.getInstance();
     // Check if the string list exists
     var readPostList = sharedPrefs.getStringList(readPostListName) ?? [];
@@ -32,7 +34,9 @@ class LoadingService {
 
   //Get Read Post Index
   Future<List<int>> getReadPostList(String? currentScreenTag) async {
-    String readPostListName = (currentScreenTag == null) ? "readPostIndex" : "readPostIndex-$currentScreenTag";
+    String readPostListName = (currentScreenTag == null)
+        ? "readPostIndex"
+        : "readPostIndex-$currentScreenTag";
     sharedPrefs = await SharedPreferences.getInstance();
     var readPostList = sharedPrefs.getStringList(readPostListName) ?? [];
     return readPostList.map((str) => int.parse(str)).toList();
@@ -65,11 +69,11 @@ class LoadingService {
     var readPostReqBody =
         jsonEncode({'readPostIndices': mergedAndSortedReadPost});
     switch (postFor) {
-      case NewsScreenUsers.newsScreen:
-        postPath = "/news/";
+      case NewsScreenUsers.localScreen:
+        postPath = "/local-news/";
         break;
-      case NewsScreenUsers.lifestyleScreen:
-        postPath = "/lifestyle/";
+      case NewsScreenUsers.internationalScreen:
+        postPath = "/international-news/";
         break;
       case NewsScreenUsers.explorerScreen:
         if (tag != null && tag.isNotEmpty) {
@@ -79,7 +83,7 @@ class LoadingService {
     }
 
     var nextPostList = await newsService.fetchAllNews(
-        "$serverUrl/handleloading$postPath",
+        "$serverUrl/handleLoading$postPath",
         reqBody: readPostReqBody);
     return nextPostList;
   }

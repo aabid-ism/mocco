@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mocco/app_preferences.dart';
@@ -7,7 +8,6 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 
 class BottomBar extends StatelessWidget {
   final NewsCard newsCard;
@@ -59,7 +59,7 @@ class BottomBar extends StatelessWidget {
                 await Share.shareXFiles(
                   [XFile(shareTempFilePath)],
                   subject: newsCard.title,
-                  text: "$title\n\n$description\n\nAuthor - ${newsCard.author}",
+                  text: "$title\n\n$description\n\n~Mocco",
                 );
               },
               child: const Column(

@@ -1,8 +1,8 @@
-// Show the main News Page or Lifestyle Page or Saved news page
+// Show the main Local Page, International Page or Explore Page
 import 'package:flutter/material.dart';
 import 'package:mocco/news_provider_state.dart';
 import 'package:mocco/screens/explore_screen.dart';
-import 'package:mocco/screens/lifestyle_screen.dart';
+import 'package:mocco/screens/international_screen.dart';
 import 'package:mocco/screens/news_screen.dart';
 import 'package:mocco/widgets/top_menu.dart';
 import 'package:provider/provider.dart';
@@ -20,14 +20,14 @@ class _ScreensHolderState extends State<ScreensHolder> {
       initialPage: 1); //Initializer page controller and set initial page to 1
   @override
   void initState() {
-    // Fetch news data before NewsScreen build
+    // Fetch news data before LocalScreen build
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       await Provider.of<NewsProvider>(context, listen: false)
           .fetchNewsFromService(context);
     });
     _currentPageIndex = 1;
-  }
+    }
 
   @override
   void dispose() {
@@ -37,10 +37,6 @@ class _ScreensHolderState extends State<ScreensHolder> {
 
   @override
   Widget build(BuildContext context) {
-    // var newsState = context.watch<NewsProvider>();
-    // newsState.notificationFor == NewsScreenUsers.newsScreen?
-    // _currentPageIndex = 1
-    //     :_currentPageIndex = 2;
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -56,8 +52,8 @@ class _ScreensHolderState extends State<ScreensHolder> {
               },
               children: const [
                 ExploreScreen(),
-                NewsScreenContainer(),
-                LifestyleScreen(),
+                LocalScreen(),
+                InternationalScreen(),
               ],
             ),
             Positioned(

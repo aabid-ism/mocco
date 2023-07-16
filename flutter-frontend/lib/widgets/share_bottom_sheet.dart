@@ -7,7 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 class ShareBottomSheet extends StatelessWidget {
   final String imageURL;
   final String heading;
-  ShareBottomSheet({
+  const ShareBottomSheet({
     super.key,
     required this.imageURL,
     required this.heading,
@@ -134,6 +134,6 @@ Future<Uint8List> _getImageFromUrl(String imageUrl) async {
     return response.bodyBytes;
   } else {
     throw HttpException(
-        'Failed to load image: ${response.statusCode} ${imageUrl}');
+        'Failed to load image: ${response.statusCode} $imageUrl');
   }
 }

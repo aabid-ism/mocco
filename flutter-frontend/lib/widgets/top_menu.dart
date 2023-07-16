@@ -1,9 +1,36 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class TopMenu extends StatelessWidget {
+class TopMenu extends StatefulWidget {
   final int currentPageIndex;
   final Function(int) changeTab;
-  const TopMenu({super.key, required this.currentPageIndex, required this.changeTab});
+  const TopMenu(
+      {super.key, required this.currentPageIndex, required this.changeTab});
+
+  @override
+  State<TopMenu> createState() => _TopMenuState();
+}
+
+class _TopMenuState extends State<TopMenu> {
+  var posistion = 0.0;
+  final GlobalKey internationalWidgetKey = GlobalKey();
+  final GlobalKey exploreWidgetKey = GlobalKey();
+  @override
+  void initState() {
+    // Fetch news data before LocalScreen build
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      setState(() {
+        posistion = ((internationalWidgetKey.currentContext?.findRenderObject()
+                    as RenderBox)
+                .size
+                .width -
+            (exploreWidgetKey.currentContext?.findRenderObject() as RenderBox)
+                .size
+                .width);
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +45,7 @@ class TopMenu extends StatelessWidget {
                 end: const Alignment(0, .2),
                 colors: [
                   Colors.black
-                      .withOpacity(0.5), // starting color (20% transparent)
+                      .withOpacity(0.5), // starting color (50% transparent)
                   Colors.black.withOpacity(0.0), // endinrent)
                 ],
               ),
@@ -31,27 +58,32 @@ class TopMenu extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  SizedBox(
+                    width: posistion
+                  ),
                   GestureDetector(
-                    onTap: () => changeTab(0),
+                    onTap: () => widget.changeTab(0),
                     child: _TopMenuText(
                       text: 'Explore',
-                      isActive: currentPageIndex == 0,
+                      isActive: widget.currentPageIndex == 0,
+                      widKey: exploreWidgetKey,
                     ),
                   ),
                   const SizedBox(width: 16),
                   GestureDetector(
-                    onTap: () => changeTab(1),
+                    onTap: () => widget.changeTab(1),
                     child: _TopMenuText(
-                      text: 'News',
-                      isActive: currentPageIndex == 1,
+                      text: 'Local',
+                      isActive: widget.currentPageIndex == 1,
                     ),
                   ),
                   const SizedBox(width: 16),
                   GestureDetector(
-                    onTap: () => changeTab(2),
+                    onTap: () => widget.changeTab(2),
                     child: _TopMenuText(
-                      text: 'Lifestyle',
-                      isActive: currentPageIndex == 2,
+                      text: 'International',
+                      isActive: widget.currentPageIndex == 2,
+                      widKey: internationalWidgetKey,
                     ),
                   ),
                 ],
@@ -67,11 +99,13 @@ class TopMenu extends StatelessWidget {
 class _TopMenuText extends StatelessWidget {
   final String text;
   final bool isActive;
-  const _TopMenuText({required this.text, required this.isActive});
+  final GlobalKey? widKey;
+  const _TopMenuText({required this.text, required this.isActive, this.widKey});
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      key: widKey,
       children: [
         Text(
           text,

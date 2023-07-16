@@ -36,10 +36,10 @@ class _NewsContainerState extends State<NewsContainer> {
     List<NewsCard> newsCards = [];
     var currentPageIndex = 0;
 
-    if (_containerReqFrom == NewsScreenUsers.newsScreen) {
+    if (_containerReqFrom == NewsScreenUsers.localScreen) {
       newsCards = appState.newsModelsList;
-    } else if (_containerReqFrom == NewsScreenUsers.lifestyleScreen) {
-      newsCards = appState.lifestyleModelsList;
+    } else if (_containerReqFrom == NewsScreenUsers.internationalScreen) {
+      newsCards = appState.internationalModelsList;
     } else {
       newsCards = appState.tagResponse;
     }

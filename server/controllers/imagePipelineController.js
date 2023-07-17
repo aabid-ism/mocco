@@ -79,7 +79,7 @@ export const deleteImage = async (req, res) => {
           .then(() => {
             deleteObject(deleteRef)
               .then(() => {
-                res.status(200).json({ message: "News deleted successfully" });
+                res.status(200).json({ message: "Image deleted successfully" });
               })
               .catch((deleteError) => {
                 res.status(500).json({ message: deleteError });

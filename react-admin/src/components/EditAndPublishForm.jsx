@@ -207,22 +207,48 @@ const EditAndPublishForm = ({
 
         // checking to differentiate between an already existing post or a newly added post
         if (selectedNews && selectedNews.imageUrl) {
-          let imageResponse = await Axios.post("/image", imageFormData);
-          try {
-            const imgUrl = selectedNews.imageUrl;
-            let deleteResponse = await Axios.post("/image/delete-image", {
-              imgUrl,
-            });
-            handleSubmitFunc(deleteResponse);
-          } catch (err) {
-            handleSubmitFunc(err);
-            console.log(err);
+          if (fileInputRef.current.value != "" && imageUpload) {
+            let imageResponse = await Axios.post("/image", imageFormData);
+            try {
+              const imgUrl = selectedNews.imageUrl;
+              let deleteResponse = await Axios.post("/image/delete-image", {
+                imgUrl,
+              });
+              handleSubmitFunc(deleteResponse);
+            } catch (err) {
+              handleSubmitFunc(err);
+              console.log(err);
+            }
+            request = { ...data, imageUrl: imageResponse.data };
+          } else {
+            try {
+              const imgUrl = selectedNews.imageUrl;
+              let deleteResponse = await Axios.post("/image/delete-image", {
+                imgUrl,
+              });
+              handleSubmitFunc(deleteResponse);
+            } catch (err) {
+              handleSubmitFunc(err);
+              console.log(err);
+            }
           }
-          request = { ...data, imageUrl: imageResponse.data };
         } else {
-          let imageResponse = await Axios.post("/image", imageFormData);
-          request = { ...data, imageUrl: imageResponse.data };
+          if (fileInputRef.current.value != "" && imageUpload) {
+            let imageResponse = await Axios.post("/image", imageFormData);
+            request = { ...data, imageUrl: imageResponse.data };
+          }
         }
+      } catch (err) {
+        handleSubmitFunc(err);
+        console.log(err);
+      }
+    } else if (selectedNews && selectedNews.imageUrl) {
+      try {
+        const imgUrl = selectedNews.imageUrl;
+        let deleteResponse = await Axios.post("/image/delete-image", {
+          imgUrl,
+        });
+        handleSubmitFunc(deleteResponse);
       } catch (err) {
         handleSubmitFunc(err);
         console.log(err);

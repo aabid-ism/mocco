@@ -48,18 +48,18 @@ class NewsProvider extends ChangeNotifier {
         '$serverUrl/handleLoading/international-news',
         reqBody: readPostReqBody);
 
-    //Show error message on empty responds
-    if (newsModelsList.isEmpty ||
-        newsModelsList.isEmpty ||
-        (postIndex != null && notificationResponse.isEmpty) ||
-        (tag != null && tagResponse.isEmpty)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.redAccent,
-          content: Text('Please Connect to the Internet'),
-        ),
-      );
-    }
+    // //Show error message on empty responds
+    // if (newsModelsList.isEmpty ||
+    //     newsModelsList.isEmpty ||
+    //     (postIndex != null && notificationResponse.isEmpty) ||
+    //     (tag != null && tagResponse.isEmpty)) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //       backgroundColor: Colors.redAccent,
+    //       content: Text('Please Connect to the Internet'),
+    //     ),
+    //   );
+    // }
 
     if (notificationResponse.isNotEmpty) {
       if (notificationResponse[0].typeOfPost == "international") {

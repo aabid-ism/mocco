@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mocco/app_preferences.dart';
 import 'package:mocco/enum.dart';
 import 'package:mocco/env.dart';
@@ -78,6 +79,24 @@ class _NewsContainerState extends State<NewsContainer> {
                 newsCards.addAll(nextPostList);
               });
             }
+          }
+          if (newsCards.length == index + 1) {
+            Get.rawSnackbar(
+                messageText: const Text(
+                  'You have caught up with all new stories!',
+                  style: TextStyle(color: Colors.black, fontSize: 15),
+                  textAlign: TextAlign.center,
+                ),
+                isDismissible: true,
+                duration: const Duration(seconds: 10),
+                backgroundColor: const Color(0xFFD9D9D9),
+                icon: const Icon(
+                  Icons.done_all,
+                  color: Colors.black,
+                  size: 30,
+                ),
+                margin: EdgeInsets.zero,
+                snackStyle: SnackStyle.GROUNDED);
           }
         },
         itemBuilder: (BuildContext context, int index) {

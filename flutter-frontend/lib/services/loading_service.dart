@@ -60,7 +60,7 @@ class LoadingService {
   // }
 
   Future<List<NewsCard>> loadNextPosts(NewsScreenUsers postFor,
-      List<int> postConsideredAsReadList, String? tag) async {
+    List<int> postConsideredAsReadList, String? tag) async {
     final newsService = NewsService();
     var actualReadPostList = await getReadPostList(tag);
     var postPath = "";

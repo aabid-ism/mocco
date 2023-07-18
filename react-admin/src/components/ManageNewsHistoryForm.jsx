@@ -139,6 +139,7 @@ const ManageNewsHistoryForm = ({
 
   // function to set the submitted form data to the state.
   const handleSubmit = async (values) => {
+    // checking to see if the description count is greater than 25
     if (!isDeleteMode) {
       if (
         values.description.length < 25 ||
@@ -146,26 +147,27 @@ const ManageNewsHistoryForm = ({
       ) {
         setEditOpen(false);
         setHandleWordLimit(true);
-      }
-    } else {
-      if (imageUpload) {
-        const formData = new FormData();
-        formData.append("image", imageUpload);
-        setImageFormData(formData);
-      }
-
-      setData({
-        ...values,
-        secondaryTags: selectedSecondaryTags ? selectedSecondaryTags : [],
-        imageUrl: imageUrlChip ? imageUrlChip : "",
-        typeOfPost: extra ? "extra" : "essential",
-        postIndex: selectedNews ? selectedNews.postIndex : "",
-      });
-      if (isDeleteMode) {
-        setDeleteOpen(true);
       } else {
         setEditOpen(true);
       }
+    }
+
+    if (imageUpload) {
+      const formData = new FormData();
+      formData.append("image", imageUpload);
+      setImageFormData(formData);
+    }
+
+    setData({
+      ...values,
+      secondaryTags: selectedSecondaryTags ? selectedSecondaryTags : [],
+      imageUrl: imageUrlChip ? imageUrlChip : "",
+      typeOfPost: extra ? "extra" : "essential",
+      postIndex: selectedNews ? selectedNews.postIndex : "",
+    });
+
+    if (isDeleteMode) {
+      setDeleteOpen(true);
     }
   };
 

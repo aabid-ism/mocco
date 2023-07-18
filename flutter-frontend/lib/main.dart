@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:mocco/app_preferences.dart';
+import 'package:mocco/dependency_injection.dart';
 import 'package:mocco/news_provider_state.dart';
 import 'package:mocco/screen_holder.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
@@ -9,6 +11,7 @@ import "env.dart";
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  DependencyInjection.init();
 
   runApp(
     MultiProvider(
@@ -40,7 +43,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Mocco',
       theme: ThemeData(

@@ -35,9 +35,16 @@ class NewsProvider extends ChangeNotifier {
 
     //Get Tag Posts
     if (tag != null) {
-      tagResponse = await newsService.fetchAllNews(
-          '$serverUrl/handleLoading/tag?reqTag=$tag',
-          reqBody: readPostReqBody);
+      if (tag == "today") {
+        DateTime currentDate = DateTime.now();
+        String isoDateString = currentDate.toIso8601String();
+        tagResponse = await newsService.fetchAllNews(
+            '$serverUrl/handleLoading/today?todayDateTime=$isoDateString%2b05:30');
+      } else {
+        tagResponse = await newsService.fetchAllNews(
+            '$serverUrl/handleLoading/today?tagReqUrl=$tag',
+            reqBody: readPostReqBody);
+      }
     }
 
     //Get posts for news & Lifestule

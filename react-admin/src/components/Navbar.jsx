@@ -19,6 +19,7 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import ManageHistoryIcon from "@mui/icons-material/ManageHistory";
 import { Button, ListItemIcon } from "@mui/material";
+import EventIcon from "@mui/icons-material/Event";
 import { useAuthContext } from "../hooks/useAuthContext.js";
 
 const drawerWidth = 240;
@@ -55,6 +56,7 @@ export default function Navbar({ open, setOpen }) {
     { label: "Create a post", url: "/create-post" },
     { label: "Edit and Publish", url: "/edit-and-publish-post" },
     { label: "Manage News History", url: "/manage-news-history" },
+    { label: "Events", url: "/events" },
   ];
 
   const handleDrawerOpen = () => {
@@ -205,6 +207,23 @@ export default function Navbar({ open, setOpen }) {
                 <ManageHistoryIcon />
               </ListItemIcon>
               <ListItemText primary={"Manage News History"} />
+            </ListItemButton>
+          </ListItem>
+        </List>
+
+        <List>
+          <ListItem disablePadding>
+            <ListItemButton
+              sx={{
+                backgroundColor:
+                  activeItem === "Events" ? "#e2e8f0" : "transparent",
+              }}
+              onClick={() => handleListItemClick(tabs[3])}
+            >
+              <ListItemIcon>
+                <EventIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Events"} />
             </ListItemButton>
           </ListItem>
         </List>

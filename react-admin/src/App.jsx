@@ -12,6 +12,7 @@ import {
 import SignIn from "./pages/SignIn";
 // import SignUp from "./pages/SignUp";
 import { useAuthContext } from "./hooks/useAuthContext";
+import Events from "./pages/Events";
 
 function App() {
   const [open, setOpen] = useState(true);
@@ -59,6 +60,14 @@ function App() {
           path: "/manage-news-history",
           element: user ? (
             <ManageNewsHistory open={open} setOpen={setOpen} />
+          ) : (
+            <Navigate to="/" />
+          ),
+        },
+        {
+          path: "/events",
+          element: user ? (
+            <Events open={open} setOpen={setOpen} />
           ) : (
             <Navigate to="/" />
           ),

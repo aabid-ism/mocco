@@ -1,0 +1,757 @@
+// <------------------------ IMPORTS ------------------------------->
+import { useState, useEffect, useRef, forwardRef, cloneElement } from "react";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import { Chip, TextareaAutosize, Tooltip } from "@mui/material";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import Axios from "../utils/axios.js";
+import Backdrop from "@mui/material/Backdrop";
+import { useSpring, animated } from "@react-spring/web";
+import Modal from "@mui/material/Modal";
+import CancelIcon from "@mui/icons-material/Cancel";
+
+// function used for smooth transitioning of the modal
+const Fade = forwardRef(function Fade(props, ref) {
+  const {
+    children,
+    in: open,
+    onClick,
+    onEnter,
+    onExited,
+    ownerState,
+    ...other
+  } = props;
+  const style = useSpring({
+    from: { opacity: 0 },
+    to: { opacity: open ? 1 : 0 },
+    onStart: () => {
+      if (open && onEnter) {
+        onEnter(null, true);
+      }
+    },
+    onRest: () => {
+      if (!open && onExited) {
+        onExited(null, true);
+      }
+    },
+  });
+
+  return (
+    <animated.div ref={ref} style={style} {...other}>
+      {cloneElement(children, { onClick })}
+    </animated.div>
+  );
+});
+
+const EventsForm = ({
+  setSelectedNews,
+  selectedNews,
+  handleSubmitFunc,
+  handleLoaderOpen,
+  handleLoaderClose,
+  handleImageSize,
+  formEnabledToAddEvent,
+  formEnabledToEditEvent,
+}) => {
+  const [editOpen, setEditOpen] = useState(false); // state used to manipulate the opening and closing of edit modal.
+  const [deleteOpen, setDeleteOpen] = useState(false); // state used to manipulate the opening and closing of edit modal.
+  const [publishOpen, setPublishOpen] = useState(false); // state used to manipulate the opening and closing of publish modal.
+  const [valid, setValid] = useState(false); // state to check if form has passed validation.
+  const [data, setData] = useState([]); // state to store the data that has been submitted by form (edit or delete).
+  const [imageUrlChip, setImageUrlChip] = useState(""); // state to track the image url chip.
+  const [isPublishMode, setIsPublishMode] = useState(false); // state to track the publish button.
+  const [isDeleteMode, setIsDeleteMode] = useState(false); // state to track the delete button.
+  const [isEditMode, setIsEditMode] = useState(false); // state to track the delete button.
+  const [imageUpload, setImageUpload] = useState(null); // state to store uploaded image.
+  const [imageFormData, setImageFormData] = useState(null); // state to store form data of the uploaded image.
+  const fileInputRef = useRef(); // useRef to reference the image upload component and reset after submit.
+  const [formEnable, setFormEnable] = useState(true);
+  const formikRef = useRef(null); // useRef to reference the form data of formik.
+
+  useEffect(() => {
+    setImageUrlChip(selectedNews ? selectedNews.imageUrl : "");
+  }, [selectedNews]);
+
+  useEffect(() => {
+    if (!formEnabledToAddEvent) {
+      setSelectedNews(null);
+      setImageUrlChip("");
+    }
+
+    if (formEnabledToAddEvent || formEnabledToEditEvent) {
+      setFormEnable(false);
+    }
+  }, [formEnabledToAddEvent, formEnabledToAddEvent]);
+
+  // Initial values of the form data.
+  const initialValues = {
+    id: selectedNews ? selectedNews._id : "",
+    name: selectedNews ? selectedNews.name : "",
+    s_name: selectedNews ? selectedNews.s_name : "",
+    desc: selectedNews ? selectedNews.desc : "",
+    s_desc: selectedNews ? selectedNews.s_desc : "",
+    imageUrl: formikRef.current
+      ? formikRef.current.files
+        ? formikRef.current.files[0]
+        : null
+      : null,
+    srcUrl: selectedNews ? selectedNews.srcUrl : "",
+  };
+
+  // function to set the submitted form data to the state.
+  const handleSubmit = async (values) => {
+    if (imageUpload) {
+      const formData = new FormData();
+      formData.append("image", imageUpload);
+      setImageFormData(formData);
+    }
+
+    setData({
+      ...values,
+      imageUrl: imageUrlChip ? imageUrlChip : "",
+    });
+
+    if (isPublishMode) {
+      setPublishOpen(true);
+    } else if (isEditMode) {
+      setEditOpen(true);
+    } else if (isDeleteMode) {
+      setDeleteOpen(true);
+    }
+  };
+
+  // function to add the image upload to a state
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    const maxSize = 1 * 1024 * 1024; // 1MB (in bytes)
+
+    if (file && file.size > maxSize) {
+      handleImageSize(fileInputRef);
+    } else {
+      setImageUpload(file);
+    }
+  };
+
+  // function that sends updated form data to the backend after confirmation from the pop up.
+  const handleEditConfirm = async (resetForm) => {
+    setEditOpen(false);
+    handleLoaderOpen();
+    let request = data;
+
+    // get bearer token
+    const storedUser = localStorage.getItem("user");
+    const token = storedUser ? JSON.parse(storedUser).token : null;
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    if (imageFormData) {
+      try {
+        imageFormData.append(
+          "imageUrl",
+          selectedNews ? selectedNews.imageUrl : ""
+        );
+        // checking to differentiate between an already existing post or a newly added post
+        if (selectedNews && selectedNews.imageUrl) {
+          let imageResponse = await Axios.post("/image", imageFormData);
+          try {
+            const imgUrl = selectedNews.imageUrl;
+            let deleteResponse = await Axios.post("/image/delete-image", {
+              imgUrl,
+            });
+            handleSubmitFunc(deleteResponse);
+          } catch (err) {
+            handleSubmitFunc(err);
+            console.log(err);
+          }
+          request = { ...data, imageUrl: imageResponse.data };
+        } else {
+          let imageResponse = await Axios.post("/image", imageFormData);
+          request = { ...data, imageUrl: imageResponse.data };
+        }
+      } catch (err) {
+        handleSubmitFunc(err);
+        console.log(err);
+      }
+    }
+
+    try {
+      // statement to check the new property change
+      let response = await Axios.post(
+        "/events/edit-event-data",
+        {
+          ...request,
+        },
+        { headers }
+      );
+      response && handleLoaderClose();
+      setSelectedNews(null);
+      resetForm();
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      setImageUpload(null);
+      setValid(false);
+      handleSubmitFunc(response);
+      setImageUrlChip("");
+    } catch (err) {
+      handleSubmitFunc(err);
+      console.error(err);
+    }
+  };
+
+  // function that deletes form data to the backend after confirmation from the pop up.
+  const handleDeleteConfirm = async (resetForm) => {
+    setDeleteOpen(false);
+    handleLoaderOpen();
+
+    try {
+      // get bearer token
+      const storedUser = localStorage.getItem("user");
+      const token = storedUser ? JSON.parse(storedUser).token : null;
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+      const response = await Axios.post("/events/delete-event-data", data, {
+        headers,
+      });
+      response && handleLoaderClose();
+      setSelectedNews(null);
+      resetForm();
+      setImageUpload(null);
+      setValid(false);
+      setImageUrlChip("");
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      handleSubmitFunc(response);
+    } catch (err) {
+      console.error(err);
+      err && handleLoaderClose();
+      handleSubmitFunc(err);
+    }
+
+    if (data.imageUrl) {
+      try {
+        const imgUrl = data.imageUrl;
+        await Axios.post("/image/delete-image", { imgUrl });
+      } catch (err) {
+        handleSubmitFunc(err);
+        console.log(err);
+      }
+    }
+  };
+
+  // function that sends deleted form data to the backend after confirmation from the pop up.
+  const handlePublishConfirm = async (resetForm) => {
+    setPublishOpen(false);
+    handleLoaderOpen();
+    let request = data;
+    // get bearer token
+    const storedUser = localStorage.getItem("user");
+    const token = storedUser ? JSON.parse(storedUser).token : null;
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    if (imageFormData) {
+      try {
+        let imageResponse = await Axios.post("/image", imageFormData);
+        request = { ...data, imageUrl: imageResponse.data };
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    try {
+      // statement to check the new property change
+      let response = await Axios.post(
+        "/events/add-event-data",
+        {
+          ...request,
+        },
+        { headers }
+      );
+      response && handleLoaderClose();
+      setSelectedNews(null);
+      resetForm();
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      setImageUpload(null);
+      setValid(false);
+      handleSubmitFunc(response);
+      setImageUrlChip("");
+    } catch (err) {
+      handleSubmitFunc(err);
+      console.error(err);
+    }
+  };
+
+  // function used to set state based on if the if the validation is passed.
+  const isValidationPassed = (values) => {
+    try {
+      validationSchema.validateSync(values);
+      setValid(true);
+      return true;
+    } catch (error) {
+      setValid(false);
+      return false;
+    }
+  };
+
+  // validation schema to define the error message.
+  const validationSchema = Yup.object({
+    name:
+      formEnabledToEditEvent &&
+      Yup.string().required("News Headline is required"),
+    s_name:
+      formEnabledToEditEvent &&
+      Yup.string().required("Sinhala News Title is required"),
+    desc:
+      formEnabledToEditEvent &&
+      Yup.string().required("News Description is required"),
+    s_desc:
+      formEnabledToEditEvent &&
+      Yup.string().required("Sinhala News Description is required"),
+    imageUrl:
+      formEnabledToEditEvent &&
+      imageUrlChip === "" &&
+      !imageUpload &&
+      Yup.string().required("Image URL is required"),
+    srcUrl:
+      formEnabledToEditEvent && Yup.string().required("Source URL is required"),
+  });
+
+  return (
+    <Formik
+      innerRef={formikRef}
+      initialValues={initialValues}
+      onSubmit={handleSubmit}
+      validationSchema={validationSchema}
+      validate={isValidationPassed}
+      enableReinitialize={true}
+    >
+      {(formProps) => {
+        return (
+          <Form>
+            <Box sx={{ marginBottom: "2%" }}>
+              <label htmlFor="name">
+                <Typography fontWeight="bold">Event Name</Typography>
+              </label>
+              <Field
+                disabled={formEnable}
+                as={TextField}
+                id="name"
+                name="name"
+                variant="outlined"
+                fullWidth
+                inputProps={{
+                  style: {
+                    padding: "10px",
+                  },
+                  maxLength: 100,
+                }}
+              />
+              <ErrorMessage
+                name="name"
+                component="div"
+                style={{
+                  color: "red",
+                  fontSize: "0.8rem",
+                }}
+              />
+            </Box>
+
+            <Box sx={{ marginBottom: "2%" }}>
+              <label htmlFor="s_name">
+                <Typography fontWeight="bold">Event Name (Sinhala)</Typography>
+              </label>
+              <Field
+                disabled={formEnable}
+                as={TextField}
+                id="s_name"
+                name="s_name"
+                variant="outlined"
+                fullWidth
+                inputProps={{
+                  style: {
+                    padding: "10px",
+                  },
+                  maxLength: 100,
+                }}
+              />
+              <ErrorMessage
+                name="s_name"
+                component="div"
+                style={{
+                  color: "red",
+                  fontSize: "0.8rem",
+                }}
+              />
+            </Box>
+
+            <Box sx={{ marginBottom: "2%" }}>
+              <label htmlFor="desc">
+                <Typography fontWeight="bold">Event Description</Typography>
+              </label>
+              <Field
+                disabled={formEnable}
+                as={TextareaAutosize}
+                id="desc"
+                name="desc"
+                maxLength={350}
+                minRows={3}
+                maxRows={5}
+                placeholder="Enter text here..."
+                style={{
+                  width: "100%",
+                  padding: "20px",
+                  resize: "none",
+                  border: "1px solid #ccc",
+                }}
+              />
+              <ErrorMessage
+                name="desc"
+                component="div"
+                style={{
+                  color: "red",
+                  fontSize: "0.8rem",
+                }}
+              />
+            </Box>
+
+            <Box sx={{ marginBottom: "2%" }}>
+              <label htmlFor="s_desc">
+                <Typography fontWeight="bold">
+                  Event Description (Sinhala)
+                </Typography>
+              </label>
+              <Field
+                disabled={formEnable}
+                as={TextareaAutosize}
+                id="s_desc"
+                name="s_desc"
+                maxLength={350}
+                minRows={3}
+                maxRows={5}
+                placeholder="Enter text here..."
+                style={{
+                  width: "100%",
+                  padding: "20px",
+                  resize: "none",
+                  border: "1px solid #ccc",
+                }}
+              />
+              <ErrorMessage
+                name="s_desc"
+                component="div"
+                style={{
+                  color: "red",
+                  fontSize: "0.8rem",
+                }}
+              />
+            </Box>
+
+            <Box sx={{ marginBottom: "2%" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                }}
+              >
+                <label htmlFor="image">
+                  <Typography fontWeight="bold">
+                    Choose Image (JPG or PNG)
+                  </Typography>
+                </label>
+                {imageUrlChip ? (
+                  <Tooltip name={imageUrlChip} arrow>
+                    <Chip
+                      id="image"
+                      name="image"
+                      label={imageUrlChip}
+                      size="small"
+                      onClick={() => {
+                        window.open(imageUrlChip, "_blank");
+                      }}
+                      onDelete={() => setImageUrlChip("")}
+                      deleteIcon={<CancelIcon />}
+                      sx={{
+                        maxWidth: "150px",
+                        marginLeft: "2%",
+                        marginBottom: "2%",
+                        backgroundColor: "orange",
+                        color: "white",
+                      }}
+                    />
+                  </Tooltip>
+                ) : null}
+              </Box>
+
+              <Field
+                inputRef={fileInputRef}
+                disabled={imageUrlChip ? true : formEnable ? true : false}
+                component={TextField}
+                name="imageUrl"
+                type="file"
+                variant="outlined"
+                fullWidth
+                inputProps={{ accept: "image/jpeg, image/png" }}
+                onChange={(event) => handleFileChange(event)}
+              />
+              <ErrorMessage
+                name="imageUrl"
+                component="div"
+                style={{
+                  color: "red",
+                  fontSize: "0.8rem",
+                }}
+              />
+            </Box>
+
+            <Box sx={{ marginBottom: "2%" }}>
+              <label htmlFor="srcUrl">
+                <Typography fontWeight="bold">Source URL</Typography>
+              </label>
+              <Field
+                disabled={formEnable}
+                as={TextField}
+                id="srcUrl"
+                name="srcUrl"
+                variant="outlined"
+                fullWidth
+                inputProps={{
+                  style: {
+                    padding: "10px",
+                  },
+                }}
+              />
+              <ErrorMessage
+                name="srcUrl"
+                component="div"
+                style={{
+                  color: "red",
+                  fontSize: "0.8rem",
+                }}
+              />
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 2,
+              }}
+            >
+              <Button
+                disabled={formEnabledToEditEvent}
+                variant="contained"
+                type="submit"
+                onClick={() => {
+                  valid && setEditOpen(true);
+                  setIsPublishMode(false);
+                  setIsDeleteMode(false);
+                  setIsEditMode(true);
+                }}
+              >
+                Edit
+              </Button>
+              <Button
+                disabled={formEnabledToEditEvent}
+                variant="contained"
+                type="submit"
+                sx={{
+                  backgroundColor: "red",
+                  "&:hover": {
+                    backgroundColor: "red",
+                  },
+                }}
+                onClick={() => {
+                  valid && setDeleteOpen(true);
+                  setIsPublishMode(false);
+                  setIsDeleteMode(true);
+                  setIsEditMode(false);
+                }}
+              >
+                Delete
+              </Button>
+              <Button
+                disabled={formEnabledToAddEvent}
+                variant="contained"
+                type="submit"
+                sx={{
+                  backgroundColor: "green",
+                  "&:hover": {
+                    backgroundColor: "green",
+                  },
+                }}
+                onClick={() => {
+                  valid && setPublishOpen(true);
+                  setIsPublishMode(true);
+                  setIsDeleteMode(false);
+                  setIsEditMode(false);
+                }}
+              >
+                Publish
+              </Button>
+            </Box>
+            {editOpen && (
+              <Modal
+                aria-labelledby="spring-modal-title"
+                aria-describedby="spring-modal-description"
+                open={editOpen}
+                onClose={() => {
+                  setEditOpen(false);
+                  setValid(false);
+                }}
+                closeAfterTransition
+                slots={{ backdrop: Backdrop }}
+                slotProps={{
+                  backdrop: {
+                    TransitionComponent: Fade,
+                  },
+                }}
+              >
+                <Fade in={editOpen}>
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      width: 400,
+                      bgcolor: "background.paper",
+                      border: "2px solid #000",
+                      boxShadow: 24,
+                      p: 4,
+                      textAlign: "center",
+                    }}
+                  >
+                    <Typography id="spring-modal-description" sx={{ mt: 2 }}>
+                      Are you sure you want to edit this article?
+                    </Typography>
+                    <Button
+                      sx={{ mt: 2, mx: "auto" }}
+                      variant="contained"
+                      onClick={handleEditConfirm.bind(
+                        null,
+                        formProps.resetForm
+                      )}
+                    >
+                      Yes
+                    </Button>
+                  </Box>
+                </Fade>
+              </Modal>
+            )}
+
+            {deleteOpen && (
+              <Modal
+                aria-labelledby="spring-modal-title"
+                aria-describedby="spring-modal-description"
+                open={deleteOpen}
+                onClose={() => {
+                  setDeleteOpen(false);
+                  setValid(false);
+                }}
+                closeAfterTransition
+                slots={{ backdrop: Backdrop }}
+                slotProps={{
+                  backdrop: {
+                    TransitionComponent: Fade,
+                  },
+                }}
+              >
+                <Fade in={deleteOpen}>
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      width: 400,
+                      bgcolor: "background.paper",
+                      border: "2px solid #000",
+                      boxShadow: 24,
+                      p: 4,
+                      textAlign: "center",
+                    }}
+                  >
+                    <Typography id="spring-modal-description" sx={{ mt: 2 }}>
+                      Are you sure you want to delete this article?
+                    </Typography>
+                    <Button
+                      sx={{ mt: 2, mx: "auto" }}
+                      variant="contained"
+                      onClick={handleDeleteConfirm.bind(
+                        null,
+                        formProps.resetForm
+                      )}
+                    >
+                      Yes
+                    </Button>
+                  </Box>
+                </Fade>
+              </Modal>
+            )}
+
+            {publishOpen && (
+              <Modal
+                aria-labelledby="spring-modal-title"
+                aria-describedby="spring-modal-description"
+                open={publishOpen}
+                onClose={() => {
+                  setPublishOpen(false);
+                  setValid(false);
+                }}
+                closeAfterTransition
+                slots={{ backdrop: Backdrop }}
+                slotProps={{
+                  backdrop: {
+                    TransitionComponent: Fade,
+                  },
+                }}
+              >
+                <Fade in={publishOpen}>
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      width: 400,
+                      bgcolor: "background.paper",
+                      border: "2px solid #000",
+                      boxShadow: 24,
+                      p: 4,
+                      textAlign: "center",
+                    }}
+                  >
+                    <Typography id="spring-modal-description" sx={{ mt: 2 }}>
+                      Are you sure you want to publish this article?
+                    </Typography>
+                    <Button
+                      sx={{ mt: 2, mx: "auto" }}
+                      variant="contained"
+                      onClick={handlePublishConfirm.bind(
+                        null,
+                        formProps.resetForm
+                      )}
+                    >
+                      Yes
+                    </Button>
+                  </Box>
+                </Fade>
+              </Modal>
+            )}
+          </Form>
+        );
+      }}
+    </Formik>
+  );
+};
+
+export default EventsForm;

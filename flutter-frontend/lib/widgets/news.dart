@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mocco/app_preferences.dart';
 import 'package:mocco/enum.dart';
 import 'package:mocco/env.dart';
@@ -7,7 +8,9 @@ import 'package:mocco/models/news_card.dart';
 import 'package:mocco/news_provider_state.dart';
 import 'package:mocco/services/loading_service.dart';
 import 'package:mocco/widgets/bottom_bar.dart';
+import 'package:mocco/widgets/scroll_donw.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NewsContainer extends StatefulWidget {
   final NewsScreenUsers requestSource;
@@ -25,6 +28,13 @@ class _NewsContainerState extends State<NewsContainer> {
   late NewsScreenUsers _containerReqFrom;
   List<NewsCard> newsList = [];
   final LoadingService loadingService = LoadingService();
+  late bool isFirstLaunch = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkFirstLaunch();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +79,24 @@ class _NewsContainerState extends State<NewsContainer> {
                 newsCards.addAll(nextPostList);
               });
             }
+          }
+          if (newsCards.length == index + 1) {
+            Get.rawSnackbar(
+                messageText: const Text(
+                  'You have caught up with all new stories!',
+                  style: TextStyle(color: Colors.black, fontSize: 15),
+                  textAlign: TextAlign.center,
+                ),
+                isDismissible: true,
+                duration: const Duration(seconds: 10),
+                backgroundColor: const Color(0xFFD9D9D9),
+                icon: const Icon(
+                  Icons.done_all,
+                  color: Colors.black,
+                  size: 30,
+                ),
+                margin: EdgeInsets.zero,
+                snackStyle: SnackStyle.GROUNDED);
           }
         },
         itemBuilder: (BuildContext context, int index) {
@@ -273,12 +301,32 @@ class _NewsContainerState extends State<NewsContainer> {
                     ),
                   ),
                 ),
+                Visibility(
+                  visible: isFirstLaunch && index == 0,
+                  child: const Positioned(
+                    bottom: 17,
+                    left: 0,
+                    right: 0,
+                    child: ScrollDown(),
+                  ),
+                ),
               ],
             ),
           );
         },
       ),
     );
+  }
+
+  Future<void> _checkFirstLaunch() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isFirst = prefs.getBool('is_first_launch') ?? true;
+    setState(() {
+      isFirstLaunch = isFirst;
+    });
+    if (isFirst) {
+      prefs.setBool('is_first_launch', false);
+    }
   }
 }
 

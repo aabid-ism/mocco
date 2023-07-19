@@ -35,9 +35,16 @@ class NewsProvider extends ChangeNotifier {
 
     //Get Tag Posts
     if (tag != null) {
-      tagResponse = await newsService.fetchAllNews(
-          '$serverUrl/handleLoading/tag?reqTag=$tag',
-          reqBody: readPostReqBody);
+      if (tag == "today") {
+        DateTime currentDate = DateTime.now();
+        String isoDateString = currentDate.toIso8601String();
+        tagResponse = await newsService.fetchAllNews(
+            '$serverUrl/handleLoading/today?todayDateTime=$isoDateString%2b05:30');
+      } else {
+        tagResponse = await newsService.fetchAllNews(
+            '$serverUrl/handleLoading/today?tagReqUrl=$tag',
+            reqBody: readPostReqBody);
+      }
     }
 
     //Get posts for news & Lifestule
@@ -48,18 +55,18 @@ class NewsProvider extends ChangeNotifier {
         '$serverUrl/handleLoading/international-news',
         reqBody: readPostReqBody);
 
-    //Show error message on empty responds
-    if (newsModelsList.isEmpty ||
-        newsModelsList.isEmpty ||
-        (postIndex != null && notificationResponse.isEmpty) ||
-        (tag != null && tagResponse.isEmpty)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.redAccent,
-          content: Text('Please Connect to the Internet'),
-        ),
-      );
-    }
+    // //Show error message on empty responds
+    // if (newsModelsList.isEmpty ||
+    //     newsModelsList.isEmpty ||
+    //     (postIndex != null && notificationResponse.isEmpty) ||
+    //     (tag != null && tagResponse.isEmpty)) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //       backgroundColor: Colors.redAccent,
+    //       content: Text('Please Connect to the Internet'),
+    //     ),
+    //   );
+    // }
 
     if (notificationResponse.isNotEmpty) {
       if (notificationResponse[0].typeOfPost == "international") {

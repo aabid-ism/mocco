@@ -5,7 +5,7 @@ import 'package:mocco/news_provider_state.dart';
 import 'package:mocco/widgets/news.dart';
 import 'package:provider/provider.dart';
 
-class ExploreScreen extends StatelessWidget {
+class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
 
   static const items = [
@@ -24,8 +24,52 @@ class ExploreScreen extends StatelessWidget {
   ];
 
   @override
+  State<ExploreScreen> createState() => _ExploreScreenState();
+}
+
+class _ExploreScreenState extends State<ExploreScreen> {
+  bool _isDark = true;
+  double _size = 45;
+  void _animateShape() {
+    setState(() {
+      _isDark = !_isDark;
+      _isDark ? _size = 45 : _size = 40;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.fromLTRB(42, 0, 10, 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            FloatingActionButton(
+              heroTag: "themeSwitcherFAB",
+              backgroundColor: const Color.fromARGB(255, 217, 217, 217),
+              onPressed: _animateShape,
+              child: SvgPicture.asset(
+                _isDark
+                    ? 'assets/icons/light_mode.svg'
+                    : 'assets/icons/dark_mode.svg',
+                height: _size,
+                width: _size,
+              ),
+            ),
+            FloatingActionButton(
+              heroTag: "settingsFAB",
+              backgroundColor: const Color.fromARGB(255, 217, 217, 217),
+              onPressed: () {},
+              child: SvgPicture.asset(
+                'assets/icons/settings.svg',
+                height: 35,
+                width: 35,
+              ),
+            ),
+          ],
+        ),
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(27, 70, 27, 27),
@@ -33,7 +77,7 @@ class ExploreScreen extends StatelessWidget {
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3, // Number of columns in the grid
             ),
-            itemCount: items.length,
+            itemCount: ExploreScreen.items.length,
             itemBuilder: (context, index) {
               return GridTile(
                 child: Padding(
@@ -45,7 +89,8 @@ class ExploreScreen extends StatelessWidget {
                           await Provider.of<NewsProvider>(context,
                                   listen: false)
                               .fetchNewsFromService(context,
-                                  tag: items[index].toLowerCase());
+                                  tag:
+                                      ExploreScreen.items[index].toLowerCase());
                         });
                         Navigator.push(
                             context,
@@ -53,10 +98,11 @@ class ExploreScreen extends StatelessWidget {
                                 builder: (context) => NewsContainer(
                                     requestSource:
                                         NewsScreenUsers.explorerScreen,
-                                    tag: items[index].toLowerCase())));
+                                    tag: ExploreScreen.items[index]
+                                        .toLowerCase())));
                       },
                       child: Container(
-                        key: Key("${items[index]}-cntr"),
+                        key: Key("${ExploreScreen.items[index]}-cntr"),
                         decoration: BoxDecoration(
                           color: const Color.fromARGB(255, 217, 217, 217),
                           borderRadius: BorderRadius.circular(15.0),
@@ -69,14 +115,14 @@ class ExploreScreen extends StatelessWidget {
                             children: [
                               Center(
                                 child: SvgPicture.asset(
-                                  'assets/icons/$index.svg',
+                                  'assets/icons/tags/$index.svg',
                                   height: imageSize,
                                   width: imageSize,
                                 ),
                               ),
                               const SizedBox(height: 10),
                               Text(
-                                items[index],
+                                ExploreScreen.items[index],
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,

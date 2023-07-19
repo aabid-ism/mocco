@@ -1,7 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart';
 import 'package:mocco/widgets/no_internet.dart';
 
 class NetworkController extends GetxController {
@@ -32,7 +31,7 @@ class NetworkController extends GetxController {
             textAlign: TextAlign.center,
           ),
           isDismissible: false,
-          duration: const Duration(seconds: 15),
+          duration: const Duration(seconds: 10),
           backgroundColor: Colors.red[400]!,
           icon: const Icon(
             Icons.wifi_off_rounded,
@@ -58,7 +57,7 @@ class NetworkController extends GetxController {
               textAlign: TextAlign.center,
             ),
             isDismissible: false,
-            duration: const Duration(seconds: 7),
+            duration: const Duration(seconds: 4),
             backgroundColor: Colors.green,
             icon: const Icon(
               Icons.wifi_rounded,

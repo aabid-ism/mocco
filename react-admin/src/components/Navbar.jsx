@@ -158,7 +158,7 @@ export default function Navbar({ open, setOpen }) {
           </IconButton>
         </Box>
 
-        <List>
+        <List sx={{ paddingX: "3%" }}>
           <ListItem disablePadding>
             <ListItemButton
               sx={{
@@ -175,7 +175,7 @@ export default function Navbar({ open, setOpen }) {
           </ListItem>
         </List>
 
-        <List>
+        <List sx={{ paddingX: "3%" }}>
           <ListItem disablePadding>
             <ListItemButton
               sx={{
@@ -192,7 +192,7 @@ export default function Navbar({ open, setOpen }) {
           </ListItem>
         </List>
 
-        <List>
+        <List sx={{ paddingX: "3%" }}>
           <ListItem disablePadding>
             <ListItemButton
               sx={{
@@ -211,7 +211,7 @@ export default function Navbar({ open, setOpen }) {
           </ListItem>
         </List>
 
-        <List>
+        <List sx={{ paddingX: "3%" }}>
           <ListItem disablePadding>
             <ListItemButton
               sx={{

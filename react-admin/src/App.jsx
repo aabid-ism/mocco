@@ -43,7 +43,10 @@ function App() {
         {
           path: "/create-post",
           element: user ? (
-            <CreatePost open={open} setOpen={setOpen} />
+            <>
+              <Navigate to="/create-post" />
+              <CreatePost open={open} setOpen={setOpen} />
+            </>
           ) : (
             <Navigate to="/" />
           ),
@@ -51,7 +54,10 @@ function App() {
         {
           path: "/edit-and-publish-post",
           element: user ? (
-            <EditAndPublish open={open} setOpen={setOpen} />
+            <>
+              <Navigate to="/edit-and-publish-post" />
+              <EditAndPublish open={open} setOpen={setOpen} />
+            </>
           ) : (
             <Navigate to="/" />
           ),
@@ -59,7 +65,10 @@ function App() {
         {
           path: "/manage-news-history",
           element: user ? (
-            <ManageNewsHistory open={open} setOpen={setOpen} />
+            <>
+              <Navigate to="/manage-news-history" />
+              <ManageNewsHistory open={open} setOpen={setOpen} />
+            </>
           ) : (
             <Navigate to="/" />
           ),
@@ -67,7 +76,10 @@ function App() {
         {
           path: "/events",
           element: user ? (
-            <Events open={open} setOpen={setOpen} />
+            <>
+              <Navigate to="/events" />
+              <Events open={open} setOpen={setOpen} />
+            </>
           ) : (
             <Navigate to="/" />
           ),

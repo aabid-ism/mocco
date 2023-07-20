@@ -19,7 +19,7 @@ function FeedContainer() {
   const isLoadingMorePostsRef = useRef(false);
   // ref is needed to directly access and mutate a state variable from the handlescroll event handler
   let metaDataForLoading = useRef({
-    feedTag: "NEWS",
+    feedTag: "LOCAL",
     newsTag: null,
     lastPostIndex: null,
   });
@@ -48,18 +48,18 @@ function FeedContainer() {
 
       let morePosts;
 
-      if (metaDataForLoading.current.feedTag == "NEWS") {
+      if (metaDataForLoading.current.feedTag == "LOCAL") {
         morePosts = await loadMorePosts(
-          "ALL",
+          "LOCAL",
           metaDataForLoading.current.lastPostIndex
         );
         dispatch({
           type: "LOAD_TO_FEED",
           payload: morePosts,
         });
-      } else if (metaDataForLoading.current.feedTag == "LIFESTYLE") {
+      } else if (metaDataForLoading.current.feedTag == "INTERNATIONAL") {
         morePosts = await loadMorePosts(
-          "LIFESTYLE",
+          "INTERNATIONAL",
           metaDataForLoading.current.lastPostIndex
         );
       } else if (metaDataForLoading.current.feedTag == "TAG") {

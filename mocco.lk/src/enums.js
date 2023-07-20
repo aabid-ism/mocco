@@ -4,21 +4,21 @@ export const Language = {
 };
 
 export const FeedType = {
-  NEWS: "NEWS",
-  LIFESTYLE: "LIFESTYLE",
+  LOCAL: "LOCAL",
+  INTERNATIONAL: "INTERNATIONAL",
   TAG: "TAG",
 };
 
 export const NewsType = {
   EMPTY: "",
   ACCIDENTS: "Accidents",
-  ECONOMY: "Economy",
   CRIME: "Crime",
+  ECONOMY: "Economy",
   EDUCATION: "Education",
   ENTERTAINMENT: "Entertainment",
   ENVIRONMENT: "Environment",
-  HUMANITARIAN: "Humanitarian",
   HEALTH: "Health",
+  HUMANITARIAN: "Humanitarian",
   POLITICS: "Politics",
   SPORTS: "Sports",
   TECHNOLOGY: "Technology",

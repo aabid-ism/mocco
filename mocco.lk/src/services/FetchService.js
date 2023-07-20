@@ -11,9 +11,19 @@ export async function fetchDefaultFeed() {
   }
 }
 
+export async function fetchIntlNews() {
+  try {
+    const response = await baseAxios.get("news/international-news");
+    // console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 // load more posts
 export async function loadMorePosts(post_type, ref_postIndex, tag = null) {
-  if (post_type == "ALL") {
+  if (post_type == "LOCAL") {
     try {
       const response = await baseAxios.get(
         `/loadposts/local-news/?ref_postIndex=${ref_postIndex}/`
@@ -27,6 +37,16 @@ export async function loadMorePosts(post_type, ref_postIndex, tag = null) {
     try {
       const response = await baseAxios.get(
         `/loadPosts/tag/?ref_postIndex=${ref_postIndex}&req_tag=${tag.toLowerCase()}`
+      );
+      // console.log(response.data);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  } else if (post_type == "INTERNATIONAL") {
+    try {
+      const response = await baseAxios.get(
+        `/loadPosts/international-news/?ref_postIndex=${ref_postIndex}}/`
       );
       // console.log(response.data);
       return response.data;

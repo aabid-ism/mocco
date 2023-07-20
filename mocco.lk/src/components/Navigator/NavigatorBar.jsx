@@ -2,11 +2,45 @@ import React from "react";
 import { Navbar, Container, Nav, NavDropdown, Col } from "react-bootstrap";
 import "./Navigator.css";
 import LanguageToggle from "../left/LanguageToggle";
+import {
+  fetchDefaultFeed,
+  fetchIntlNews,
+  loadMorePosts,
+} from "../../services/FetchService";
+import { useMoccoNewsFeedDispatchContext } from "../../providers/NewsProvider";
+import { NewsType } from "../../enums";
 
 function NavigatorBar() {
-  function handleSelect(eventKey) {
-    // Fetch
-    // Dispatch
+  const dispatch = useMoccoNewsFeedDispatchContext();
+  const newsTagsList = Object.values(NewsType);
+  const tagDropdown = newsTagsList.map((tag) => (
+    <NavDropdown.Item eventKey={tag} key={tag}>
+      {tag}
+    </NavDropdown.Item>
+  ));
+  console.log(tagDropdown);
+  async function handleSelect(eventKey) {
+    if (eventKey == "Local") {
+      const data = await fetchDefaultFeed();
+      dispatch({
+        type: "DispatchDefaultFeed",
+        payload: data,
+      });
+    } else if (eventKey == "International") {
+      const data = await fetchIntlNews();
+
+      dispatch({
+        type: "LOAD_INTL_TO_FEED",
+        payload: data,
+      });
+    } else {
+      const data = await loadMorePosts("TAG", 99999, eventKey);
+      dispatch({
+        type: "SET_TAG_FEED",
+        // toUpperCase because in the provider we use enums.js
+        payload: { tag: eventKey.toUpperCase(), data: data },
+      });
+    }
   }
 
   return (
@@ -28,19 +62,19 @@ function NavigatorBar() {
           id="basic-navbar-nav"
           className="justify-content-center"
         >
-          <Nav className="text-center">
+          <Nav
+            variant="underline"
+            className="text-center"
+            onSelect={handleSelect}
+            defaultActiveKey="Local"
+          >
             <NavDropdown title="Explore" id="basic-nav-dropdown">
-              <NavDropdown.Item href="#action/3.1">News Tag 1</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.2">News Tag 2</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.3">News Tag 3</NavDropdown.Item>
+              {tagDropdown}
+
               <NavDropdown.Divider />
-              <NavDropdown.Item href="#action/3.4">
-                Separated News Tag
-              </NavDropdown.Item>
+              <NavDropdown.Item eventKey="Mocco">Mocco</NavDropdown.Item>
             </NavDropdown>
-            <Nav.Link eventKey="Local" active>
-              Local
-            </Nav.Link>
+            <Nav.Link eventKey="Local">Local</Nav.Link>
             <Nav.Link eventKey="International">International</Nav.Link>
           </Nav>
         </Navbar.Collapse>

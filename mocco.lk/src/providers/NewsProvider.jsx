@@ -42,7 +42,18 @@ function moccoReducer(state, action) {
       // console.log(action.payload);
       return {
         ...state,
-        feedTag: FeedType.NEWS,
+        feedTag: FeedType.LOCAL,
+        newsTag: NewsType.EMPTY,
+        postFeed: action.payload,
+        is_loading: false,
+      };
+    }
+
+    case "LOAD_INTL_TO_FEED": {
+      // console.log(action.payload);
+      return {
+        ...state,
+        feedTag: FeedType.INTERNATIONAL,
         newsTag: NewsType.EMPTY,
         postFeed: action.payload,
         is_loading: false,

@@ -39,6 +39,7 @@ function TagAnimation(props) {
         style={style}
         loop={true}
       />
+      <h2>{props.tag}</h2>
     </div>
   );
 }

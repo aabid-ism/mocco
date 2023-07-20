@@ -46,6 +46,7 @@ function moccoReducer(state, action) {
         newsTag: NewsType.EMPTY,
         postFeed: action.payload,
         is_loading: false,
+        need_to_go_up: true,
       };
     }
 
@@ -57,6 +58,7 @@ function moccoReducer(state, action) {
         newsTag: NewsType.EMPTY,
         postFeed: action.payload,
         is_loading: false,
+        need_to_go_up: true,
       };
     }
 
@@ -77,6 +79,7 @@ function moccoReducer(state, action) {
         newsTag: NewsType[action.payload.tag],
         postFeed: [...action.payload.data],
         is_loading: false,
+        need_to_go_up: true,
       };
     }
 
@@ -95,9 +98,11 @@ function moccoReducer(state, action) {
         language: action.payload,
       };
     }
-    case "SetNFetchTagSpecificFeed": {
-    }
-    case "FetchYdayFeed": {
+    case "WENT_UP": {
+      return {
+        ...state,
+        need_to_go_up: false,
+      };
     }
     default: {
       throw Error("Unknown action: " + action.type);
@@ -108,8 +113,9 @@ function moccoReducer(state, action) {
 // Initial Mocco
 const initialState = {
   language: "English",
-  is_loading: true,
   feedTag: FeedType.NEWS,
   newsTag: NewsType.EMPTY,
   postFeed: [],
+  is_loading: true,
+  need_to_go_up: false,
 };

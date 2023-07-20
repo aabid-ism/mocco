@@ -22,14 +22,16 @@ const app = express();
 const PORT = process.env.PORT || 5555;
 
 //  Middlewares
+const allowedOrigins = ["https://mocco-admin.web.app", "https://mocco.lk"];
+
 const corsOptions = {
-  origin: "*",
+  origin: allowedOrigins,
 };
 
 // Limit requests from a single IP to 100 requests per hour
 const limiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 200,
+  windowMs: 60 * 1000, // 1 minute
+  max: 500,
 });
 
 app.use(limiter);
@@ -59,6 +61,7 @@ app.use("/loadPosts", loadposts);
 app.use("/handleLoading", handleLoading);
 app.use("/events", events);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(jsonObject));
+// app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(jsonObject));
 
 // Global error handling
 app.use((err, _req, res, next) => {

@@ -1,12 +1,17 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import NewsCard from "./NewsCard/NewsCard";
+import Row from "react-bootstrap/Row";
 import {
   useMoccoNewsFeedContext,
   useMoccoNewsFeedDispatchContext,
 } from "../providers/NewsProvider";
 import { fetchDefaultFeed, loadMorePosts } from "../services/FetchService";
 import LoadingSpinner from "./loadspinner";
-// import Lottie from "react-lottie";
+import LanguageToggle from "./left/LanguageToggle";
+import Lottie from "lottie-react";
+import TagAnimation from "./TagAnimation";
+import { FeedType } from "../enums";
+
 // import hook from "../assets/hook.json";
 function FeedContainer() {
   // getting references for the dispatch function and appState(moccoContext)
@@ -17,7 +22,7 @@ function FeedContainer() {
   const isLoadingMorePostsRef = useRef(false);
   // ref is needed to directly access and mutate a state variable from the handlescroll event handler
   let metaDataForLoading = useRef({
-    feedTag: "NEWS",
+    feedTag: "LOCAL",
     newsTag: null,
     lastPostIndex: null,
   });
@@ -46,18 +51,18 @@ function FeedContainer() {
 
       let morePosts;
 
-      if (metaDataForLoading.current.feedTag == "NEWS") {
+      if (metaDataForLoading.current.feedTag == "LOCAL") {
         morePosts = await loadMorePosts(
-          "ALL",
+          "LOCAL",
           metaDataForLoading.current.lastPostIndex
         );
         dispatch({
           type: "LOAD_TO_FEED",
           payload: morePosts,
         });
-      } else if (metaDataForLoading.current.feedTag == "LIFESTYLE") {
+      } else if (metaDataForLoading.current.feedTag == "INTERNATIONAL") {
         morePosts = await loadMorePosts(
-          "LIFESTYLE",
+          "INTERNATIONAL",
           metaDataForLoading.current.lastPostIndex
         );
       } else if (metaDataForLoading.current.feedTag == "TAG") {
@@ -123,7 +128,7 @@ function FeedContainer() {
   handleRefs();
 
   let feed = newsCardsList;
-
+  console.log(appState);
   // const defaultOptions = {
   //   loop: true, // Set this to false if you don't want the animation to loop
   //   autoplay: true, // Set this to false if you don't want the animation to play automatically
@@ -135,8 +140,19 @@ function FeedContainer() {
 
   // THE FEED
   return (
-    <div style={{ padding: "80px" }}>
+    <div style={{ margin: "0px" }}>
       {/* <img src="MOCCO.svg"></img> */}
+      <Row
+        className="d-sm-none"
+        style={{ display: "flex", justifyContent: "center" }}
+      >
+        <LanguageToggle />
+      </Row>
+      {appState.feedTag == FeedType.TAG && (
+        <Row style={{ display: "flex", justifyContent: "center" }}>
+          <TagAnimation tag={appState.newsTag} />
+        </Row>
+      )}
       {
         appState.is_loading ? (
           <div>

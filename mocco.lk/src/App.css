@@ -11,3 +11,11 @@ a {
 a:hover {
   color: black;
 }
+
+/* Custom CSS file */
+@media (min-width: 992px) {
+  .custom-lg-margin {
+    padding-right: 70px;
+    padding-left: 70px;
+  }
+}

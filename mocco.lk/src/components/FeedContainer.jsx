@@ -85,6 +85,13 @@ function FeedContainer() {
   };
 
   useEffect(() => {
+    if (appState.need_to_go_up == true) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      dispatch({
+        type: "WENT_UP",
+      });
+    }
+
     handleRefs();
   });
   useEffect(() => {

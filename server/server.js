@@ -56,7 +56,7 @@ app.use("/news", news);
 app.use("/image", image);
 app.use("/loadPosts", loadposts);
 app.use("/handleLoading", handleLoading);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(jsonObject));
+// app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(jsonObject));
 
 // Global error handling
 app.use((err, _req, res, next) => {

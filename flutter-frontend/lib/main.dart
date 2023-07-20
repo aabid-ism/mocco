@@ -5,6 +5,8 @@ import 'package:mocco/app_preferences.dart';
 import 'package:mocco/dependency_injection.dart';
 import 'package:mocco/news_provider_state.dart';
 import 'package:mocco/screen_holder.dart';
+import 'package:mocco/theme/dark_theme.dart';
+import 'package:mocco/theme/light_theme.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import "env.dart";
@@ -46,10 +48,8 @@ class _MyAppState extends State<MyApp> {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Mocco',
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
-      ),
+      theme: lightTheme,
+      darkTheme: darkTheme,
       home: const ScreensHolder(),
     );
   }

@@ -3,8 +3,17 @@ import TagCardList from "./TagCardList";
 
 function LeftSidebar() {
   return (
-    <div>
-      <h3>Discover</h3>
+    <div style={{ marginTop: "30px" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-start",
+          paddingLeft: "10px",
+        }}
+      >
+        <h3>Discover</h3>
+      </div>
+
       <hr></hr>
       <TagCardList />
     </div>

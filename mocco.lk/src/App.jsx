@@ -1,7 +1,6 @@
 import "./App.css";
 import NavigatorBar from "./components/Navigator/NavigatorBar";
-import Col from "react-bootstrap/Col";
-import { Container } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import LeftSidebar from "./components/Left/LeftSidebar";
 import RightSidebar from "./components/Right/RightSidebar";
 import FeedContainer from "./components/FeedContainer";
@@ -15,57 +14,29 @@ function App() {
       <MoccoNewsFeedProvider>
         <NavigatorBar />
 
-        <Container
-          fluid
-          style={{
-            backgroundColor: "#F1F2F5",
-            // backgroundImage: `url(backgroundImage)`,
-            // backgroundSize: "cover",
-            // backgroundRepeat: "no-repeat",
-            // backgroundPosition: "center",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              paddingTop: "150px",
-              margin: "0",
-            }}
-          >
+        <Container fluid style={{ backgroundColor: "#F1F2F5" }}>
+          <Row style={{ paddingTop: "80px", margin: "0" }}>
             <Col
               lg={3}
               className="d-none d-lg-block"
-              // style={{ backgroundColor: "orange" }}
+              style={{
+                position: "sticky",
+                top: "80px",
+                height: "calc(100vh - 80px)",
+                overflowY: "auto",
+              }}
             >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  position: "fixed",
-                }}
-              >
-                <LeftSidebar />
-              </div>
+              <LeftSidebar />
             </Col>
             <Col lg={6} md={12} sm={12} xs={12} className="custom-lg-margin">
               <FeedContainer />
             </Col>
             <Col lg={3} className="d-none d-lg-block">
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-start",
-                  position: "fixed",
-                  marginLeft: "30px",
-                  marginRight: "10px",
-                  paddingLeft: "90px",
-                  paddingRight: "0px",
-                }}
-              >
+              <div style={{ position: "sticky", top: "80px" }}>
                 <RightSidebar />
               </div>
             </Col>
-          </div>
+          </Row>
         </Container>
       </MoccoNewsFeedProvider>
     </>

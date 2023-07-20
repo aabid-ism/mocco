@@ -91,7 +91,6 @@ function FeedContainer() {
         type: "WENT_UP",
       });
     }
-
     handleRefs();
   });
   useEffect(() => {

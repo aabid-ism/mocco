@@ -8,7 +8,10 @@ import {
 import { fetchDefaultFeed, loadMorePosts } from "../services/FetchService";
 import LoadingSpinner from "./loadspinner";
 import LanguageToggle from "./left/LanguageToggle";
-// import Lottie from "react-lottie";
+import Lottie from "lottie-react";
+import TagAnimation from "./TagAnimation";
+import { FeedType } from "../enums";
+
 // import hook from "../assets/hook.json";
 function FeedContainer() {
   // getting references for the dispatch function and appState(moccoContext)
@@ -125,7 +128,7 @@ function FeedContainer() {
   handleRefs();
 
   let feed = newsCardsList;
-
+  console.log(appState);
   // const defaultOptions = {
   //   loop: true, // Set this to false if you don't want the animation to loop
   //   autoplay: true, // Set this to false if you don't want the animation to play automatically
@@ -145,6 +148,11 @@ function FeedContainer() {
       >
         <LanguageToggle />
       </Row>
+      {appState.feedTag == FeedType.TAG && (
+        <Row style={{ display: "flex", justifyContent: "center" }}>
+          <TagAnimation tag={appState.newsTag} />
+        </Row>
+      )}
       {
         appState.is_loading ? (
           <div>

@@ -3,7 +3,7 @@ import conn from "../conn.js";
 // <-------------------- GET REMAINING NUMBER OF LOCAL NEWS POSTS -------------------->
 export const getLocalNews = async (req, res) => {
   const ref_postIndex = parseInt(req.query.ref_postIndex);
-  const OUTPUT = 2;
+  const OUTPUT = 10;
 
   if (!ref_postIndex) {
     return res.send("ref_postIndex is required").status(400);
@@ -39,7 +39,7 @@ export const getLocalNews = async (req, res) => {
 // <-------------------- GET REMAINING NUMBER OF INTERNATIONAL NEWS POSTS -------------------->
 export const getInternationalNews = async (req, res) => {
   const ref_postIndex = parseInt(req.query.ref_postIndex);
-  const OUTPUT = 2;
+  const OUTPUT = 10;
 
   if (!ref_postIndex) {
     return res.send("ref_postIndex is required").status(400);
@@ -76,7 +76,7 @@ export const getInternationalNews = async (req, res) => {
 export const getNewsTags = async (req, res) => {
   const ref_postIndex = parseInt(req.query.ref_postIndex);
   const req_tag = req.query.req_tag;
-  const OUTPUT = 2;
+  const OUTPUT = 10;
 
   if (!ref_postIndex) {
     return res.send("ref_postIndex is required").status(400);

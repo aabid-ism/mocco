@@ -10,7 +10,7 @@ export const getInternationalNews = async (req, res) => {
     const collection = await db.collection("international");
 
     // finding and returning all international news posts
-    const results = await collection.find({}).limit(50).toArray();
+    const results = await collection.find({}).limit(20).toArray();
     res.send(results).status(200);
   } catch (error) {
     res.send(error).status(500);
@@ -30,7 +30,7 @@ export const getLocalNews = async (req, res) => {
           $sort: { createdAt: -1 },
         },
         {
-          $limit: 2,
+          $limit: 20,
         },
       ])
       .toArray();

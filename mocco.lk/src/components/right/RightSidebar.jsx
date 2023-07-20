@@ -5,7 +5,7 @@ import DateString from "./DateString";
 
 function RightSidebar() {
   return (
-    <>
+    <div>
       <DateString />
       <hr></hr>
       <TodayEvents />
@@ -13,7 +13,7 @@ function RightSidebar() {
       <hr></hr>
       <TodayQuote />
       <h4>Today's Sponsor</h4>
-    </>
+    </div>
   );
 }
 

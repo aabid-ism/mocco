@@ -135,7 +135,7 @@ function FeedContainer() {
 
   // THE FEED
   return (
-    <div style={{ padding: "80px" }}>
+    <div style={{ margin: "10px" }}>
       {/* <img src="MOCCO.svg"></img> */}
       {
         appState.is_loading ? (

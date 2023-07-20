@@ -45,14 +45,20 @@ function App() {
                 <LeftSidebar />
               </div>
             </Col>
-            <Col lg={6} md={12} sm={12} xs={12}>
-              <div>
-                <FeedContainer />
-              </div>
+            <Col lg={6} md={12} sm={12} xs={12} className="custom-lg-margin">
+              <FeedContainer />
             </Col>
             <Col lg={3} className="d-none d-lg-block">
               <div
-              // style={{ position: "fixed" }}
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  position: "fixed",
+                  marginLeft: "30px",
+                  marginRight: "10px",
+                  paddingLeft: "90px",
+                  paddingRight: "0px",
+                }}
               >
                 <RightSidebar />
               </div>

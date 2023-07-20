@@ -11,8 +11,10 @@ import rateLimit from "express-rate-limit";
 import auth from "./routes/auth/auth.js";
 import news from "./routes/news/news.js";
 import image from "./routes/image-pipeline/imagepipeline.js";
+import event from "./routes/eventImagePipeline/eventImagePipeline.js";
 import loadposts from "./routes/loadPosts/loadPosts.js";
 import handleLoading from "./routes/handleLoading/handleLoading.js";
+import events from "./routes/eventData/eventData.js";
 import swaggerUi from "swagger-ui-express";
 import * as path from "path";
 
@@ -54,9 +56,12 @@ const jsonObject = await getJsonFromFile(swaggerDocumentPath);
 app.use("/auth", auth);
 app.use("/news", news);
 app.use("/image", image);
+app.use("/event-image", event);
 app.use("/loadPosts", loadposts);
 app.use("/handleLoading", handleLoading);
+app.use("/events", events);
 // app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(jsonObject));
+
 
 // Global error handling
 app.use((err, _req, res, next) => {

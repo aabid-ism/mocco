@@ -4,13 +4,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import {
-  Autocomplete,
-  Chip,
-  MenuItem,
-  TextareaAutosize,
-  Tooltip,
-} from "@mui/material";
+import { Chip, TextareaAutosize, Tooltip } from "@mui/material";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Axios from "../utils/axios.js";
@@ -18,8 +12,6 @@ import Backdrop from "@mui/material/Backdrop";
 import { useSpring, animated } from "@react-spring/web";
 import Modal from "@mui/material/Modal";
 import CancelIcon from "@mui/icons-material/Cancel";
-import Switch from "@mui/material/Switch";
-import FormControlLabel from "@mui/material/FormControlLabel";
 
 // function used for smooth transitioning of the modal
 const Fade = forwardRef(function Fade(props, ref) {
@@ -54,111 +46,65 @@ const Fade = forwardRef(function Fade(props, ref) {
   );
 });
 
-const EditAndPublishForm = ({
+const EventsForm = ({
   setSelectedNews,
   selectedNews,
   handleSubmitFunc,
-  handleLoaderClose,
   handleLoaderOpen,
+  handleLoaderClose,
   handleImageSize,
-  setHandleWordLimit,
+  formEnabledToAddEvent,
+  formEnabledToEditEvent,
+  startDate,
+  handlePublishValidation,
 }) => {
   const [editOpen, setEditOpen] = useState(false); // state used to manipulate the opening and closing of edit modal.
-  const [deleteOpen, setDeleteOpen] = useState(false); // state used to manipulate the opening and closing of delete modal.
-  const [approveOpen, setApproveOpen] = useState(false); // state used to manipulate the opening and closing of approve modal.
-  const [valid, setValid] = useState(false); // state to check if form has passed validation.
+  const [deleteOpen, setDeleteOpen] = useState(false); // state used to manipulate the opening and closing of edit modal.
+  const [publishOpen, setPublishOpen] = useState(false); // state used to manipulate the opening and closing of publish modal.
   const [data, setData] = useState([]); // state to store the data that has been submitted by form (edit or delete).
-  const [dropDownList, setDropDownList] = useState(); // state to store the data return of the dropdown values from the api.
-  const [isDeleteMode, setIsDeleteMode] = useState(false); // state to track the button clicked
-  const [isEditMode, setIsEditMode] = useState(false); // state to track the button clicked
-  const [isApproveMode, setIsApproveMode] = useState(false); // state to track the button clicked
-  const [selectedSecondaryTags, setSelectedSecondaryTags] = useState([]); // state to track the selected secondary tags
   const [imageUrlChip, setImageUrlChip] = useState(""); // state to track the image url chip.
+  const [isPublishMode, setIsPublishMode] = useState(false); // state to track the publish button.
+  const [isDeleteMode, setIsDeleteMode] = useState(false); // state to track the delete button.
+  const [isEditMode, setIsEditMode] = useState(false); // state to track the delete button.
   const [imageUpload, setImageUpload] = useState(null); // state to store uploaded image.
   const [imageFormData, setImageFormData] = useState(null); // state to store form data of the uploaded image.
-  const [extra, setExtra] = useState(false); // state to track the extra toggle.
   const fileInputRef = useRef(); // useRef to reference the image upload component and reset after submit.
+  const [formEnable, setFormEnable] = useState(true); //state to enable manipulation of form.
   const formikRef = useRef(null); // useRef to reference the form data of formik.
 
   useEffect(() => {
-    async function getDropDowns() {
-      handleLoaderOpen();
-      try {
-        // get bearer token
-        const storedUser = localStorage.getItem("user");
-        const token = storedUser ? JSON.parse(storedUser).token : null;
-        const headers = {
-          Authorization: `Bearer ${token}`,
-        };
-        const response = await Axios.get("/news/get-drop-downs", { headers });
-        response && handleLoaderClose();
-        setDropDownList(response.data);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    getDropDowns();
-  }, []);
+    setImageUrlChip(selectedNews ? selectedNews.imageUrl : "");
+  }, [selectedNews]);
 
   useEffect(() => {
-    if (selectedNews && selectedNews.secondaryTags) {
-      let temp = selectedNews.secondaryTags;
-      setSelectedSecondaryTags(temp);
-      setImageUrlChip(selectedNews ? selectedNews.imageUrl : "");
-      setExtra(
-        selectedNews
-          ? selectedNews.typeOfPost === "extra"
-            ? true
-            : false
-          : false
-      );
+    if (!formEnabledToAddEvent) {
+      setSelectedNews(null);
+      setImageUrlChip("");
     }
-  }, [selectedNews]);
+
+    if (formEnabledToAddEvent || formEnabledToEditEvent) {
+      setFormEnable(false);
+    }
+  }, [formEnabledToAddEvent, formEnabledToAddEvent]);
 
   // Initial values of the form data.
   const initialValues = {
     id: selectedNews ? selectedNews._id : "",
-    title: selectedNews ? selectedNews.title : "",
-    sinhalaTitle: selectedNews ? selectedNews.sinhalaTitle : "",
-    description: selectedNews ? selectedNews.description : "",
-    sinhalaDescription: selectedNews ? selectedNews.sinhalaDescription : "",
+    name: selectedNews ? selectedNews.name : "",
+    s_name: selectedNews ? selectedNews.s_name : "",
+    desc: selectedNews ? selectedNews.desc : "",
+    s_desc: selectedNews ? selectedNews.s_desc : "",
     imageUrl: formikRef.current
       ? formikRef.current.files
         ? formikRef.current.files[0]
         : null
       : null,
-    sourceName: selectedNews ? selectedNews.sourceName : "",
-    sourceUrl: selectedNews ? selectedNews.sourceUrl : "",
-    author:
-      selectedNews && selectedNews.author !== undefined
-        ? selectedNews.author
-        : "",
-    mainTag:
-      selectedNews && selectedNews.mainTag !== undefined
-        ? selectedNews.mainTag
-        : "",
-    secondaryTags: [],
-    locality:
-      selectedNews && selectedNews.locality !== undefined
-        ? selectedNews.locality
-        : "",
+    srcUrl: selectedNews ? selectedNews.srcUrl : "",
   };
 
   // function to set the submitted form data to the state.
   const handleSubmit = async (values) => {
-    if (
-      (values.description.length > 0 && values.description.length < 25) ||
-      (values.sinhalaDescription.length > 0 &&
-        values.sinhalaDescription.length < 25)
-    ) {
-      if (!isDeleteMode) {
-        isEditMode && setEditOpen(false);
-        isApproveMode && setApproveOpen(false);
-        setValid(false);
-        setHandleWordLimit(true);
-      }
-    } else {
+    if (values.name || values.s_name) {
       if (imageUpload) {
         const formData = new FormData();
         formData.append("image", imageUpload);
@@ -167,22 +113,33 @@ const EditAndPublishForm = ({
 
       setData({
         ...values,
-        secondaryTags: selectedSecondaryTags ? selectedSecondaryTags : [],
         imageUrl: imageUrlChip ? imageUrlChip : "",
-        typeOfPost: extra ? "extra" : "essential",
       });
 
-      if (isDeleteMode) {
+      if (isPublishMode) {
+        setPublishOpen(true);
+      } else if (isEditMode) {
+        setEditOpen(true);
+      } else if (isDeleteMode) {
         setDeleteOpen(true);
       }
-
-      if (isEditMode) {
-        setEditOpen(true);
+    } else {
+      if (isPublishMode) {
+        setPublishOpen(false);
+        handlePublishValidation();
       }
+    }
+  };
 
-      if (isApproveMode) {
-        setApproveOpen(true);
-      }
+  // function to add the image upload to a state
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    const maxSize = 1 * 1024 * 1024; // 1MB (in bytes)
+
+    if (file && file.size > maxSize) {
+      handleImageSize(fileInputRef);
+    } else {
+      setImageUpload(file);
     }
   };
 
@@ -199,6 +156,8 @@ const EditAndPublishForm = ({
       Authorization: `Bearer ${token}`,
     };
 
+    //  if statement that checks if the image form data object is set.
+    //  This is only set when a new image is uploaded or if an image is removed and a new image is added.
     if (imageFormData) {
       try {
         imageFormData.append(
@@ -206,15 +165,20 @@ const EditAndPublishForm = ({
           selectedNews ? selectedNews.imageUrl : ""
         );
 
-        // checking to differentiate between an already existing post or a newly added post
+        // if statement to differentiate between an already existing post or a newly added post
         if (selectedNews && selectedNews.imageUrl) {
+          // statement to recheck if the file input ref is not equal anything and
+          // if theres an image upload to ensure that the current image is removed and a new image has been uploaded.
           if (fileInputRef.current.value != "" && imageUpload) {
-            let imageResponse = await Axios.post("/image", imageFormData);
+            let imageResponse = await Axios.post("/event-image", imageFormData);
             try {
               const imgUrl = selectedNews.imageUrl;
-              let deleteResponse = await Axios.post("/image/delete-image", {
-                imgUrl,
-              });
+              let deleteResponse = await Axios.post(
+                "/event-image/delete-event-image",
+                {
+                  imgUrl,
+                }
+              );
               handleSubmitFunc(deleteResponse);
             } catch (err) {
               handleSubmitFunc(err);
@@ -222,20 +186,29 @@ const EditAndPublishForm = ({
             }
             request = { ...data, imageUrl: imageResponse.data };
           } else {
-            try {
-              const imgUrl = selectedNews.imageUrl;
-              let deleteResponse = await Axios.post("/image/delete-image", {
-                imgUrl,
-              });
-              handleSubmitFunc(deleteResponse);
-            } catch (err) {
-              handleSubmitFunc(err);
-              console.log(err);
+            // if file input ref is equal to "" and there is no imageUpload, the imageUrlChip
+            //  is removed which indicates the user wants the image removed
+            if (!imageUrlChip) {
+              try {
+                const imgUrl = selectedNews.imageUrl;
+                let deleteResponse = await Axios.post(
+                  "/event-image/delete-event-image",
+                  {
+                    imgUrl,
+                  }
+                );
+                handleSubmitFunc(deleteResponse);
+              } catch (err) {
+                handleSubmitFunc(err);
+                console.log(err);
+              }
             }
           }
         } else {
+          // statement to recheck if the file input ref is not equal anything and
+          // if theres an image upload to ensure that a new image has been uploaded.
           if (fileInputRef.current.value != "" && imageUpload) {
-            let imageResponse = await Axios.post("/image", imageFormData);
+            let imageResponse = await Axios.post("/event-image", imageFormData);
             request = { ...data, imageUrl: imageResponse.data };
           }
         }
@@ -243,13 +216,20 @@ const EditAndPublishForm = ({
         handleSubmitFunc(err);
         console.log(err);
       }
-    } else if (selectedNews && selectedNews.imageUrl) {
+    }
+    // if a new image upload was made, a checking is carried out to check if current post already has an image.
+    else if (selectedNews && selectedNews.imageUrl) {
+      // if there is no imageUrlChip that means the user has removed the chip therefore intending to delete the image
+      // the delete image execution is run.
       if (!imageUrlChip) {
         try {
           const imgUrl = selectedNews.imageUrl;
-          let deleteResponse = await Axios.post("/image/delete-image", {
-            imgUrl,
-          });
+          let deleteResponse = await Axios.post(
+            "/event-image/delete-event-image",
+            {
+              imgUrl,
+            }
+          );
           handleSubmitFunc(deleteResponse);
         } catch (err) {
           handleSubmitFunc(err);
@@ -259,26 +239,30 @@ const EditAndPublishForm = ({
     }
 
     try {
-      let response = await Axios.post("/news/edit-unpublished-news", request, {
-        headers,
-      });
+      // statement to check the new property change
+      let response = await Axios.post(
+        "/events/edit-event-data",
+        {
+          ...request,
+        },
+        { headers }
+      );
       response && handleLoaderClose();
-      setSelectedNews(response.data.value);
+      setSelectedNews(null);
       resetForm();
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
-      setValid(false);
       setImageUpload(null);
       handleSubmitFunc(response);
+      setImageUrlChip("");
     } catch (err) {
-      console.error(err);
-      err && handleLoaderClose();
       handleSubmitFunc(err);
+      console.error(err);
     }
   };
 
-  // function that sends deleted form data to the backend after confirmation from the pop up.
+  // function that deletes form data to the backend after confirmation from the pop up.
   const handleDeleteConfirm = async (resetForm) => {
     setDeleteOpen(false);
     handleLoaderOpen();
@@ -290,16 +274,13 @@ const EditAndPublishForm = ({
       const headers = {
         Authorization: `Bearer ${token}`,
       };
-      const response = await Axios.post("/news/delete-unpublished-news", data, {
+      const response = await Axios.post("/events/delete-event-data", data, {
         headers,
       });
       response && handleLoaderClose();
       setSelectedNews(null);
       resetForm();
       setImageUpload(null);
-      setSelectedSecondaryTags([]);
-      setValid(false);
-      setExtra(false);
       setImageUrlChip("");
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -314,7 +295,7 @@ const EditAndPublishForm = ({
     if (data.imageUrl) {
       try {
         const imgUrl = data.imageUrl;
-        await Axios.post("/image/delete-image", { imgUrl });
+        await Axios.post("/event-image/delete-event-image", { imgUrl });
       } catch (err) {
         handleSubmitFunc(err);
         console.log(err);
@@ -322,10 +303,11 @@ const EditAndPublishForm = ({
     }
   };
 
-  const handleApproveConfirm = async (resetForm) => {
-    setApproveOpen(false);
+  // function that sends deleted form data to the backend after confirmation from the pop up.
+  const handlePublishConfirm = async (resetForm) => {
+    setPublishOpen(false);
     handleLoaderOpen();
-
+    let request = data;
     // get bearer token
     const storedUser = localStorage.getItem("user");
     const token = storedUser ? JSON.parse(storedUser).token : null;
@@ -333,150 +315,38 @@ const EditAndPublishForm = ({
       Authorization: `Bearer ${token}`,
     };
 
-    let request = data;
     if (imageFormData) {
       try {
-        imageFormData.append(
-          "imageUrl",
-          selectedNews ? selectedNews.imageUrl : ""
-        );
-
-        // checking to differentiate between an already existing post or a newly added post
-        if (selectedNews && selectedNews.imageUrl) {
-          let imageResponse = await Axios.post("/image", imageFormData);
-          try {
-            const imgUrl = selectedNews.imageUrl;
-            let deleteResponse = await Axios.post("/image/delete-image", {
-              imgUrl,
-            });
-            handleSubmitFunc(deleteResponse);
-          } catch (err) {
-            handleSubmitFunc(err);
-            console.log(err);
-          }
-          request = { ...data, imageUrl: imageResponse.data };
-        } else {
-          let imageResponse = await Axios.post("/image", imageFormData);
-          request = { ...data, imageUrl: imageResponse.data };
-        }
+        let imageResponse = await Axios.post("/event-image", imageFormData);
+        request = { ...data, imageUrl: imageResponse.data };
       } catch (err) {
-        console.error(err);
-        err && handleLoaderClose();
-        handleSubmitFunc(err);
+        console.log(err);
       }
     }
 
     try {
-      if (data && data.locality === "international") {
-        const response = await Axios.post(
-          "/news/approve-international-news",
-          request,
-          { headers }
-        );
-        response && handleLoaderClose();
-        setSelectedNews(null);
-        resetForm();
-        setImageUpload(null);
-        setSelectedSecondaryTags([]);
-        setExtra(false);
-        setImageUrlChip("");
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-        handleSubmitFunc(response);
-      } else {
-        const response = await Axios.post("/news/approve-local-news", request, {
-          headers,
-        });
-        response && handleLoaderClose();
-        setSelectedNews(null);
-        resetForm();
-        setImageUpload(null);
-        setSelectedSecondaryTags([]);
-        setExtra(false);
-        setValid(false);
-        setImageUrlChip("");
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-        handleSubmitFunc(response);
+      request = { ...request, date: startDate.toISOString() };
+      // statement to check the new property change
+      let response = await Axios.post(
+        "/events/add-event-data",
+        {
+          ...request,
+        },
+        { headers }
+      );
+      response && handleLoaderClose();
+      setSelectedNews(response.data.value);
+      resetForm();
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
       }
+      setImageUpload(null);
+      handleSubmitFunc(response);
+      setImageUrlChip("");
     } catch (err) {
       handleSubmitFunc(err);
       console.error(err);
     }
-  };
-
-  // function to add the image upload to a state
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    const maxSize = 1 * 1024 * 1024; // 1MB (in bytes)
-
-    if (file && file.size > maxSize) {
-      handleImageSize(fileInputRef);
-    } else {
-      setImageUpload(file);
-    }
-  };
-
-  // function used to set state based on if the if the validation is passed.
-  const isValidationPassed = (values) => {
-    try {
-      validationSchema.validateSync(values);
-      setValid(true);
-      return true;
-    } catch (error) {
-      setValid(false);
-      return false;
-    }
-  };
-
-  // validation schema to define the error message.
-  const validationSchema = Yup.object({
-    title:
-      !isEditMode &&
-      !isDeleteMode &&
-      Yup.string().required("News Headline is required"),
-    sinhalaTitle:
-      !isEditMode &&
-      !isDeleteMode &&
-      Yup.string().required("Sinhala News Title is required"),
-    description:
-      !isEditMode &&
-      !isDeleteMode &&
-      Yup.string().required("News Description is required"),
-    imageUrl:
-      !isEditMode &&
-      !isDeleteMode &&
-      imageUrlChip.length === 0 &&
-      !imageUpload &&
-      Yup.string().required("Image URL is required"),
-    sinhalaDescription:
-      !isEditMode &&
-      !isDeleteMode &&
-      Yup.string().required("Sinhala News Description is required"),
-    sourceName:
-      !isEditMode &&
-      !isDeleteMode &&
-      Yup.string().required("Source Name is required"),
-    sourceUrl:
-      !isEditMode &&
-      !isDeleteMode &&
-      Yup.string().required("Source URL is required"),
-    mainTag:
-      !isEditMode &&
-      !isDeleteMode &&
-      Yup.string().required("Main News Tags are required"),
-    locality:
-      !isEditMode &&
-      !isDeleteMode &&
-      Yup.string().required("Locality is required"),
-  });
-
-  // function to handle the secondary news tag drop down
-  const handleSecondaryTagChange = (e, values) => {
-    const selectedValues = values.map(({ topic }) => topic);
-    setSelectedSecondaryTags(selectedValues);
   };
 
   return (
@@ -484,21 +354,20 @@ const EditAndPublishForm = ({
       innerRef={formikRef}
       initialValues={initialValues}
       onSubmit={handleSubmit}
-      validationSchema={validationSchema}
-      validate={isValidationPassed}
       enableReinitialize={true}
     >
       {(formProps) => {
         return (
           <Form>
             <Box sx={{ marginBottom: "2%" }}>
-              <label htmlFor="title">
-                <Typography fontWeight="bold">News Headline</Typography>
+              <label htmlFor="name">
+                <Typography fontWeight="bold">Event Name</Typography>
               </label>
               <Field
+                disabled={formEnable}
                 as={TextField}
-                id="title"
-                name="title"
+                id="name"
+                name="name"
                 variant="outlined"
                 fullWidth
                 inputProps={{
@@ -509,7 +378,7 @@ const EditAndPublishForm = ({
                 }}
               />
               <ErrorMessage
-                name="title"
+                name="name"
                 component="div"
                 style={{
                   color: "red",
@@ -519,15 +388,14 @@ const EditAndPublishForm = ({
             </Box>
 
             <Box sx={{ marginBottom: "2%" }}>
-              <label htmlFor="sinhalaTitle">
-                <Typography fontWeight="bold">
-                  News Headline (Sinhala)
-                </Typography>
+              <label htmlFor="s_name">
+                <Typography fontWeight="bold">Event Name (Sinhala)</Typography>
               </label>
               <Field
+                disabled={formEnable}
                 as={TextField}
-                id="sinhalaTitle"
-                name="sinhalaTitle"
+                id="s_name"
+                name="s_name"
                 variant="outlined"
                 fullWidth
                 inputProps={{
@@ -538,7 +406,7 @@ const EditAndPublishForm = ({
                 }}
               />
               <ErrorMessage
-                name="sinhalaTitle"
+                name="s_name"
                 component="div"
                 style={{
                   color: "red",
@@ -548,13 +416,14 @@ const EditAndPublishForm = ({
             </Box>
 
             <Box sx={{ marginBottom: "2%" }}>
-              <label htmlFor="description">
-                <Typography fontWeight="bold">News Description</Typography>
+              <label htmlFor="desc">
+                <Typography fontWeight="bold">Event Description</Typography>
               </label>
               <Field
+                disabled={formEnable}
                 as={TextareaAutosize}
-                id="description"
-                name="description"
+                id="desc"
+                name="desc"
                 maxLength={350}
                 minRows={3}
                 maxRows={5}
@@ -567,7 +436,7 @@ const EditAndPublishForm = ({
                 }}
               />
               <ErrorMessage
-                name="description"
+                name="desc"
                 component="div"
                 style={{
                   color: "red",
@@ -577,15 +446,16 @@ const EditAndPublishForm = ({
             </Box>
 
             <Box sx={{ marginBottom: "2%" }}>
-              <label htmlFor="sinhalaDescription">
+              <label htmlFor="s_desc">
                 <Typography fontWeight="bold">
-                  News Description (Sinhala)
+                  Event Description (Sinhala)
                 </Typography>
               </label>
               <Field
+                disabled={formEnable}
                 as={TextareaAutosize}
-                id="sinhalaDescription"
-                name="sinhalaDescription"
+                id="s_desc"
+                name="s_desc"
                 maxLength={350}
                 minRows={3}
                 maxRows={5}
@@ -598,7 +468,7 @@ const EditAndPublishForm = ({
                 }}
               />
               <ErrorMessage
-                name="sinhalaDescription"
+                name="s_desc"
                 component="div"
                 style={{
                   color: "red",
@@ -619,7 +489,7 @@ const EditAndPublishForm = ({
                   </Typography>
                 </label>
                 {imageUrlChip ? (
-                  <Tooltip title={imageUrlChip} arrow>
+                  <Tooltip name={imageUrlChip} arrow>
                     <Chip
                       id="image"
                       name="image"
@@ -644,7 +514,7 @@ const EditAndPublishForm = ({
 
               <Field
                 inputRef={fileInputRef}
-                disabled={imageUrlChip ? true : false}
+                disabled={imageUrlChip ? true : formEnable ? true : false}
                 component={TextField}
                 name="imageUrl"
                 type="file"
@@ -664,40 +534,14 @@ const EditAndPublishForm = ({
             </Box>
 
             <Box sx={{ marginBottom: "2%" }}>
-              <label htmlFor="sourceName">
-                <Typography fontWeight="bold">Source Name</Typography>
-              </label>
-              <Field
-                as={TextField}
-                id="sourceName"
-                name="sourceName"
-                variant="outlined"
-                fullWidth
-                inputProps={{
-                  style: {
-                    padding: "10px",
-                  },
-                  maxLength: 100,
-                }}
-              />
-              <ErrorMessage
-                name="sourceName"
-                component="div"
-                style={{
-                  color: "red",
-                  fontSize: "0.8rem",
-                }}
-              />
-            </Box>
-
-            <Box sx={{ marginBottom: "2%" }}>
-              <label htmlFor="sourceUrl">
+              <label htmlFor="srcUrl">
                 <Typography fontWeight="bold">Source URL</Typography>
               </label>
               <Field
+                disabled={formEnable}
                 as={TextField}
-                id="sourceUrl"
-                name="sourceUrl"
+                id="srcUrl"
+                name="srcUrl"
                 variant="outlined"
                 fullWidth
                 inputProps={{
@@ -707,115 +551,12 @@ const EditAndPublishForm = ({
                 }}
               />
               <ErrorMessage
-                name="sourceUrl"
+                name="srcUrl"
                 component="div"
                 style={{
                   color: "red",
                   fontSize: "0.8rem",
                 }}
-              />
-            </Box>
-
-            <Box sx={{ display: "flex" }}>
-              <Box sx={{ marginRight: "10px", width: "25%" }}>
-                <label htmlFor="author">
-                  <Typography fontWeight="bold">Author</Typography>
-                </label>
-                <Field
-                  as={TextField}
-                  id="author"
-                  name="author"
-                  variant="outlined"
-                  fullWidth
-                  inputProps={{
-                    readOnly: true,
-                  }}
-                />
-              </Box>
-
-              <Box sx={{ marginRight: "10px", width: "25%" }}>
-                <label htmlFor="mainTag">
-                  <Typography fontWeight="bold">Main News Tags</Typography>
-                </label>
-                <Field
-                  as={TextField}
-                  id="mainTag"
-                  name="mainTag"
-                  select
-                  variant="outlined"
-                  fullWidth
-                  children={
-                    dropDownList && dropDownList.mainTags
-                      ? dropDownList.mainTags.map((item) => (
-                          <MenuItem key={item._id} value={item.topic}>
-                            {item.topic}
-                          </MenuItem>
-                        ))
-                      : []
-                  }
-                />
-                <ErrorMessage
-                  name="mainTag"
-                  component="div"
-                  style={{
-                    color: "red",
-                    fontSize: "0.8rem",
-                  }}
-                />
-              </Box>
-
-              <Box sx={{ marginBottom: "10px", width: "25%" }}>
-                <label htmlFor="locality">
-                  <Typography fontWeight="bold" sx={{ fontSize: "0.9rem" }}>
-                    Local or International
-                  </Typography>
-                </label>
-                <Field
-                  as={TextField}
-                  id="locality"
-                  name="locality"
-                  select
-                  variant="outlined"
-                  fullWidth
-                >
-                  <MenuItem value="local">Local</MenuItem>
-                  <MenuItem value="international">International</MenuItem>
-                </Field>
-                <ErrorMessage
-                  name="locality"
-                  component="div"
-                  style={{
-                    color: "red",
-                    fontSize: "0.8rem",
-                  }}
-                />
-              </Box>
-
-              <FormControlLabel
-                sx={{ marginLeft: "10px" }}
-                label="Extra"
-                control={<Switch />}
-                checked={extra}
-                onChange={() => setExtra(!extra)}
-              />
-            </Box>
-
-            <Box sx={{ marginTop: "10px", width: "75%" }}>
-              <label htmlFor="secondaryTags">
-                <Typography fontWeight="bold">Secondary News Tags</Typography>
-              </label>
-              <Autocomplete
-                id="secondaryTags"
-                name="secondaryTags"
-                multiple
-                options={dropDownList ? dropDownList.secondaryTags : []}
-                getOptionLabel={(option) => option.topic}
-                isOptionEqualToValue={(option, value) =>
-                  option.topic === value.topic
-                }
-                renderInput={(params) => <TextField {...params} />}
-                onChange={handleSecondaryTagChange}
-                value={selectedSecondaryTags.map((value) => ({ topic: value }))}
               />
             </Box>
 
@@ -824,22 +565,23 @@ const EditAndPublishForm = ({
                 display: "flex",
                 justifyContent: "flex-end",
                 gap: 2,
-                marginTop: "20px",
               }}
             >
               <Button
+                disabled={formEnabledToEditEvent}
                 variant="contained"
                 type="submit"
                 onClick={() => {
                   setEditOpen(true);
-                  setIsEditMode(true);
+                  setIsPublishMode(false);
                   setIsDeleteMode(false);
-                  setIsApproveMode(false);
+                  setIsEditMode(true);
                 }}
               >
-                Save
+                Edit
               </Button>
               <Button
+                disabled={formEnabledToEditEvent}
                 variant="contained"
                 type="submit"
                 sx={{
@@ -850,14 +592,15 @@ const EditAndPublishForm = ({
                 }}
                 onClick={() => {
                   setDeleteOpen(true);
+                  setIsPublishMode(false);
                   setIsDeleteMode(true);
                   setIsEditMode(false);
-                  setIsApproveMode(false);
                 }}
               >
                 Delete
               </Button>
               <Button
+                disabled={formEnabledToAddEvent}
                 variant="contained"
                 type="submit"
                 sx={{
@@ -867,16 +610,15 @@ const EditAndPublishForm = ({
                   },
                 }}
                 onClick={() => {
-                  valid && setApproveOpen(true);
-                  setIsApproveMode(true);
+                  setPublishOpen(true);
+                  setIsPublishMode(true);
                   setIsDeleteMode(false);
                   setIsEditMode(false);
                 }}
               >
-                Approve & Publish
+                Publish
               </Button>
             </Box>
-
             {editOpen && (
               <Modal
                 aria-labelledby="spring-modal-title"
@@ -884,7 +626,6 @@ const EditAndPublishForm = ({
                 open={editOpen}
                 onClose={() => {
                   setEditOpen(false);
-                  setValid(false);
                 }}
                 closeAfterTransition
                 slots={{ backdrop: Backdrop }}
@@ -934,7 +675,6 @@ const EditAndPublishForm = ({
                 open={deleteOpen}
                 onClose={() => {
                   setDeleteOpen(false);
-                  setValid(false);
                 }}
                 closeAfterTransition
                 slots={{ backdrop: Backdrop }}
@@ -977,14 +717,13 @@ const EditAndPublishForm = ({
               </Modal>
             )}
 
-            {approveOpen && (
+            {publishOpen && (
               <Modal
                 aria-labelledby="spring-modal-title"
                 aria-describedby="spring-modal-description"
-                open={approveOpen}
+                open={publishOpen}
                 onClose={() => {
-                  setApproveOpen(false);
-                  setValid(false);
+                  setPublishOpen(false);
                 }}
                 closeAfterTransition
                 slots={{ backdrop: Backdrop }}
@@ -994,7 +733,7 @@ const EditAndPublishForm = ({
                   },
                 }}
               >
-                <Fade in={approveOpen}>
+                <Fade in={publishOpen}>
                   <Box
                     sx={{
                       position: "absolute",
@@ -1010,12 +749,12 @@ const EditAndPublishForm = ({
                     }}
                   >
                     <Typography id="spring-modal-description" sx={{ mt: 2 }}>
-                      Are you sure you want to approve this article?
+                      Are you sure you want to publish this article?
                     </Typography>
                     <Button
                       sx={{ mt: 2, mx: "auto" }}
                       variant="contained"
-                      onClick={handleApproveConfirm.bind(
+                      onClick={handlePublishConfirm.bind(
                         null,
                         formProps.resetForm
                       )}
@@ -1033,4 +772,4 @@ const EditAndPublishForm = ({
   );
 };
 
-export default EditAndPublishForm;
+export default EventsForm;

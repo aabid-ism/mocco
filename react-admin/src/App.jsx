@@ -12,6 +12,7 @@ import {
 import SignIn from "./pages/SignIn";
 // import SignUp from "./pages/SignUp";
 import { useAuthContext } from "./hooks/useAuthContext";
+import Events from "./pages/Events";
 
 function App() {
   const [open, setOpen] = useState(true);
@@ -42,7 +43,10 @@ function App() {
         {
           path: "/create-post",
           element: user ? (
-            <CreatePost open={open} setOpen={setOpen} />
+            <>
+              <Navigate to="/create-post" />
+              <CreatePost open={open} setOpen={setOpen} />
+            </>
           ) : (
             <Navigate to="/" />
           ),
@@ -50,7 +54,10 @@ function App() {
         {
           path: "/edit-and-publish-post",
           element: user ? (
-            <EditAndPublish open={open} setOpen={setOpen} />
+            <>
+              <Navigate to="/edit-and-publish-post" />
+              <EditAndPublish open={open} setOpen={setOpen} />
+            </>
           ) : (
             <Navigate to="/" />
           ),
@@ -58,7 +65,21 @@ function App() {
         {
           path: "/manage-news-history",
           element: user ? (
-            <ManageNewsHistory open={open} setOpen={setOpen} />
+            <>
+              <Navigate to="/manage-news-history" />
+              <ManageNewsHistory open={open} setOpen={setOpen} />
+            </>
+          ) : (
+            <Navigate to="/" />
+          ),
+        },
+        {
+          path: "/events",
+          element: user ? (
+            <>
+              <Navigate to="/events" />
+              <Events open={open} setOpen={setOpen} />
+            </>
           ) : (
             <Navigate to="/" />
           ),

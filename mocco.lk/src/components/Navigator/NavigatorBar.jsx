@@ -34,10 +34,10 @@ function NavigatorBar() {
                 Separated News Tag
               </NavDropdown.Item>
             </NavDropdown>
-            <Nav.Link eventKey="news" active>
-              News
+            <Nav.Link eventKey="Local" active>
+              Local
             </Nav.Link>
-            <Nav.Link eventKey="lifestyle">Lifestyle</Nav.Link>
+            <Nav.Link eventKey="International">International</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>

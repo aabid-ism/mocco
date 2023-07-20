@@ -198,6 +198,7 @@ const EditAndPublishForm = ({
     const headers = {
       Authorization: `Bearer ${token}`,
     };
+
     if (imageFormData) {
       try {
         imageFormData.append(
@@ -243,15 +244,17 @@ const EditAndPublishForm = ({
         console.log(err);
       }
     } else if (selectedNews && selectedNews.imageUrl) {
-      try {
-        const imgUrl = selectedNews.imageUrl;
-        let deleteResponse = await Axios.post("/image/delete-image", {
-          imgUrl,
-        });
-        handleSubmitFunc(deleteResponse);
-      } catch (err) {
-        handleSubmitFunc(err);
-        console.log(err);
+      if (!imageUrlChip) {
+        try {
+          const imgUrl = selectedNews.imageUrl;
+          let deleteResponse = await Axios.post("/image/delete-image", {
+            imgUrl,
+          });
+          handleSubmitFunc(deleteResponse);
+        } catch (err) {
+          handleSubmitFunc(err);
+          console.log(err);
+        }
       }
     }
 

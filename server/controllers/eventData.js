@@ -36,9 +36,9 @@ export const addEventData = async (req, res) => {
     const db = conn.getDb();
     const collection = await db.collection("events");
     let data = req.body;
-    const today = new Date();
+    const date = new Date(req.body.date);
     const { id, ...newData } = data;
-    data = { ...newData, date: today };
+    data = { ...newData, date: date };
     const result = await collection.insertOne(data);
 
     if (!result) {

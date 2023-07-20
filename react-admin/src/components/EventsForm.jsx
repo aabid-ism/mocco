@@ -55,11 +55,12 @@ const EventsForm = ({
   handleImageSize,
   formEnabledToAddEvent,
   formEnabledToEditEvent,
+  startDate,
+  handlePublishValidation,
 }) => {
   const [editOpen, setEditOpen] = useState(false); // state used to manipulate the opening and closing of edit modal.
   const [deleteOpen, setDeleteOpen] = useState(false); // state used to manipulate the opening and closing of edit modal.
   const [publishOpen, setPublishOpen] = useState(false); // state used to manipulate the opening and closing of publish modal.
-  const [valid, setValid] = useState(false); // state to check if form has passed validation.
   const [data, setData] = useState([]); // state to store the data that has been submitted by form (edit or delete).
   const [imageUrlChip, setImageUrlChip] = useState(""); // state to track the image url chip.
   const [isPublishMode, setIsPublishMode] = useState(false); // state to track the publish button.
@@ -68,7 +69,7 @@ const EventsForm = ({
   const [imageUpload, setImageUpload] = useState(null); // state to store uploaded image.
   const [imageFormData, setImageFormData] = useState(null); // state to store form data of the uploaded image.
   const fileInputRef = useRef(); // useRef to reference the image upload component and reset after submit.
-  const [formEnable, setFormEnable] = useState(true);
+  const [formEnable, setFormEnable] = useState(true); //state to enable manipulation of form.
   const formikRef = useRef(null); // useRef to reference the form data of formik.
 
   useEffect(() => {
@@ -103,23 +104,30 @@ const EventsForm = ({
 
   // function to set the submitted form data to the state.
   const handleSubmit = async (values) => {
-    if (imageUpload) {
-      const formData = new FormData();
-      formData.append("image", imageUpload);
-      setImageFormData(formData);
-    }
+    if (values.name || values.s_name) {
+      if (imageUpload) {
+        const formData = new FormData();
+        formData.append("image", imageUpload);
+        setImageFormData(formData);
+      }
 
-    setData({
-      ...values,
-      imageUrl: imageUrlChip ? imageUrlChip : "",
-    });
+      setData({
+        ...values,
+        imageUrl: imageUrlChip ? imageUrlChip : "",
+      });
 
-    if (isPublishMode) {
-      setPublishOpen(true);
-    } else if (isEditMode) {
-      setEditOpen(true);
-    } else if (isDeleteMode) {
-      setDeleteOpen(true);
+      if (isPublishMode) {
+        setPublishOpen(true);
+      } else if (isEditMode) {
+        setEditOpen(true);
+      } else if (isDeleteMode) {
+        setDeleteOpen(true);
+      }
+    } else {
+      if (isPublishMode) {
+        setPublishOpen(false);
+        handlePublishValidation();
+      }
     }
   };
 
@@ -148,33 +156,85 @@ const EventsForm = ({
       Authorization: `Bearer ${token}`,
     };
 
+    //  if statement that checks if the image form data object is set.
+    //  This is only set when a new image is uploaded or if an image is removed and a new image is added.
     if (imageFormData) {
       try {
         imageFormData.append(
           "imageUrl",
           selectedNews ? selectedNews.imageUrl : ""
         );
-        // checking to differentiate between an already existing post or a newly added post
+
+        // if statement to differentiate between an already existing post or a newly added post
         if (selectedNews && selectedNews.imageUrl) {
-          let imageResponse = await Axios.post("/image", imageFormData);
-          try {
-            const imgUrl = selectedNews.imageUrl;
-            let deleteResponse = await Axios.post("/image/delete-image", {
-              imgUrl,
-            });
-            handleSubmitFunc(deleteResponse);
-          } catch (err) {
-            handleSubmitFunc(err);
-            console.log(err);
+          // statement to recheck if the file input ref is not equal anything and
+          // if theres an image upload to ensure that the current image is removed and a new image has been uploaded.
+          if (fileInputRef.current.value != "" && imageUpload) {
+            let imageResponse = await Axios.post("/event-image", imageFormData);
+            try {
+              const imgUrl = selectedNews.imageUrl;
+              let deleteResponse = await Axios.post(
+                "/event-image/delete-event-image",
+                {
+                  imgUrl,
+                }
+              );
+              handleSubmitFunc(deleteResponse);
+            } catch (err) {
+              handleSubmitFunc(err);
+              console.log(err);
+            }
+            request = { ...data, imageUrl: imageResponse.data };
+          } else {
+            // if file input ref is equal to "" and there is no imageUpload, the imageUrlChip
+            //  is removed which indicates the user wants the image removed
+            if (!imageUrlChip) {
+              try {
+                const imgUrl = selectedNews.imageUrl;
+                let deleteResponse = await Axios.post(
+                  "/event-image/delete-event-image",
+                  {
+                    imgUrl,
+                  }
+                );
+                handleSubmitFunc(deleteResponse);
+              } catch (err) {
+                handleSubmitFunc(err);
+                console.log(err);
+              }
+            }
           }
-          request = { ...data, imageUrl: imageResponse.data };
         } else {
-          let imageResponse = await Axios.post("/image", imageFormData);
-          request = { ...data, imageUrl: imageResponse.data };
+          // statement to recheck if the file input ref is not equal anything and
+          // if theres an image upload to ensure that a new image has been uploaded.
+          if (fileInputRef.current.value != "" && imageUpload) {
+            let imageResponse = await Axios.post("/event-image", imageFormData);
+            request = { ...data, imageUrl: imageResponse.data };
+          }
         }
       } catch (err) {
         handleSubmitFunc(err);
         console.log(err);
+      }
+    }
+    // if a new image upload was made, a checking is carried out to check if current post already has an image.
+    else if (selectedNews && selectedNews.imageUrl) {
+      // if there is no imageUrlChip that means the user has removed the chip therefore intending to delete the image
+      // the delete image execution is run.
+      if (!imageUrlChip) {
+        try {
+          const imgUrl = selectedNews.imageUrl;
+          let deleteResponse = await Axios.post(
+            "/event-image/delete-event-image",
+            {
+              imgUrl,
+            }
+          );
+          handleSubmitFunc(deleteResponse);
+        } catch (err) {
+          handleSubmitFunc(err);
+          console.log(err);
+        }
       }
     }
 
@@ -194,7 +254,6 @@ const EventsForm = ({
         fileInputRef.current.value = "";
       }
       setImageUpload(null);
-      setValid(false);
       handleSubmitFunc(response);
       setImageUrlChip("");
     } catch (err) {
@@ -222,7 +281,6 @@ const EventsForm = ({
       setSelectedNews(null);
       resetForm();
       setImageUpload(null);
-      setValid(false);
       setImageUrlChip("");
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -237,7 +295,7 @@ const EventsForm = ({
     if (data.imageUrl) {
       try {
         const imgUrl = data.imageUrl;
-        await Axios.post("/image/delete-image", { imgUrl });
+        await Axios.post("/event-image/delete-event-image", { imgUrl });
       } catch (err) {
         handleSubmitFunc(err);
         console.log(err);
@@ -259,7 +317,7 @@ const EventsForm = ({
 
     if (imageFormData) {
       try {
-        let imageResponse = await Axios.post("/image", imageFormData);
+        let imageResponse = await Axios.post("/event-image", imageFormData);
         request = { ...data, imageUrl: imageResponse.data };
       } catch (err) {
         console.log(err);
@@ -267,6 +325,7 @@ const EventsForm = ({
     }
 
     try {
+      request = { ...request, date: startDate.toISOString() };
       // statement to check the new property change
       let response = await Axios.post(
         "/events/add-event-data",
@@ -276,13 +335,12 @@ const EventsForm = ({
         { headers }
       );
       response && handleLoaderClose();
-      setSelectedNews(null);
+      setSelectedNews(response.data.value);
       resetForm();
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
       setImageUpload(null);
-      setValid(false);
       handleSubmitFunc(response);
       setImageUrlChip("");
     } catch (err) {
@@ -291,48 +349,11 @@ const EventsForm = ({
     }
   };
 
-  // function used to set state based on if the if the validation is passed.
-  const isValidationPassed = (values) => {
-    try {
-      validationSchema.validateSync(values);
-      setValid(true);
-      return true;
-    } catch (error) {
-      setValid(false);
-      return false;
-    }
-  };
-
-  // validation schema to define the error message.
-  const validationSchema = Yup.object({
-    name:
-      formEnabledToEditEvent &&
-      Yup.string().required("News Headline is required"),
-    s_name:
-      formEnabledToEditEvent &&
-      Yup.string().required("Sinhala News Title is required"),
-    desc:
-      formEnabledToEditEvent &&
-      Yup.string().required("News Description is required"),
-    s_desc:
-      formEnabledToEditEvent &&
-      Yup.string().required("Sinhala News Description is required"),
-    imageUrl:
-      formEnabledToEditEvent &&
-      imageUrlChip === "" &&
-      !imageUpload &&
-      Yup.string().required("Image URL is required"),
-    srcUrl:
-      formEnabledToEditEvent && Yup.string().required("Source URL is required"),
-  });
-
   return (
     <Formik
       innerRef={formikRef}
       initialValues={initialValues}
       onSubmit={handleSubmit}
-      validationSchema={validationSchema}
-      validate={isValidationPassed}
       enableReinitialize={true}
     >
       {(formProps) => {
@@ -551,7 +572,7 @@ const EventsForm = ({
                 variant="contained"
                 type="submit"
                 onClick={() => {
-                  valid && setEditOpen(true);
+                  setEditOpen(true);
                   setIsPublishMode(false);
                   setIsDeleteMode(false);
                   setIsEditMode(true);
@@ -570,7 +591,7 @@ const EventsForm = ({
                   },
                 }}
                 onClick={() => {
-                  valid && setDeleteOpen(true);
+                  setDeleteOpen(true);
                   setIsPublishMode(false);
                   setIsDeleteMode(true);
                   setIsEditMode(false);
@@ -589,7 +610,7 @@ const EventsForm = ({
                   },
                 }}
                 onClick={() => {
-                  valid && setPublishOpen(true);
+                  setPublishOpen(true);
                   setIsPublishMode(true);
                   setIsDeleteMode(false);
                   setIsEditMode(false);
@@ -605,7 +626,6 @@ const EventsForm = ({
                 open={editOpen}
                 onClose={() => {
                   setEditOpen(false);
-                  setValid(false);
                 }}
                 closeAfterTransition
                 slots={{ backdrop: Backdrop }}
@@ -655,7 +675,6 @@ const EventsForm = ({
                 open={deleteOpen}
                 onClose={() => {
                   setDeleteOpen(false);
-                  setValid(false);
                 }}
                 closeAfterTransition
                 slots={{ backdrop: Backdrop }}
@@ -705,7 +724,6 @@ const EventsForm = ({
                 open={publishOpen}
                 onClose={() => {
                   setPublishOpen(false);
-                  setValid(false);
                 }}
                 closeAfterTransition
                 slots={{ backdrop: Backdrop }}

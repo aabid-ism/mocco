@@ -38,7 +38,7 @@ function FeedContainer() {
 
     // Check if scrolled to the bottom
     if (
-      scrollY + windowHeight >= documentHeight &&
+      scrollY + windowHeight + 200 >= documentHeight &&
       !isLoadingMorePostsRef.current
     ) {
       // set loading to true to avoid calls while fetching is occurring
@@ -75,7 +75,7 @@ function FeedContainer() {
       // TIMEOUT TO AVOID UNNECESSARY MULTIPLE CALLS
       setTimeout(() => {
         isLoadingMorePostsRef.current = false;
-      }, 1000);
+      }, 500);
     }
   };
 

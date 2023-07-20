@@ -93,6 +93,13 @@ const Events = ({ open }) => {
     setLoader(false);
   };
 
+  const handlePublishValidation = () => {
+    toast.error("Either Sinhala or English Event name should be entered", {
+      autoClose: 1500,
+      theme: "dark",
+    });
+  };
+
   // function to handle loader open
   const handleLoaderOpen = () => {
     setLoader(true);
@@ -250,6 +257,8 @@ const Events = ({ open }) => {
                     handleImageSize={handleImageSize}
                     formEnabledToAddEvent={formEnabledToAddEvent}
                     formEnabledToEditEvent={formEnabledToEditEvent}
+                    startDate={startDate}
+                    handlePublishValidation={handlePublishValidation}
                   />
                 </CardContent>
               </Card>

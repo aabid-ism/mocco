@@ -27,7 +27,7 @@ class _ScreensHolderState extends State<ScreensHolder> {
           .fetchNewsFromService(context);
     });
     _currentPageIndex = 1;
-    }
+  }
 
   @override
   void dispose() {

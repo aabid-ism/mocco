@@ -7,12 +7,14 @@ import RightSidebar from "./components/Right/RightSidebar";
 import FeedContainer from "./components/FeedContainer";
 import { MoccoNewsFeedProvider } from "./providers/NewsProvider";
 import backgroundImage from "./assets/MOCCO.svg";
+import LanguageToggle from "./components/left/LanguageToggle";
 
 function App() {
   return (
     <>
       <MoccoNewsFeedProvider>
         <NavigatorBar />
+
         <Container
           fluid
           style={{
@@ -26,7 +28,7 @@ function App() {
           <div
             style={{
               display: "flex",
-              paddingTop: "100px",
+              paddingTop: "150px",
               margin: "0",
             }}
           >

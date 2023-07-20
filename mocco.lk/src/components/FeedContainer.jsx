@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import NewsCard from "./NewsCard/NewsCard";
+import Row from "react-bootstrap/Row";
 import {
   useMoccoNewsFeedContext,
   useMoccoNewsFeedDispatchContext,
 } from "../providers/NewsProvider";
 import { fetchDefaultFeed, loadMorePosts } from "../services/FetchService";
 import LoadingSpinner from "./loadspinner";
+import LanguageToggle from "./left/LanguageToggle";
 // import Lottie from "react-lottie";
 // import hook from "../assets/hook.json";
 function FeedContainer() {
@@ -135,8 +137,14 @@ function FeedContainer() {
 
   // THE FEED
   return (
-    <div style={{ margin: "10px" }}>
+    <div style={{ margin: "0px" }}>
       {/* <img src="MOCCO.svg"></img> */}
+      <Row
+        className="d-sm-none"
+        style={{ display: "flex", justifyContent: "center" }}
+      >
+        <LanguageToggle />
+      </Row>
       {
         appState.is_loading ? (
           <div>

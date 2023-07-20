@@ -1,5 +1,5 @@
 import React from "react";
-import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
+import { Navbar, Container, Nav, NavDropdown, Col } from "react-bootstrap";
 import "./Navigator.css";
 import LanguageToggle from "../left/LanguageToggle";
 
@@ -18,13 +18,17 @@ function NavigatorBar() {
       className="full-width-navbar"
     >
       <Container fluid>
-        <Navbar.Brand href="#home">Mocco</Navbar.Brand>
+        <Navbar.Brand href="#home">
+          <Col className="d-none d-sm-block">
+            <h1>Mocco</h1>
+          </Col>
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse
           id="basic-navbar-nav"
           className="justify-content-center"
         >
-          <Nav className="mr-auto">
+          <Nav className="text-center">
             <NavDropdown title="Explore" id="basic-nav-dropdown">
               <NavDropdown.Item href="#action/3.1">News Tag 1</NavDropdown.Item>
               <NavDropdown.Item href="#action/3.2">News Tag 2</NavDropdown.Item>
@@ -40,10 +44,15 @@ function NavigatorBar() {
             <Nav.Link eventKey="International">International</Nav.Link>
           </Nav>
         </Navbar.Collapse>
+        <Navbar.Brand>
+          <Col className="d-none d-sm-block">
+            <LanguageToggle />
+          </Col>
+        </Navbar.Brand>
       </Container>
-      <div style={{ marginRight: "10px" }}>
+      {/* <div style={{ marginRight: "40px" }}>
         <LanguageToggle />
-      </div>
+      </div> */}
     </Navbar>
   );
 }

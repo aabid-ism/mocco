@@ -31,7 +31,7 @@ function LanguageToggle() {
           onClick={(e) => toggle("English")}
           style={buttonStyle}
         >
-          English
+          ENG
         </ToggleButton>
         <ToggleButton
           variant="light"

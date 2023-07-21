@@ -19,4 +19,4 @@ const SendAnalytics = () => {
     page: window.location.pathname,
   });
 };
-// reportWebVitals(SendAnalytics);
+reportWebVitals(SendAnalytics);

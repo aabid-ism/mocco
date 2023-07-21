@@ -5,15 +5,12 @@ import LeftSidebar from "./components/Left/LeftSidebar";
 import RightSidebar from "./components/Right/RightSidebar";
 import FeedContainer from "./components/FeedContainer";
 import { MoccoNewsFeedProvider } from "./providers/NewsProvider";
-import backgroundImage from "./assets/MOCCO.svg";
-import LanguageToggle from "./components/left/LanguageToggle";
 
 function App() {
   return (
     <>
       <MoccoNewsFeedProvider>
         <NavigatorBar />
-
         <Container fluid style={{ backgroundColor: "#F1F2F5" }}>
           <Row style={{ paddingTop: "80px", margin: "0" }}>
             <Col

@@ -1,21 +1,3 @@
-/* .btn:focus,
-.btn:active:focus,
-.btn.active:focus,
-.btn:focus:not(:focus-visible) {
-  outline: none !important;
-  box-shadow: none !important;
-} */
-
-/* .tagd-button {
-      display: "flex",
-      justifyContent: "flex-start",
-      width: "200px",
-      padding: "10px",
-      backgroundColor: "#F1F2F5",
-    outlineWidth: "0",
-  background-color: "#F1F2F5";
-} */
-
 .tag-button {
   background-color: #f1f2f5;
 }

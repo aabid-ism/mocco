@@ -1,6 +1,5 @@
 import React from "react";
 import Lottie from "lottie-react";
-
 import Accidents from "../assets/animations/Accidents.json";
 import Crime from "../assets/animations/Crime.json";
 import Education from "../assets/animations/Education.json";

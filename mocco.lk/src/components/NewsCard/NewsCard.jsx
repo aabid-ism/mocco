@@ -1,6 +1,5 @@
-import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
-// import economy from "../assets/money-bag.gif";
+
 function NewsCard({
   heading,
   description,
@@ -23,10 +22,7 @@ function NewsCard({
             "0 0px 3px 0px rgba(0, 0, 0, 0.2), 0 0px 1px 0 rgba(0, 0, 0, 0.19)",
         }}
       >
-        <Card.Header>
-          {/* <img src={economy} style={{ width: "24px" }}></img> */}
-          {tag}
-        </Card.Header>
+        <Card.Header>{tag}</Card.Header>
         <Card.Img variant="bottom" src={imageUrl} />
         <Card.Body>
           {lang == "English" && <Card.Title>{heading}</Card.Title>}

@@ -59,6 +59,7 @@ export default function Navbar({ open, setOpen }) {
     { label: "Manage News History", url: "/manage-news-history" },
     { label: "Events", url: "/events" },
     { label: "Quotes", url: "/quotes" },
+
   ];
 
   const handleDrawerOpen = () => {
@@ -243,6 +244,7 @@ export default function Navbar({ open, setOpen }) {
                 <FormatQuoteIcon />
               </ListItemIcon>
               <ListItemText primary={"Add Quote"} />
+
             </ListItemButton>
           </ListItem>
         </List>

@@ -11,7 +11,6 @@ function TagCard(props) {
   async function sendTagFeedRequest() {
     // fetch
     const postData = await loadMorePosts("TAG", 999999, props.tag);
-    // console.log(postData);
     // dispatch
     dispatch({
       type: "SET_TAG_FEED",
@@ -37,15 +36,9 @@ function TagCard(props) {
         onClick={sendTagFeedRequest}
         active={props.focus}
       >
-        {/* <img
-          src={sportsimg}
-          alt="Example"
-          style={{ width: "24px", marginRight: "8px", marginTop: "5px" }}
-        /> */}
         {props.children}
         {props.tag}
       </Button>{" "}
-      {/* <Button className="purple-button">Hello Again</Button> */}
     </div>
   );
 }

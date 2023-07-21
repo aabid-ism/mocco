@@ -8,13 +8,10 @@ import {
 import { fetchDefaultFeed, loadMorePosts } from "../services/FetchService";
 import LoadingSpinner from "./loadspinner";
 import LanguageToggle from "./left/LanguageToggle";
-import Lottie from "lottie-react";
 import TagAnimation from "./TagAnimation";
 import { FeedType } from "../enums";
 
-// import hook from "../assets/hook.json";
 function FeedContainer() {
-  // getting references for the dispatch function and appState(moccoContext)
   const dispatch = useMoccoNewsFeedDispatchContext();
   const appState = useMoccoNewsFeedContext();
 
@@ -36,12 +33,13 @@ function FeedContainer() {
       metaDataForLoading.current.newsTag = appState.newsTag;
     }
   }
+  // function runs when a scroll event is triggered
   const handleScroll = async (event) => {
     const scrollY = window.scrollY; // scrolled position relative to the top
     const windowHeight = window.innerHeight; // height of viewport
     const documentHeight = document.documentElement.scrollHeight; // height of entire scrollable view
 
-    // Check if scrolled to the bottom
+    // Check if scrolled to close to the bottom of page
     if (
       scrollY + windowHeight + 200 >= documentHeight &&
       !isLoadingMorePostsRef.current
@@ -94,7 +92,6 @@ function FeedContainer() {
     handleRefs();
   });
   useEffect(() => {
-    // dispatch({ type: "SET_LOADING" });
     // Fetching the latest news
     const fetchInitialPosts = async () => {
       const initialNewsPosts = await fetchDefaultFeed();
@@ -134,41 +131,31 @@ function FeedContainer() {
   handleRefs();
 
   let feed = newsCardsList;
-  console.log(appState);
-  // const defaultOptions = {
-  //   loop: true, // Set this to false if you don't want the animation to loop
-  //   autoplay: true, // Set this to false if you don't want the animation to play automatically
-  //   animationData: hook,
-  //   rendererSettings: {
-  //     preserveAspectRatio: "xMidYMid slice", // Adjust the animation's position
-  //   },
-  // };
 
-  // THE FEED
   return (
     <div style={{ margin: "0px" }}>
-      {/* <img src="MOCCO.svg"></img> */}
+      {/* Language Toggle is at top of the feed for small screens */}
       <Row
         className="d-sm-none"
         style={{ display: "flex", justifyContent: "center" }}
       >
         <LanguageToggle />
       </Row>
+
+      {/* Animation when the feedtype is Tag */}
       {appState.feedTag == FeedType.TAG && (
         <Row style={{ display: "flex", justifyContent: "center" }}>
           <TagAnimation tag={appState.newsTag} />
         </Row>
       )}
-      {
-        appState.is_loading ? (
-          <div>
-            <LoadingSpinner />
-          </div>
-        ) : (
-          feed
-        )
-        // <Lottie options={defaultOptions} height={100} width={100} />
-      }
+
+      {appState.is_loading ? (
+        <div>
+          <LoadingSpinner />
+        </div>
+      ) : (
+        feed
+      )}
     </div>
   );
 }

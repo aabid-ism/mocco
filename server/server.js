@@ -16,6 +16,7 @@ import loadposts from "./routes/loadPosts/loadPosts.js";
 import handleLoading from "./routes/handleLoading/handleLoading.js";
 import events from "./routes/eventData/eventData.js";
 import quotes from "./routes/quotes/quotes.js";
+
 import swaggerUi from "swagger-ui-express";
 import * as path from "path";
 
@@ -66,8 +67,8 @@ app.use("/loadPosts", loadposts);
 app.use("/handleLoading", handleLoading);
 app.use("/events", events);
 app.use("/quotes", quotes);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(jsonObject));
 // app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(jsonObject));
+
 
 // Global error handling
 app.use((err, _req, res, next) => {

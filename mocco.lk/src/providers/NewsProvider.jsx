@@ -15,7 +15,7 @@ export function useMoccoNewsFeedDispatchContext() {
   return useContext(moccoNewsFeedDispatchContext);
 }
 
-// Mocco Provider provides a Higher-Order Component to automatically wrap
+// MoccoNewsFeedProvider provides a Higher-Order Component to automatically wrap
 // the state context (Mocco Context) and dispatch contect (MoccoDispatchContext)
 export function MoccoNewsFeedProvider({ children }) {
   const [moccoNewsFeedState, dispatch] = useReducer(moccoReducer, initialState);
@@ -39,7 +39,6 @@ function moccoReducer(state, action) {
       };
     }
     case "DispatchDefaultFeed": {
-      // console.log(action.payload);
       return {
         ...state,
         feedTag: FeedType.LOCAL,
@@ -51,7 +50,6 @@ function moccoReducer(state, action) {
     }
 
     case "LOAD_INTL_TO_FEED": {
-      // console.log(action.payload);
       return {
         ...state,
         feedTag: FeedType.INTERNATIONAL,
@@ -63,7 +61,6 @@ function moccoReducer(state, action) {
     }
 
     case "LOAD_TO_FEED": {
-      // console.log(action.payload);
       return {
         ...state,
         postFeed: [...state.postFeed, ...action.payload],
@@ -72,7 +69,6 @@ function moccoReducer(state, action) {
     }
 
     case "SET_TAG_FEED": {
-      // console.log(action.payload);
       return {
         ...state,
         feedTag: FeedType.TAG,
@@ -84,7 +80,6 @@ function moccoReducer(state, action) {
     }
 
     case "LOAD_TO_TAG_FEED": {
-      // console.log(action.payload);
       return {
         ...state,
         postFeed: [...state.postFeed, ...action.payload],
@@ -110,7 +105,7 @@ function moccoReducer(state, action) {
   }
 }
 
-// Initial Mocco
+// Initial State
 const initialState = {
   language: "English",
   feedTag: FeedType.NEWS,

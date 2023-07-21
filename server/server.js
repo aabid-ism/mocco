@@ -66,7 +66,6 @@ app.use("/loadPosts", loadposts);
 app.use("/handleLoading", handleLoading);
 app.use("/events", events);
 app.use("/quotes", quotes);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(jsonObject));
 // app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(jsonObject));
 
 // Global error handling

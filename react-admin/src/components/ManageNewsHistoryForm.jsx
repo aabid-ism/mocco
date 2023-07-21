@@ -174,7 +174,7 @@ const ManageNewsHistoryForm = ({
   // function to add the image upload to a state
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    const maxSize = 1 * 1024 * 1024; // 1MB (in bytes)
+    const maxSize = 2 * 1024 * 1024; // 2MB (in bytes)
 
     if (file && file.size > maxSize) {
       handleImageSize(fileInputRef);

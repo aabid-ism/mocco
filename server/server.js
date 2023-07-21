@@ -15,6 +15,7 @@ import event from "./routes/eventImagePipeline/eventImagePipeline.js";
 import loadposts from "./routes/loadPosts/loadPosts.js";
 import handleLoading from "./routes/handleLoading/handleLoading.js";
 import events from "./routes/eventData/eventData.js";
+import quotes from "./routes/quotes/quotes.js";
 import swaggerUi from "swagger-ui-express";
 import * as path from "path";
 
@@ -22,7 +23,11 @@ const app = express();
 const PORT = process.env.PORT || 5555;
 
 //  Middlewares
-const allowedOrigins = ["https://mocco-admin.web.app", "https://mocco.lk"];
+const allowedOrigins = [
+  "https://mocco-admin.web.app",
+  "https://mocco.lk",
+  "http://127.0.0.1:5173",
+];
 
 const corsOptions = {
   origin: allowedOrigins,
@@ -60,6 +65,7 @@ app.use("/event-image", event);
 app.use("/loadPosts", loadposts);
 app.use("/handleLoading", handleLoading);
 app.use("/events", events);
+app.use("/quotes", quotes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(jsonObject));
 // app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(jsonObject));
 

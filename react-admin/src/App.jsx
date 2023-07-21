@@ -13,6 +13,7 @@ import SignIn from "./pages/SignIn";
 // import SignUp from "./pages/SignUp";
 import { useAuthContext } from "./hooks/useAuthContext";
 import Events from "./pages/Events";
+import Quotes from "./pages/Quotes";
 
 function App() {
   const [open, setOpen] = useState(true);
@@ -79,6 +80,17 @@ function App() {
             <>
               <Navigate to="/events" />
               <Events open={open} setOpen={setOpen} />
+            </>
+          ) : (
+            <Navigate to="/" />
+          ),
+        },
+        {
+          path: "/quotes",
+          element: user ? (
+            <>
+              <Navigate to="/quotes" />
+              <Quotes open={open} setOpen={setOpen} />
             </>
           ) : (
             <Navigate to="/" />

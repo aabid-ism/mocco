@@ -1,8 +1,8 @@
 import conn from "../conn.js";
 import { ObjectId } from "mongodb";
 
-// <-------------------- GET EVENT DATA FROM events COLLECTION. -------------------->
-export const getEventData = async (req, res) => {
+// <-------------------- GET QUOTES FROM quotes COLLECTION. -------------------->
+export const getQuotes = async (req, res) => {
   let { date } = req.body;
   const startOfDay = new Date(date);
   const endOfDay = new Date(date);
@@ -11,9 +11,9 @@ export const getEventData = async (req, res) => {
   try {
     // getting references to database and collection
     const db = conn.getDb();
-    const collection = await db.collection("events");
+    const collection = await db.collection("quotes");
 
-    // finding and returning all event posts
+    // finding and returning all Quote posts
     const results = await collection
       .find({
         date: {
@@ -30,11 +30,11 @@ export const getEventData = async (req, res) => {
   }
 };
 
-// <-------------------- ADD EVENT DATA TO events COLLECTION. -------------------->
-export const addEventData = async (req, res) => {
+// <-------------------- ADD QUOTES TO quotes COLLECTION. -------------------->
+export const addQuotes = async (req, res) => {
   try {
     const db = conn.getDb();
-    const collection = await db.collection("events");
+    const collection = await db.collection("quotes");
     let data = req.body;
     const date = new Date(req.body.date);
     const { id, ...newData } = data;
@@ -42,67 +42,64 @@ export const addEventData = async (req, res) => {
     const result = await collection.insertOne(data);
 
     if (!result) {
-      return res.status(404).json({ message: "Event not found" });
+      return res.status(404).json({ message: "Quote not found" });
     }
 
-    res.status(200).json({ message: "Event pushed successfully" });
+    res.status(200).json({ message: "Quote pushed successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Event server error" });
+    res.status(500).json({ message: "Quote server error" });
   }
 };
 
-// <-------------------- EDIT EVENT DATA TO events COLLECTION. -------------------->
-export const editEventData = async (req, res) => {
+// <-------------------- EDIT QUOTES TO quotes COLLECTION. -------------------->
+export const editQuotes = async (req, res) => {
   try {
-    const eventId = req.body.id;
-    const { id, ...editEvent } = req.body;
+    const QuoteId = req.body.id;
+    const { id, ...editQuote } = req.body;
     // getting references to database and collection
     const db = conn.getDb();
-    const collection = await db.collection("events");
+    const collection = await db.collection("quotes");
 
-
-    // finding and updating event post based on ID
-
+    // finding and updating quotes post based on ID
     const result = await collection.findOneAndUpdate(
       {
-        _id: new ObjectId(eventId),
+        _id: new ObjectId(QuoteId),
       },
-      { $set: editEvent },
+      { $set: editQuote },
       { returnDocument: "after" }
     );
 
     if (!result) {
-      return res.status(404).json({ message: "Event not found" });
+      return res.status(404).json({ message: "Quote not found" });
     }
 
     res
       .status(200)
-      .json({ message: "Event edited successfully", value: result.value });
+      .json({ message: "Quote edited successfully", value: result.value });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
-// <-------------------- DELETE EVENT DATA TO events COLLECTION. -------------------->
-export const deleteEventData = async (req, res) => {
+// <-------------------- DELETE QUOTES TO quotes COLLECTION. -------------------->
+export const deleteQuotes = async (req, res) => {
   try {
     const newsId = req.body.id;
 
     // getting references to database and collection
     const db = conn.getDb();
-    const collection = await db.collection("events");
+    const collection = await db.collection("quotes");
 
-    // finding and deleting event post based on ID
-
+    // finding and deleting quotes post based on ID
     const result = await collection.deleteOne({
       _id: new ObjectId(newsId),
     });
 
     if (!result) {
-      return res.status(404).json({ message: "Event not found" });
+      return res.status(404).json({ message: "Quote not found" });
     }
 
-    res.status(200).json({ message: "Event deleted successfully" });
+    res.status(200).json({ message: "Quote deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }

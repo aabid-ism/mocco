@@ -11,6 +11,7 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
@@ -57,6 +58,8 @@ export default function Navbar({ open, setOpen }) {
     { label: "Edit and Publish", url: "/edit-and-publish-post" },
     { label: "Manage News History", url: "/manage-news-history" },
     { label: "Events", url: "/events" },
+    { label: "Quotes", url: "/quotes" },
+
   ];
 
   const handleDrawerOpen = () => {
@@ -223,7 +226,25 @@ export default function Navbar({ open, setOpen }) {
               <ListItemIcon>
                 <EventIcon />
               </ListItemIcon>
-              <ListItemText primary={"Events"} />
+              <ListItemText primary={"Add Event Data"} />
+            </ListItemButton>
+          </ListItem>
+        </List>
+
+        <List sx={{ paddingX: "3%" }}>
+          <ListItem disablePadding>
+            <ListItemButton
+              sx={{
+                backgroundColor:
+                  activeItem === "Quotes" ? "#e2e8f0" : "transparent",
+              }}
+              onClick={() => handleListItemClick(tabs[4])}
+            >
+              <ListItemIcon>
+                <FormatQuoteIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Add Quote"} />
+
             </ListItemButton>
           </ListItem>
         </List>

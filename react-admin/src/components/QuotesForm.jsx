@@ -1,17 +1,14 @@
 // <------------------------ IMPORTS ------------------------------->
-import { useState, useEffect, useRef, forwardRef, cloneElement } from "react";
+import { useState, useEffect, forwardRef, cloneElement } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { Chip, TextareaAutosize, Tooltip } from "@mui/material";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
 import Axios from "../utils/axios.js";
 import Backdrop from "@mui/material/Backdrop";
 import { useSpring, animated } from "@react-spring/web";
 import Modal from "@mui/material/Modal";
-import CancelIcon from "@mui/icons-material/Cancel";
 
 // function used for smooth transitioning of the modal
 const Fade = forwardRef(function Fade(props, ref) {
@@ -46,15 +43,14 @@ const Fade = forwardRef(function Fade(props, ref) {
   );
 });
 
-const EventsForm = ({
-  setSelectedNews,
-  selectedNews,
+const QuotesForm = ({
+  setSelectedQuote,
+  selectedQuote,
   handleSubmitFunc,
   handleLoaderOpen,
   handleLoaderClose,
-  handleImageSize,
-  formEnabledToAddEvent,
-  formEnabledToEditEvent,
+  formEnabledToAddQuote,
+  formEnabledToEditQuote,
   startDate,
   handlePublishValidation,
 }) => {
@@ -62,58 +58,36 @@ const EventsForm = ({
   const [deleteOpen, setDeleteOpen] = useState(false); // state used to manipulate the opening and closing of edit modal.
   const [publishOpen, setPublishOpen] = useState(false); // state used to manipulate the opening and closing of publish modal.
   const [data, setData] = useState([]); // state to store the data that has been submitted by form (edit or delete).
-  const [imageUrlChip, setImageUrlChip] = useState(""); // state to track the image url chip.
   const [isPublishMode, setIsPublishMode] = useState(false); // state to track the publish button.
   const [isDeleteMode, setIsDeleteMode] = useState(false); // state to track the delete button.
   const [isEditMode, setIsEditMode] = useState(false); // state to track the delete button.
-  const [imageUpload, setImageUpload] = useState(null); // state to store uploaded image.
-  const [imageFormData, setImageFormData] = useState(null); // state to store form data of the uploaded image.
-  const fileInputRef = useRef(); // useRef to reference the image upload component and reset after submit.
   const [formEnable, setFormEnable] = useState(true); //state to enable manipulation of form.
-  const formikRef = useRef(null); // useRef to reference the form data of formik.
 
   useEffect(() => {
-    setImageUrlChip(selectedNews ? selectedNews.imageUrl : "");
-  }, [selectedNews]);
-
-  useEffect(() => {
-    if (!formEnabledToAddEvent) {
-      setSelectedNews(null);
-      setImageUrlChip("");
+    if (!formEnabledToAddQuote) {
+      setSelectedQuote(null);
     }
 
-    if (formEnabledToAddEvent || formEnabledToEditEvent) {
+    if (formEnabledToAddQuote || formEnabledToEditQuote) {
       setFormEnable(false);
     }
-  }, [formEnabledToAddEvent, formEnabledToAddEvent]);
+  }, [formEnabledToAddQuote, formEnabledToAddQuote]);
 
   // Initial values of the form data.
   const initialValues = {
-    id: selectedNews ? selectedNews._id : "",
-    name: selectedNews ? selectedNews.name : "",
-    s_name: selectedNews ? selectedNews.s_name : "",
-    desc: selectedNews ? selectedNews.desc : "",
-    s_desc: selectedNews ? selectedNews.s_desc : "",
-    imageUrl: formikRef.current
-      ? formikRef.current.files
-        ? formikRef.current.files[0]
-        : null
-      : null,
-    srcUrl: selectedNews ? selectedNews.srcUrl : "",
+    id: selectedQuote ? selectedQuote._id : "",
+    quote: selectedQuote ? selectedQuote.quote : "",
+    s_quote: selectedQuote ? selectedQuote.s_quote : "",
+    author: selectedQuote ? selectedQuote.author : "",
+    s_author: selectedQuote ? selectedQuote.s_author : "",
+    url: selectedQuote ? selectedQuote.s_author : "",
   };
 
   // function to set the submitted form data to the state.
   const handleSubmit = async (values) => {
-    if (values.name || values.s_name) {
-      if (imageUpload) {
-        const formData = new FormData();
-        formData.append("image", imageUpload);
-        setImageFormData(formData);
-      }
-
+    if (values.quote || values.s_quote) {
       setData({
         ...values,
-        imageUrl: imageUrlChip ? imageUrlChip : "",
       });
 
       if (isPublishMode) {
@@ -131,20 +105,6 @@ const EventsForm = ({
     }
   };
 
-  // function to add the image upload to a state
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-
-    const maxSize = 2 * 1024 * 1024; // 2MB (in bytes)
-
-
-    if (file && file.size > maxSize) {
-      handleImageSize(fileInputRef);
-    } else {
-      setImageUpload(file);
-    }
-  };
-
   // function that sends updated form data to the backend after confirmation from the pop up.
   const handleEditConfirm = async (resetForm) => {
     setEditOpen(false);
@@ -158,106 +118,19 @@ const EventsForm = ({
       Authorization: `Bearer ${token}`,
     };
 
-    //  if statement that checks if the image form data object is set.
-    //  This is only set when a new image is uploaded or if an image is removed and a new image is added.
-    if (imageFormData) {
-      try {
-        imageFormData.append(
-          "imageUrl",
-          selectedNews ? selectedNews.imageUrl : ""
-        );
-
-        // if statement to differentiate between an already existing post or a newly added post
-        if (selectedNews && selectedNews.imageUrl) {
-          // statement to recheck if the file input ref is not equal anything and
-          // if theres an image upload to ensure that the current image is removed and a new image has been uploaded.
-          if (fileInputRef.current.value != "" && imageUpload) {
-            let imageResponse = await Axios.post("/event-image", imageFormData);
-            try {
-              const imgUrl = selectedNews.imageUrl;
-              let deleteResponse = await Axios.post(
-                "/event-image/delete-event-image",
-                {
-                  imgUrl,
-                }
-              );
-              handleSubmitFunc(deleteResponse);
-            } catch (err) {
-              handleSubmitFunc(err);
-              console.log(err);
-            }
-            request = { ...data, imageUrl: imageResponse.data };
-          } else {
-            // if file input ref is equal to "" and there is no imageUpload, the imageUrlChip
-            //  is removed which indicates the user wants the image removed
-            if (!imageUrlChip) {
-              try {
-                const imgUrl = selectedNews.imageUrl;
-                let deleteResponse = await Axios.post(
-                  "/event-image/delete-event-image",
-                  {
-                    imgUrl,
-                  }
-                );
-                handleSubmitFunc(deleteResponse);
-              } catch (err) {
-                handleSubmitFunc(err);
-                console.log(err);
-              }
-            }
-          }
-        } else {
-          // statement to recheck if the file input ref is not equal anything and
-          // if theres an image upload to ensure that a new image has been uploaded.
-          if (fileInputRef.current.value != "" && imageUpload) {
-            let imageResponse = await Axios.post("/event-image", imageFormData);
-            request = { ...data, imageUrl: imageResponse.data };
-          }
-        }
-      } catch (err) {
-        handleSubmitFunc(err);
-        console.log(err);
-      }
-    }
-    // if a new image upload was made, a checking is carried out to check if current post already has an image.
-    else if (selectedNews && selectedNews.imageUrl) {
-      // if there is no imageUrlChip that means the user has removed the chip therefore intending to delete the image
-      // the delete image execution is run.
-      if (!imageUrlChip) {
-        try {
-          const imgUrl = selectedNews.imageUrl;
-          let deleteResponse = await Axios.post(
-            "/event-image/delete-event-image",
-            {
-              imgUrl,
-            }
-          );
-          handleSubmitFunc(deleteResponse);
-        } catch (err) {
-          handleSubmitFunc(err);
-          console.log(err);
-        }
-      }
-    }
-
     try {
       // statement to check the new property change
       let response = await Axios.post(
-        "/events/edit-event-data",
+        "/quotes/edit-quotes",
         {
           ...request,
         },
         { headers }
       );
       response && handleLoaderClose();
-      setSelectedNews(null);
+      setSelectedQuote(null);
       resetForm();
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-      setImageUpload(null);
       handleSubmitFunc(response);
-      setImageUrlChip("");
     } catch (err) {
       handleSubmitFunc(err);
       console.error(err);
@@ -276,32 +149,17 @@ const EventsForm = ({
       const headers = {
         Authorization: `Bearer ${token}`,
       };
-      const response = await Axios.post("/events/delete-event-data", data, {
+      const response = await Axios.post("/quotes/delete-quotes", data, {
         headers,
       });
       response && handleLoaderClose();
-      setSelectedNews(null);
+      setSelectedQuote(null);
       resetForm();
-      setImageUpload(null);
-      setImageUrlChip("");
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
       handleSubmitFunc(response);
     } catch (err) {
       console.error(err);
       err && handleLoaderClose();
       handleSubmitFunc(err);
-    }
-
-    if (data.imageUrl) {
-      try {
-        const imgUrl = data.imageUrl;
-        await Axios.post("/event-image/delete-event-image", { imgUrl });
-      } catch (err) {
-        handleSubmitFunc(err);
-        console.log(err);
-      }
     }
   };
 
@@ -317,34 +175,20 @@ const EventsForm = ({
       Authorization: `Bearer ${token}`,
     };
 
-    if (imageFormData) {
-      try {
-        let imageResponse = await Axios.post("/event-image", imageFormData);
-        request = { ...data, imageUrl: imageResponse.data };
-      } catch (err) {
-        console.log(err);
-      }
-    }
-
     try {
       request = { ...request, date: startDate.toISOString() };
       // statement to check the new property change
       let response = await Axios.post(
-        "/events/add-event-data",
+        "/quotes/add-quotes",
         {
           ...request,
         },
         { headers }
       );
       response && handleLoaderClose();
-      setSelectedNews(response.data.value);
+      setSelectedQuote(response.data.value);
       resetForm();
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-      setImageUpload(null);
       handleSubmitFunc(response);
-      setImageUrlChip("");
     } catch (err) {
       handleSubmitFunc(err);
       console.error(err);
@@ -353,7 +197,6 @@ const EventsForm = ({
 
   return (
     <Formik
-      innerRef={formikRef}
       initialValues={initialValues}
       onSubmit={handleSubmit}
       enableReinitialize={true}
@@ -362,42 +205,14 @@ const EventsForm = ({
         return (
           <Form>
             <Box sx={{ marginBottom: "2%" }}>
-              <label htmlFor="name">
-                <Typography fontWeight="bold">Event Name</Typography>
+              <label htmlFor="quote">
+                <Typography fontWeight="bold">Quote</Typography>
               </label>
               <Field
                 disabled={formEnable}
                 as={TextField}
-                id="name"
-                name="name"
-                variant="outlined"
-                fullWidth
-                inputProps={{
-                  style: {
-                    padding: "10px",
-                  },
-                  maxLength: 100,
-                }}
-              />
-              <ErrorMessage
-                name="name"
-                component="div"
-                style={{
-                  color: "red",
-                  fontSize: "0.8rem",
-                }}
-              />
-            </Box>
-
-            <Box sx={{ marginBottom: "2%" }}>
-              <label htmlFor="s_name">
-                <Typography fontWeight="bold">Event Name (Sinhala)</Typography>
-              </label>
-              <Field
-                disabled={formEnable}
-                as={TextField}
-                id="s_name"
-                name="s_name"
+                id="quote"
+                name="quote"
                 variant="outlined"
                 fullWidth
                 inputProps={{
@@ -410,108 +225,74 @@ const EventsForm = ({
             </Box>
 
             <Box sx={{ marginBottom: "2%" }}>
-              <label htmlFor="desc">
-                <Typography fontWeight="bold">Event Description</Typography>
+              <label htmlFor="s_quote">
+                <Typography fontWeight="bold">Quote (Sinhala)</Typography>
               </label>
               <Field
                 disabled={formEnable}
-                as={TextareaAutosize}
-                id="desc"
-                name="desc"
-                maxLength={350}
-                minRows={3}
-                maxRows={5}
-                placeholder="Enter text here..."
-                style={{
-                  width: "100%",
-                  padding: "20px",
-                  resize: "none",
-                  border: "1px solid #ccc",
-                }}
-              />
-            </Box>
-
-            <Box sx={{ marginBottom: "2%" }}>
-              <label htmlFor="s_desc">
-                <Typography fontWeight="bold">
-                  Event Description (Sinhala)
-                </Typography>
-              </label>
-              <Field
-                disabled={formEnable}
-                as={TextareaAutosize}
-                id="s_desc"
-                name="s_desc"
-                maxLength={350}
-                minRows={3}
-                maxRows={5}
-                placeholder="Enter text here..."
-                style={{
-                  width: "100%",
-                  padding: "20px",
-                  resize: "none",
-                  border: "1px solid #ccc",
-                }}
-              />
-            </Box>
-
-            <Box sx={{ marginBottom: "2%" }}>
-              <Box
-                sx={{
-                  display: "flex",
-                }}
-              >
-                <label htmlFor="image">
-                  <Typography fontWeight="bold">
-                    Choose Image (JPG or PNG)
-                  </Typography>
-                </label>
-                {imageUrlChip ? (
-                  <Tooltip name={imageUrlChip} arrow>
-                    <Chip
-                      id="image"
-                      name="image"
-                      label={imageUrlChip}
-                      size="small"
-                      onClick={() => {
-                        window.open(imageUrlChip, "_blank");
-                      }}
-                      onDelete={() => setImageUrlChip("")}
-                      deleteIcon={<CancelIcon />}
-                      sx={{
-                        maxWidth: "150px",
-                        marginLeft: "2%",
-                        marginBottom: "2%",
-                        backgroundColor: "orange",
-                        color: "white",
-                      }}
-                    />
-                  </Tooltip>
-                ) : null}
-              </Box>
-
-              <Field
-                inputRef={fileInputRef}
-                disabled={imageUrlChip ? true : formEnable ? true : false}
-                component={TextField}
-                name="imageUrl"
-                type="file"
+                as={TextField}
+                id="s_quote"
+                name="s_quote"
                 variant="outlined"
                 fullWidth
-                inputProps={{ accept: "image/jpeg, image/png" }}
-                onChange={(event) => handleFileChange(event)}
+                inputProps={{
+                  style: {
+                    padding: "10px",
+                  },
+                  maxLength: 100,
+                }}
               />
             </Box>
 
             <Box sx={{ marginBottom: "2%" }}>
-              <label htmlFor="srcUrl">
+              <label htmlFor="author">
+                <Typography fontWeight="bold">Author</Typography>
+              </label>
+              <Field
+                disabled={formEnable}
+                as={TextField}
+                id="author"
+                name="author"
+                variant="outlined"
+                fullWidth
+                inputProps={{
+                  style: {
+                    padding: "10px",
+                  },
+                  maxLength: 100,
+                }}
+              />
+            </Box>
+
+            <Box sx={{ marginBottom: "2%" }}>
+              <label htmlFor="s_author">
+                <Typography fontWeight="bold">Author (Sinhala)</Typography>
+              </label>
+              <Field
+                disabled={formEnable}
+                as={TextField}
+                id="s_author"
+                name="s_author"
+                variant="outlined"
+                fullWidth
+                inputProps={{
+                  style: {
+                    padding: "10px",
+                  },
+                  maxLength: 100,
+                }}
+              />
+            </Box>
+
+            <Box sx={{ marginBottom: "2%" }}>
+              <label htmlFor="url">
                 <Typography fontWeight="bold">Source URL</Typography>
               </label>
               <Field
                 disabled={formEnable}
                 as={TextField}
-                id="srcUrl"
-                name="srcUrl"
+                id="url"
+                name="url"
                 variant="outlined"
                 fullWidth
                 inputProps={{
@@ -530,7 +311,7 @@ const EventsForm = ({
               }}
             >
               <Button
-                disabled={formEnabledToEditEvent}
+                disabled={formEnabledToEditQuote}
                 variant="contained"
                 type="submit"
                 onClick={() => {
@@ -543,7 +324,7 @@ const EventsForm = ({
                 Edit
               </Button>
               <Button
-                disabled={formEnabledToEditEvent}
+                disabled={formEnabledToEditQuote}
                 variant="contained"
                 type="submit"
                 sx={{
@@ -562,7 +343,7 @@ const EventsForm = ({
                 Delete
               </Button>
               <Button
-                disabled={formEnabledToAddEvent}
+                disabled={formEnabledToAddQuote}
                 variant="contained"
                 type="submit"
                 sx={{
@@ -613,7 +394,7 @@ const EventsForm = ({
                     }}
                   >
                     <Typography id="spring-modal-description" sx={{ mt: 2 }}>
-                      Are you sure you want to edit this article?
+                      Are you sure you want to edit this quote?
                     </Typography>
                     <Button
                       sx={{ mt: 2, mx: "auto" }}
@@ -662,7 +443,7 @@ const EventsForm = ({
                     }}
                   >
                     <Typography id="spring-modal-description" sx={{ mt: 2 }}>
-                      Are you sure you want to delete this article?
+                      Are you sure you want to delete this quote?
                     </Typography>
                     <Button
                       sx={{ mt: 2, mx: "auto" }}
@@ -734,4 +515,4 @@ const EventsForm = ({
   );
 };
 
-export default EventsForm;
+export default QuotesForm;

@@ -16,6 +16,7 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useAuthContext } from "../hooks/useAuthContext.js";
 
 const drawerWidth = 240;
 
@@ -53,6 +54,7 @@ const AppBar = styled(MuiAppBar, {
 
 const CreatePost = ({ open }) => {
   const [loader, setLoader] = useState(false); // state to handle page loader
+  const { dispatch } = useAuthContext();
 
   // function to handle loader close
   const handleLoaderClose = () => {
@@ -89,6 +91,20 @@ const CreatePost = ({ open }) => {
   // function to handle loader open
   const handleLoaderOpen = () => {
     setLoader(true);
+  };
+
+  // function to handle 401 unauthorised error
+  const handleUserUnauthorised = () => {
+    setLoader(false);
+    toast.error("Access token expired, login again", {
+      autoClose: 2000,
+      theme: "dark",
+    });
+
+    // Dispatch the action after 2 seconds
+    setTimeout(() => {
+      dispatch({ type: "LOGOUT" });
+    }, 2000);
   };
 
   // function to notify successful upload
@@ -163,6 +179,7 @@ const CreatePost = ({ open }) => {
                     handleImageSize={handleImageSize}
                     handleHeadline={handleHeadline}
                     handleWordLimit={handleWordLimit}
+                    handleUserUnauthorised={handleUserUnauthorised}
                   />
                 </CardContent>
               </Card>

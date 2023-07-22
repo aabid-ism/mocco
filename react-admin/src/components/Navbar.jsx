@@ -54,11 +54,19 @@ export default function Navbar({ open, setOpen }) {
   const { user } = useAuthContext();
 
   const tabs = [
-    { label: "Create a post", url: "/create-post" },
-    { label: "Edit and Publish", url: "/edit-and-publish-post" },
-    { label: "Manage News History", url: "/manage-news-history" },
-    { label: "Events", url: "/events" },
-    { label: "Quotes", url: "/quotes" },
+    { label: "Create a post", url: "/create-post", icon: <AddCircleIcon /> },
+    {
+      label: "Edit and Publish",
+      url: "/edit-and-publish-post",
+      icon: <BorderColorIcon />,
+    },
+    {
+      label: "Manage News History",
+      url: "/manage-news-history",
+      icon: <ManageHistoryIcon />,
+    },
+    { label: "Events", url: "/events", icon: <EventIcon /> },
+    { label: "Quotes", url: "/quotes", icon: <FormatQuoteIcon /> },
   ];
 
   const handleDrawerOpen = () => {
@@ -159,93 +167,22 @@ export default function Navbar({ open, setOpen }) {
             <ChevronLeftIcon />
           </IconButton>
         </Box>
-
-        <List sx={{ paddingX: "3%" }}>
-          <ListItem disablePadding>
-            <ListItemButton
-              sx={{
-                backgroundColor:
-                  activeItem === "Create a post" ? "#e2e8f0" : "transparent",
-              }}
-              onClick={() => handleListItemClick(tabs[0])}
-            >
-              <ListItemIcon>
-                <AddCircleIcon />
-              </ListItemIcon>
-              <ListItemText primary={"Create a post"} />
-            </ListItemButton>
-          </ListItem>
-        </List>
-
-        <List sx={{ paddingX: "3%" }}>
-          <ListItem disablePadding>
-            <ListItemButton
-              sx={{
-                backgroundColor:
-                  activeItem === "Edit and Publish" ? "#e2e8f0" : "transparent",
-              }}
-              onClick={() => handleListItemClick(tabs[1])}
-            >
-              <ListItemIcon>
-                <BorderColorIcon />
-              </ListItemIcon>
-              <ListItemText primary={"Edit and Publish"} />
-            </ListItemButton>
-          </ListItem>
-        </List>
-
-        <List sx={{ paddingX: "3%" }}>
-          <ListItem disablePadding>
-            <ListItemButton
-              sx={{
-                backgroundColor:
-                  activeItem === "Manage News History"
-                    ? "#e2e8f0"
-                    : "transparent",
-              }}
-              onClick={() => handleListItemClick(tabs[2])}
-            >
-              <ListItemIcon>
-                <ManageHistoryIcon />
-              </ListItemIcon>
-              <ListItemText primary={"Manage News History"} />
-            </ListItemButton>
-          </ListItem>
-        </List>
-
-        <List sx={{ paddingX: "3%" }}>
-          <ListItem disablePadding>
-            <ListItemButton
-              sx={{
-                backgroundColor:
-                  activeItem === "Events" ? "#e2e8f0" : "transparent",
-              }}
-              onClick={() => handleListItemClick(tabs[3])}
-            >
-              <ListItemIcon>
-                <EventIcon />
-              </ListItemIcon>
-              <ListItemText primary={"Add Event Data"} />
-            </ListItemButton>
-          </ListItem>
-        </List>
-
-        <List sx={{ paddingX: "3%" }}>
-          <ListItem disablePadding>
-            <ListItemButton
-              sx={{
-                backgroundColor:
-                  activeItem === "Quotes" ? "#e2e8f0" : "transparent",
-              }}
-              onClick={() => handleListItemClick(tabs[4])}
-            >
-              <ListItemIcon>
-                <FormatQuoteIcon />
-              </ListItemIcon>
-              <ListItemText primary={"Add Quote"} />
-            </ListItemButton>
-          </ListItem>
-        </List>
+        {tabs.map((item, index) => (
+          <List sx={{ paddingX: "3%" }} key={index}>
+            <ListItem disablePadding>
+              <ListItemButton
+                sx={{
+                  backgroundColor:
+                    activeItem === item.label ? "#e2e8f0" : "transparent",
+                }}
+                onClick={() => handleListItemClick(item)}
+              >
+                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.label} />
+              </ListItemButton>
+            </ListItem>
+          </List>
+        ))}
       </Drawer>
     </Box>
   );

@@ -5,6 +5,7 @@ import {
   addEventData,
   deleteEventData,
 } from "../../controllers/eventData.js";
+import requireAuth from "../../middlewares/requireAuth.js";
 
 const router = express.Router();
 
@@ -12,12 +13,12 @@ const router = express.Router();
 router.post("/get-event-data", getEventData);
 
 // ADD EVENT DATA TO events COLLECTION.
-router.post("/add-event-data", addEventData);
+router.post("/add-event-data", requireAuth, addEventData);
 
 // EDIT EVENT DATA TO events COLLECTION.
-router.post("/edit-event-data", editEventData);
+router.post("/edit-event-data", requireAuth, editEventData);
 
 // DELETE EVENT DATA FROM events COLLECTION.
-router.post("/delete-event-data", deleteEventData);
+router.post("/delete-event-data", requireAuth, deleteEventData);
 
 export default router;

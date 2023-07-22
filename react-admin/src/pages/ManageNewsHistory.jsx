@@ -18,7 +18,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
-
+import { useAuthContext } from "../hooks/useAuthContext.js";
 const drawerWidth = 240;
 
 // function used for smooth transitioning of the page based on the opening and closing of the navigation bar
@@ -59,6 +59,7 @@ const ManageNewsHistory = ({ open }) => {
   const [selectedNews, setSelectedNews] = useState([]);
   const [loader, setLoader] = useState(false); // state to handle page loader
   const [handleWordLimit, setHandleWordLimit] = useState(false);
+  const { dispatch } = useAuthContext();
 
   // function to notify successful edit or delete
   const handleSubmitFunc = (response) => {
@@ -145,6 +146,20 @@ const ManageNewsHistory = ({ open }) => {
     setSelectedNews(item);
   }
 
+  // function to handle 401 unauthorised error
+  const handleUserUnauthorised = () => {
+    setLoader(false);
+    toast.error("Access token expired, login again", {
+      autoClose: 2000,
+      theme: "dark",
+    });
+
+    // Dispatch the action after 2 seconds
+    setTimeout(() => {
+      dispatch({ type: "LOGOUT" });
+    }, 2000);
+  };
+
   useEffect(() => {
     if (handleWordLimit) {
       toast.error("Word count for description should be more than 25", {
@@ -161,15 +176,14 @@ const ManageNewsHistory = ({ open }) => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: 30,
+        gap: 2,
       }}
     >
-      <Box sx={{ marginBottom: 3 }}>
-        <label htmlFor="datepicker">Select a date:</label>
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
         <DatePicker
           selected={startDate}
           onChange={(date) => setStartDate(date)}
-          open={true}
+          inline
         />
       </Box>
       <Box
@@ -246,6 +260,7 @@ const ManageNewsHistory = ({ open }) => {
                     handleLoaderClose={handleLoaderClose}
                     handleImageSize={handleImageSize}
                     setHandleWordLimit={setHandleWordLimit}
+                    handleUserUnauthorised={handleUserUnauthorised}
                   />
                 </CardContent>
               </Card>

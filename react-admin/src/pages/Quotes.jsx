@@ -19,6 +19,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import EventIcon from "@mui/icons-material/Event";
+import { useAuthContext } from "../hooks/useAuthContext.js";
 
 const drawerWidth = 240;
 
@@ -61,6 +62,7 @@ const Quotes = ({ open }) => {
   const [loader, setLoader] = useState(false); // state to handle page loader
   const [formEnabledToAddQuote, setFormEnabledToAddQuote] = useState(true);
   const [formEnabledToEditQuote, setFormEnabledToEditQuote] = useState(true);
+  const { dispatch } = useAuthContext();
 
   // function to notify successful edit or delete
   const handleSubmitFunc = (response) => {
@@ -144,21 +146,34 @@ const Quotes = ({ open }) => {
     setFormEnabledToEditQuote(false);
   }
 
+  // function to handle 401 unauthorised error
+  const handleUserUnauthorised = () => {
+    setLoader(false);
+    toast.error("Access token expired, login again", {
+      autoClose: 2000,
+      theme: "dark",
+    });
+
+    // Dispatch the action after 2 seconds
+    setTimeout(() => {
+      console.log("hey");
+      dispatch({ type: "LOGOUT" });
+    }, 2000);
+  };
+
   // JSX content for the sidebar specific to Quotes screen.
   const sideBarContent = (
     <Stack
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: 30,
       }}
     >
-      <Box sx={{ marginBottom: 3 }}>
-        <label htmlFor="datepicker">Select a date:</label>
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
         <DatePicker
           selected={startDate}
           onChange={(date) => setStartDate(date)}
-          open={true}
+          inline
         />
       </Box>
       <Box
@@ -259,6 +274,7 @@ const Quotes = ({ open }) => {
                     formEnabledToEditQuote={formEnabledToEditQuote}
                     startDate={startDate}
                     handlePublishValidation={handlePublishValidation}
+                    handleUserUnauthorised={handleUserUnauthorised}
                   />
                 </CardContent>
               </Card>

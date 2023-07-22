@@ -19,6 +19,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import EventIcon from "@mui/icons-material/Event";
+import { useAuthContext } from "../hooks/useAuthContext.js";
 
 const drawerWidth = 240;
 
@@ -57,10 +58,11 @@ const AppBar = styled(MuiAppBar, {
 const Events = ({ open }) => {
   const [startDate, setStartDate] = useState(new Date());
   const [eventsList, setEventsList] = useState([]);
-  const [selectedNews, setSelectedNews] = useState([]);
+  const [selectedEvents, setSelectedEvents] = useState([]);
   const [loader, setLoader] = useState(false); // state to handle page loader
   const [formEnabledToAddEvent, setFormEnabledToAddEvent] = useState(true);
   const [formEnabledToEditEvent, setFormEnabledToEditEvent] = useState(true);
+  const { dispatch } = useAuthContext();
 
   // function to notify successful edit or delete
   const handleSubmitFunc = (response) => {
@@ -105,6 +107,21 @@ const Events = ({ open }) => {
     setLoader(true);
   };
 
+  // function to handle 401 unauthorised error
+  const handleUserUnauthorised = () => {
+    setLoader(false);
+    toast.error("Access token expired, login again", {
+      autoClose: 2000,
+      theme: "dark",
+    });
+
+    // Dispatch the action after 2 seconds
+    setTimeout(() => {
+      console.log("hey");
+      dispatch({ type: "LOGOUT" });
+    }, 2000);
+  };
+
   useEffect(() => {
     async function getEventData() {
       try {
@@ -136,10 +153,10 @@ const Events = ({ open }) => {
     }
 
     getEventData();
-  }, [startDate, selectedNews]);
+  }, [startDate, selectedEvents]);
 
   function handleChipClick(item) {
-    setSelectedNews(item);
+    setSelectedEvents(item);
     setFormEnabledToAddEvent(true);
     setFormEnabledToEditEvent(false);
   }
@@ -150,15 +167,13 @@ const Events = ({ open }) => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: 30,
       }}
     >
-      <Box sx={{ marginBottom: 3 }}>
-        <label htmlFor="datepicker">Select a date:</label>
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
         <DatePicker
           selected={startDate}
           onChange={(date) => setStartDate(date)}
-          open={true}
+          inline
         />
       </Box>
       <Box
@@ -249,8 +264,8 @@ const Events = ({ open }) => {
               <Card>
                 <CardContent>
                   <EventsForm
-                    setSelectedNews={setSelectedNews}
-                    selectedNews={selectedNews}
+                    setSelectedEvents={setSelectedEvents}
+                    selectedEvents={selectedEvents}
                     handleSubmitFunc={handleSubmitFunc}
                     handleLoaderOpen={handleLoaderOpen}
                     handleLoaderClose={handleLoaderClose}
@@ -259,6 +274,7 @@ const Events = ({ open }) => {
                     formEnabledToEditEvent={formEnabledToEditEvent}
                     startDate={startDate}
                     handlePublishValidation={handlePublishValidation}
+                    handleUserUnauthorised={handleUserUnauthorised}
                   />
                 </CardContent>
               </Card>

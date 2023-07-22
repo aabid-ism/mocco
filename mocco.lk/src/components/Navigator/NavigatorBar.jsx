@@ -9,7 +9,6 @@ import {
 } from "../../services/FetchService";
 import { useMoccoNewsFeedDispatchContext } from "../../providers/NewsProvider";
 import { NewsType } from "../../enums";
-import AboutModal from "../Modals/ModalComponent";
 import ModalComponent from "../Modals/ModalComponent";
 
 function NavigatorBar() {

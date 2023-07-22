@@ -15,6 +15,7 @@ import { useAuthContext } from "./hooks/useAuthContext";
 import Events from "./pages/Events";
 import Quotes from "./pages/Quotes";
 
+
 function App() {
   const [open, setOpen] = useState(true);
   const { user } = useAuthContext();
@@ -92,6 +93,7 @@ function App() {
               <Navigate to="/quotes" />
               <Quotes open={open} setOpen={setOpen} />
             </>
+
           ) : (
             <Navigate to="/" />
           ),

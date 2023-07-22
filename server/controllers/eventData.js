@@ -60,7 +60,9 @@ export const editEventData = async (req, res) => {
     const db = conn.getDb();
     const collection = await db.collection("events");
 
+
     // finding and updating event post based on ID
+
     const result = await collection.findOneAndUpdate(
       {
         _id: new ObjectId(eventId),
@@ -91,6 +93,7 @@ export const deleteEventData = async (req, res) => {
     const collection = await db.collection("events");
 
     // finding and deleting event post based on ID
+
     const result = await collection.deleteOne({
       _id: new ObjectId(newsId),
     });

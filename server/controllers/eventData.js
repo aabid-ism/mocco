@@ -21,7 +21,6 @@ export const getEventData = async (req, res) => {
           $lt: endOfDay,
         },
       })
-      .limit(50)
       .toArray();
 
     res.send(results).status(200);
@@ -59,7 +58,6 @@ export const editEventData = async (req, res) => {
     // getting references to database and collection
     const db = conn.getDb();
     const collection = await db.collection("events");
-
 
     // finding and updating event post based on ID
 

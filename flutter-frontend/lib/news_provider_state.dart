@@ -42,7 +42,7 @@ class NewsProvider extends ChangeNotifier {
             '$serverUrl/handleLoading/today?todayDateTime=$isoDateString%2b05:30');
       } else {
         tagResponse = await newsService.fetchAllNews(
-            '$serverUrl/handleLoading/today?tagReqUrl=$tag',
+            '$serverUrl/handleLoading/tag?reqTag=$tag',
             reqBody: readPostReqBody);
       }
     }

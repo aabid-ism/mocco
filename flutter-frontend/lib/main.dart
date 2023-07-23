@@ -5,8 +5,7 @@ import 'package:mocco/app_preferences.dart';
 import 'package:mocco/dependency_injection.dart';
 import 'package:mocco/news_provider_state.dart';
 import 'package:mocco/screen_holder.dart';
-import 'package:mocco/theme/dark_theme.dart';
-import 'package:mocco/theme/light_theme.dart';
+import 'package:mocco/theme/theme_switcher.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import "env.dart";
@@ -18,6 +17,7 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (context) => AppTheme()),
         ChangeNotifierProvider(create: (context) => AppPreferences()),
         ChangeNotifierProvider(create: (context) => NewsProvider()),
       ],
@@ -34,23 +34,23 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final AppTheme _appTheme = AppTheme();
   final AppPreferences _appPreferences = AppPreferences();
 
   @override
   void initState() {
     super.initState();
+    _appTheme.init(context);
     _appPreferences.init();
     initPlatformState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+    return const GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Mocco',
-      theme: lightTheme,
-      darkTheme: darkTheme,
-      home: const ScreensHolder(),
+      home: ScreensHolder(),
     );
   }
 

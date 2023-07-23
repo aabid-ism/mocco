@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:mocco/theme/theme_switcher.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -20,14 +21,14 @@ class BottomBar extends StatelessWidget {
       height: 65,
       width: 190,
       decoration: BoxDecoration(
-        color: const Color(0xFFD9D9D9),
+        color: AppColors.secondary,
         borderRadius: BorderRadius.circular(35),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 1,
+            color: AppColors.text.withOpacity(0.15),
+            spreadRadius: 2,
             blurRadius: 15,
-            offset: const Offset(0, 3),
+            offset: const Offset(0, 1),
           ),
         ],
       ),
@@ -62,15 +63,15 @@ class BottomBar extends StatelessWidget {
                   text: "$title\n\n$description\n\n~Mocco",
                 );
               },
-              child: const Column(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Source Icon Buttom
                   IconButton(
                     onPressed: null,
                     icon: Column(children: [
-                      Icon(FontAwesomeIcons.share, color: Colors.black),
-                      SizedBox(
+                      Icon(FontAwesomeIcons.share, color: AppColors.text),
+                      const SizedBox(
                         height: 4,
                       ),
                     ]),
@@ -91,17 +92,14 @@ class BottomBar extends StatelessWidget {
                       )
                     : null;
               },
-              child: const Column(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Source Icon Buttom
                   IconButton(
                     onPressed: null,
                     icon: Column(children: [
-                      Icon(Icons.info_outline, color: Colors.black),
-                      SizedBox(
-                        height: 4,
-                      ),
+                      Icon(Icons.info_outline, color: AppColors.text),
                     ]),
                   ),
                 ],
@@ -133,18 +131,21 @@ class BottomBar extends StatelessWidget {
                   // Source Icon Buttom
                   IconButton(
                     onPressed: null,
-                    icon: Column(children: [
-                      Text(
-                        preferencesStateWatcher.isEng ? "ENG" : "SIN",
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 4,
-                      ),
-                    ]),
+                    icon: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            preferencesStateWatcher.isEng ? "ENG" : "SIN",
+                            style: TextStyle(
+                              color: AppColors.text,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                        ]),
                   ),
                 ],
               ),

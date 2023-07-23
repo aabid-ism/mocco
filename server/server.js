@@ -27,11 +27,7 @@ const PORT = process.env.PORT || 5555;
 const allowedOrigins = [
   "https://mocco-admin.web.app",
   "https://mocco.lk",
-<<<<<<< HEAD
-  "http://127.0.0.1:5173",
-=======
   "http://localhost:5173",
->>>>>>> b4d83ac (added localhost to allowed origins)
 ];
 
 const corsOptions = {

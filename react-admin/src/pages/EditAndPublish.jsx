@@ -16,6 +16,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useAuthContext } from "../hooks/useAuthContext.js";
 
 const drawerWidth = 240;
 
@@ -56,6 +57,7 @@ const EditAndPublish = ({ open }) => {
   const [selectedNews, setSelectedNews] = useState([]);
   const [loader, setLoader] = useState(false); // state to handle page loader
   const [handleWordLimit, setHandleWordLimit] = useState(false);
+  const { dispatch } = useAuthContext();
 
   // function to handle loader close
   const handleLoaderClose = () => {
@@ -96,15 +98,7 @@ const EditAndPublish = ({ open }) => {
   useEffect(() => {
     async function getHeadlines() {
       try {
-        // get bearer token
-        const storedUser = localStorage.getItem("user");
-        const token = storedUser ? JSON.parse(storedUser).token : null;
-        const headers = {
-          Authorization: `Bearer ${token}`,
-        };
-        const response = await Axios.get("/news/get-unpublished-news", {
-          headers,
-        });
+        const response = await Axios.get("/news/get-unpublished-news");
         setNewsList(response.data);
       } catch (err) {
         console.error(err);
@@ -127,6 +121,20 @@ const EditAndPublish = ({ open }) => {
   function handleChipClick(item) {
     setSelectedNews(item);
   }
+
+  // function to handle 401 unauthorised error
+  const handleUserUnauthorised = () => {
+    setLoader(false);
+    toast.error("Access token expired, login again", {
+      autoClose: 2000,
+      theme: "dark",
+    });
+
+    // Dispatch the action after 2 seconds
+    setTimeout(() => {
+      dispatch({ type: "LOGOUT" });
+    }, 2000);
+  };
 
   // JSX content for the sidebar specific to EditAndPublishForm screen.
   const sideBarContent = (
@@ -212,6 +220,7 @@ const EditAndPublish = ({ open }) => {
                     handleLoaderClose={handleLoaderClose}
                     handleImageSize={handleImageSize}
                     setHandleWordLimit={setHandleWordLimit}
+                    handleUserUnauthorised={handleUserUnauthorised}
                   />
                 </CardContent>
               </Card>

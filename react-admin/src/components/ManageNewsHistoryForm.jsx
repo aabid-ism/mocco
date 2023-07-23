@@ -62,6 +62,7 @@ const ManageNewsHistoryForm = ({
   handleLoaderClose,
   handleImageSize,
   setHandleWordLimit,
+  handleUserUnauthorised,
 }) => {
   const [editOpen, setEditOpen] = useState(false); // state used to manipulate the opening and closing of edit modal.
   const [deleteOpen, setDeleteOpen] = useState(false); // state used to manipulate the opening and closing of delete modal.
@@ -307,8 +308,13 @@ const ManageNewsHistoryForm = ({
         }
       }
     } catch (err) {
-      handleSubmitFunc(err);
-      console.error(err);
+      if (err.response && err.response.status === 401) {
+        handleUserUnauthorised();
+      } else {
+        console.error(err);
+        err && handleLoaderClose();
+        handleSubmitFunc(err);
+      }
     }
   };
 
@@ -372,9 +378,13 @@ const ManageNewsHistoryForm = ({
         }
       }
     } catch (err) {
-      console.error(err);
-      err && handleLoaderClose();
-      handleSubmitFunc(err);
+      if (err.response && err.response.status === 401) {
+        handleUserUnauthorised();
+      } else {
+        console.error(err);
+        err && handleLoaderClose();
+        handleSubmitFunc(err);
+      }
     }
   };
 

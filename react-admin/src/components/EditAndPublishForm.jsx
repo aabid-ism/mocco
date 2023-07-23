@@ -62,6 +62,7 @@ const EditAndPublishForm = ({
   handleLoaderOpen,
   handleImageSize,
   setHandleWordLimit,
+  handleUserUnauthorised,
 }) => {
   const [editOpen, setEditOpen] = useState(false); // state used to manipulate the opening and closing of edit modal.
   const [deleteOpen, setDeleteOpen] = useState(false); // state used to manipulate the opening and closing of delete modal.
@@ -199,6 +200,8 @@ const EditAndPublishForm = ({
       Authorization: `Bearer ${token}`,
     };
 
+    //  if statement that checks if the image form data object is set.
+    //  This is only set when a new image is uploaded or if an image is removed and a new image is added.
     if (imageFormData) {
       try {
         imageFormData.append(
@@ -206,8 +209,10 @@ const EditAndPublishForm = ({
           selectedNews ? selectedNews.imageUrl : ""
         );
 
-        // checking to differentiate between an already existing post or a newly added post
+        // if statement to differentiate between an already existing post or a newly added post
         if (selectedNews && selectedNews.imageUrl) {
+          // statement to recheck if the file input ref is not equal anything and
+          // if theres an image upload to ensure that the current image is removed and a new image has been uploaded.
           if (fileInputRef.current.value != "" && imageUpload) {
             let imageResponse = await Axios.post("/image", imageFormData);
             try {
@@ -223,6 +228,8 @@ const EditAndPublishForm = ({
             request = { ...data, imageUrl: imageResponse.data };
           } else {
             try {
+              // if file input ref is equal to "" and there is no imageUpload, the imageUrlChip
+              //  is removed which indicates the user wants the image removed
               const imgUrl = selectedNews.imageUrl;
               let deleteResponse = await Axios.post("/image/delete-image", {
                 imgUrl,
@@ -234,6 +241,8 @@ const EditAndPublishForm = ({
             }
           }
         } else {
+          // statement to recheck if the file input ref is not equal anything and
+          // if theres an image upload to ensure that a new image has been uploaded.
           if (fileInputRef.current.value != "" && imageUpload) {
             let imageResponse = await Axios.post("/image", imageFormData);
             request = { ...data, imageUrl: imageResponse.data };
@@ -243,7 +252,11 @@ const EditAndPublishForm = ({
         handleSubmitFunc(err);
         console.log(err);
       }
-    } else if (selectedNews && selectedNews.imageUrl) {
+    }
+    // if a new image upload was made, a checking is carried out to check if current post already has an image.
+    else if (selectedNews && selectedNews.imageUrl) {
+      // if there is no imageUrlChip that means the user has removed the chip therefore intending to delete the image
+      // the delete image execution is run.
       if (!imageUrlChip) {
         try {
           const imgUrl = selectedNews.imageUrl;
@@ -272,9 +285,13 @@ const EditAndPublishForm = ({
       setImageUpload(null);
       handleSubmitFunc(response);
     } catch (err) {
-      console.error(err);
-      err && handleLoaderClose();
-      handleSubmitFunc(err);
+      if (err.response && err.response.status === 401) {
+        handleUserUnauthorised();
+      } else {
+        console.error(err);
+        err && handleLoaderClose();
+        handleSubmitFunc(err);
+      }
     }
   };
 
@@ -316,12 +333,18 @@ const EditAndPublishForm = ({
         const imgUrl = data.imageUrl;
         await Axios.post("/image/delete-image", { imgUrl });
       } catch (err) {
-        handleSubmitFunc(err);
-        console.log(err);
+        if (err.response && err.response.status === 401) {
+          handleUserUnauthorised();
+        } else {
+          console.error(err);
+          err && handleLoaderClose();
+          handleSubmitFunc(err);
+        }
       }
     }
   };
 
+  // function that adds form data to the backend local or internattional collection after confirmation from the pop up to publish.
   const handleApproveConfirm = async (resetForm) => {
     setApproveOpen(false);
     handleLoaderOpen();
@@ -402,8 +425,13 @@ const EditAndPublishForm = ({
         handleSubmitFunc(response);
       }
     } catch (err) {
-      handleSubmitFunc(err);
-      console.error(err);
+      if (err.response && err.response.status === 401) {
+        handleUserUnauthorised();
+      } else {
+        console.error(err);
+        err && handleLoaderClose();
+        handleSubmitFunc(err);
+      }
     }
   };
 

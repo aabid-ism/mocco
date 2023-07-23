@@ -69,7 +69,6 @@ app.use("/events", events);
 app.use("/quotes", quotes);
 // app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(jsonObject));
 
-
 // Global error handling
 app.use((err, _req, res, next) => {
   console.error(err);

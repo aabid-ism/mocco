@@ -47,8 +47,8 @@ const Fade = forwardRef(function Fade(props, ref) {
 });
 
 const EventsForm = ({
-  setSelectedNews,
-  selectedNews,
+  setSelectedEvents,
+  selectedEvents,
   handleSubmitFunc,
   handleLoaderOpen,
   handleLoaderClose,
@@ -57,6 +57,7 @@ const EventsForm = ({
   formEnabledToEditEvent,
   startDate,
   handlePublishValidation,
+  handleUserUnauthorised,
 }) => {
   const [editOpen, setEditOpen] = useState(false); // state used to manipulate the opening and closing of edit modal.
   const [deleteOpen, setDeleteOpen] = useState(false); // state used to manipulate the opening and closing of edit modal.
@@ -73,12 +74,12 @@ const EventsForm = ({
   const formikRef = useRef(null); // useRef to reference the form data of formik.
 
   useEffect(() => {
-    setImageUrlChip(selectedNews ? selectedNews.imageUrl : "");
-  }, [selectedNews]);
+    setImageUrlChip(selectedEvents ? selectedEvents.imageUrl : "");
+  }, [selectedEvents]);
 
   useEffect(() => {
     if (!formEnabledToAddEvent) {
-      setSelectedNews(null);
+      setSelectedEvents(null);
       setImageUrlChip("");
     }
 
@@ -89,17 +90,17 @@ const EventsForm = ({
 
   // Initial values of the form data.
   const initialValues = {
-    id: selectedNews ? selectedNews._id : "",
-    name: selectedNews ? selectedNews.name : "",
-    s_name: selectedNews ? selectedNews.s_name : "",
-    desc: selectedNews ? selectedNews.desc : "",
-    s_desc: selectedNews ? selectedNews.s_desc : "",
+    id: selectedEvents ? selectedEvents._id : "",
+    name: selectedEvents ? selectedEvents.name : "",
+    s_name: selectedEvents ? selectedEvents.s_name : "",
+    desc: selectedEvents ? selectedEvents.desc : "",
+    s_desc: selectedEvents ? selectedEvents.s_desc : "",
     imageUrl: formikRef.current
       ? formikRef.current.files
         ? formikRef.current.files[0]
         : null
       : null,
-    srcUrl: selectedNews ? selectedNews.srcUrl : "",
+    srcUrl: selectedEvents ? selectedEvents.srcUrl : "",
   };
 
   // function to set the submitted form data to the state.
@@ -164,17 +165,17 @@ const EventsForm = ({
       try {
         imageFormData.append(
           "imageUrl",
-          selectedNews ? selectedNews.imageUrl : ""
+          selectedEvents ? selectedEvents.imageUrl : ""
         );
 
         // if statement to differentiate between an already existing post or a newly added post
-        if (selectedNews && selectedNews.imageUrl) {
+        if (selectedEvents && selectedEvents.imageUrl) {
           // statement to recheck if the file input ref is not equal anything and
           // if theres an image upload to ensure that the current image is removed and a new image has been uploaded.
           if (fileInputRef.current.value != "" && imageUpload) {
             let imageResponse = await Axios.post("/event-image", imageFormData);
             try {
-              const imgUrl = selectedNews.imageUrl;
+              const imgUrl = selectedEvents.imageUrl;
               let deleteResponse = await Axios.post(
                 "/event-image/delete-event-image",
                 {
@@ -192,7 +193,7 @@ const EventsForm = ({
             //  is removed which indicates the user wants the image removed
             if (!imageUrlChip) {
               try {
-                const imgUrl = selectedNews.imageUrl;
+                const imgUrl = selectedEvents.imageUrl;
                 let deleteResponse = await Axios.post(
                   "/event-image/delete-event-image",
                   {
@@ -220,12 +221,12 @@ const EventsForm = ({
       }
     }
     // if a new image upload was made, a checking is carried out to check if current post already has an image.
-    else if (selectedNews && selectedNews.imageUrl) {
+    else if (selectedEvents && selectedEvents.imageUrl) {
       // if there is no imageUrlChip that means the user has removed the chip therefore intending to delete the image
       // the delete image execution is run.
       if (!imageUrlChip) {
         try {
-          const imgUrl = selectedNews.imageUrl;
+          const imgUrl = selectedEvents.imageUrl;
           let deleteResponse = await Axios.post(
             "/event-image/delete-event-image",
             {
@@ -241,7 +242,6 @@ const EventsForm = ({
     }
 
     try {
-      // statement to check the new property change
       let response = await Axios.post(
         "/events/edit-event-data",
         {
@@ -250,7 +250,7 @@ const EventsForm = ({
         { headers }
       );
       response && handleLoaderClose();
-      setSelectedNews(null);
+      setSelectedEvents(null);
       resetForm();
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -259,8 +259,13 @@ const EventsForm = ({
       handleSubmitFunc(response);
       setImageUrlChip("");
     } catch (err) {
-      handleSubmitFunc(err);
-      console.error(err);
+      if (err.response && err.response.status === 401) {
+        handleUserUnauthorised();
+      } else {
+        console.error(err);
+        err && handleLoaderClose();
+        handleSubmitFunc(err);
+      }
     }
   };
 
@@ -280,7 +285,7 @@ const EventsForm = ({
         headers,
       });
       response && handleLoaderClose();
-      setSelectedNews(null);
+      setSelectedEvents(null);
       resetForm();
       setImageUpload(null);
       setImageUrlChip("");
@@ -289,9 +294,13 @@ const EventsForm = ({
       }
       handleSubmitFunc(response);
     } catch (err) {
-      console.error(err);
-      err && handleLoaderClose();
-      handleSubmitFunc(err);
+      if (err.response && err.response.status === 401) {
+        handleUserUnauthorised();
+      } else {
+        console.error(err);
+        err && handleLoaderClose();
+        handleSubmitFunc(err);
+      }
     }
 
     if (data.imageUrl) {
@@ -337,7 +346,7 @@ const EventsForm = ({
         { headers }
       );
       response && handleLoaderClose();
-      setSelectedNews(response.data.value);
+      setSelectedEvents(response.data.value);
       resetForm();
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -346,8 +355,13 @@ const EventsForm = ({
       handleSubmitFunc(response);
       setImageUrlChip("");
     } catch (err) {
-      handleSubmitFunc(err);
-      console.error(err);
+      if (err.response && err.response.status === 401) {
+        handleUserUnauthorised();
+      } else {
+        console.error(err);
+        err && handleLoaderClose();
+        handleSubmitFunc(err);
+      }
     }
   };
 

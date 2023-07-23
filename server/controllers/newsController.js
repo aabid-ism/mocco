@@ -58,7 +58,7 @@ export const getUnpublishedNews = async (req, res) => {
     const collection = await db.collection("newsStage");
 
     // finding and returning all unpublished posts
-    const results = await collection.find({}).limit(50).toArray();
+    const results = await collection.find({}).toArray();
     res.send(results).status(200);
   } catch (error) {
     res.send(error).status(500);
@@ -85,7 +85,6 @@ export const getLocalNewsByDate = async (req, res) => {
           $lt: endOfDay,
         },
       })
-      .limit(50)
       .toArray();
 
     res.send(results).status(200);
@@ -136,7 +135,6 @@ export const getInternationalNewsByDate = async (req, res) => {
           $lt: endOfDay,
         },
       })
-      .limit(50)
       .toArray();
     res.send(results).status(200);
   } catch (error) {

@@ -21,7 +21,6 @@ export const getQuotes = async (req, res) => {
           $lt: endOfDay,
         },
       })
-      .limit(50)
       .toArray();
 
     res.send(results).status(200);

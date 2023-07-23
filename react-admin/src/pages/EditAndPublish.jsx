@@ -99,6 +99,7 @@ const EditAndPublish = ({ open }) => {
     async function getHeadlines() {
       try {
         const response = await Axios.get("/news/get-unpublished-news");
+        console.log(response);
         setNewsList(response.data);
       } catch (err) {
         console.error(err);

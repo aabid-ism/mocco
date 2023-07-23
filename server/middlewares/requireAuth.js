@@ -27,7 +27,6 @@ const requireAuth = async (req, res, next) => {
 
       next();
     } catch (err) {
-      console.error(err);
       return res.status(401).json({ message: "Request is not authorized" });
     }
   } else {

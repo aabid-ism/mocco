@@ -54,6 +54,7 @@ const CreatePostForm = ({
   handleImageSize,
   handleHeadline,
   handleWordLimit,
+  handleUserUnauthorised,
 }) => {
   const fileInputRef = useRef(); // useRef to reference the image upload component and reset after submit.
   const [open, setOpen] = useState(false); // state used to manipulate the opening and closing of modal.
@@ -181,9 +182,13 @@ const CreatePostForm = ({
       }
       handleSubmitFunc(response);
     } catch (err) {
-      console.error(err);
-      err && handleLoaderClose();
-      handleSubmitFunc(err);
+      if (err.response && err.response.status === 401) {
+        handleUserUnauthorised();
+      } else {
+        console.error(err);
+        err && handleLoaderClose();
+        handleSubmitFunc(err);
+      }
     }
   };
 

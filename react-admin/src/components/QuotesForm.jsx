@@ -53,6 +53,7 @@ const QuotesForm = ({
   formEnabledToEditQuote,
   startDate,
   handlePublishValidation,
+  handleUserUnauthorised,
 }) => {
   const [editOpen, setEditOpen] = useState(false); // state used to manipulate the opening and closing of edit modal.
   const [deleteOpen, setDeleteOpen] = useState(false); // state used to manipulate the opening and closing of edit modal.
@@ -132,8 +133,13 @@ const QuotesForm = ({
       resetForm();
       handleSubmitFunc(response);
     } catch (err) {
-      handleSubmitFunc(err);
-      console.error(err);
+      if (err.response && err.response.status === 401) {
+        handleUserUnauthorised();
+      } else {
+        console.error(err);
+        err && handleLoaderClose();
+        handleSubmitFunc(err);
+      }
     }
   };
 
@@ -157,9 +163,13 @@ const QuotesForm = ({
       resetForm();
       handleSubmitFunc(response);
     } catch (err) {
-      console.error(err);
-      err && handleLoaderClose();
-      handleSubmitFunc(err);
+      if (err.response && err.response.status === 401) {
+        handleUserUnauthorised();
+      } else {
+        console.error(err);
+        err && handleLoaderClose();
+        handleSubmitFunc(err);
+      }
     }
   };
 
@@ -190,8 +200,13 @@ const QuotesForm = ({
       resetForm();
       handleSubmitFunc(response);
     } catch (err) {
-      handleSubmitFunc(err);
-      console.error(err);
+      if (err.response && err.response.status === 401) {
+        handleUserUnauthorised();
+      } else {
+        console.error(err);
+        err && handleLoaderClose();
+        handleSubmitFunc(err);
+      }
     }
   };
 

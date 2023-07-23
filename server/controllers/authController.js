@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 
 // function to generate jwt
 const createToken = (_id) => {
-  return jwt.sign({ _id }, process.env.SECRET_KEY, { expiresIn: "30d" });
+  return jwt.sign({ _id }, process.env.SECRET_KEY, { expiresIn: "30d" }); // token expires in 30 days
 };
 
 // <-------------------- SIGN IN -------------------->
@@ -48,13 +48,11 @@ export const signIn = async (req, res) => {
         const token = createToken(result[0]._id);
         const isValid = await verifyPassword(data.password, result[0].password);
         if (isValid) {
-          res
-            .status(200)
-            .json({
-              message: "Author sign in successful",
-              token: token,
-              username: result[0].name,
-            });
+          res.status(200).json({
+            message: "Author sign in successful",
+            token: token,
+            username: result[0].name,
+          });
         } else {
           res.status(401).json({ message: "Invalid password" });
         }

@@ -57,12 +57,18 @@ const CreatePostForm = ({
   handleUserUnauthorised,
 }) => {
   const fileInputRef = useRef(); // useRef to reference the image upload component and reset after submit.
+  const fileInputEnglishNotifRef = useRef(); // useRef to reference the english notification image upload component and reset after submit.
+  const fileInputSinhalaNotifRef = useRef(); // useRef to reference the sinhala notification image upload component and reset after submit.
   const [open, setOpen] = useState(false); // state used to manipulate the opening and closing of modal.
   const [data, setData] = useState({}); // state to store the data that has been submitted by form.
   const [dropDownList, setDropDownList] = useState(); // state to store the data return of the dropdown values from the api.
   const [selectedSecondaryTags, setSelectedSecondaryTags] = useState([]); // state to store selected secondary tags.
   const [imageUpload, setImageUpload] = useState(null); // state to store uploaded image.
+  const [englishImageUpload, setEnglishImageUpload] = useState(null); // state to store uploaded image.
+  const [sinhalaImageUpload, setSinhalaImageUpload] = useState(null); // state to store uploaded image.
   const [imageFormData, setImageFormData] = useState(null); // state to store form data of the uploaded image.
+  const [sinhalaImageFormData, setSinhalaImageFormData] = useState(null); // state to store sinhala form data of the uploaded image.
+  const [englishImageFormData, setEnglishImageFormData] = useState(null); // state to store english form data of the uploaded image .
   const [extra, setExtra] = useState(false); // boolean to set if extra toggle is on or not.
   const { user } = useAuthContext(); // accessing the global state of the current of the user.
 
@@ -92,6 +98,8 @@ const CreatePostForm = ({
     description: "",
     sinhalaDescription: "",
     imageUrl: "",
+    englishNotifImageUrl: "",
+    sinhalaNotifImageUrl: "",
     sourceName: "",
     sourceUrl: "",
     mainTag: "",
@@ -111,6 +119,30 @@ const CreatePostForm = ({
     }
   };
 
+  // function to add the english notification image upload to a state
+  const handleEnglishNotifFileChange = (event) => {
+    const file = event.target.files[0];
+    const maxSize = 2 * 1024 * 1024; // 2MB (in bytes)
+
+    if (file && file.size > maxSize) {
+      handleImageSize(fileInputEnglishNotifRef);
+    } else {
+      setEnglishImageUpload(file);
+    }
+  };
+
+  // function to add the sinhala notification image upload to a state
+  const handleSinhalaNotifFileChange = (event) => {
+    const file = event.target.files[0];
+    const maxSize = 2 * 1024 * 1024; // 2MB (in bytes)
+
+    if (file && file.size > maxSize) {
+      handleImageSize(fileInputSinhalaNotifRef);
+    } else {
+      setSinhalaImageUpload(file);
+    }
+  };
+
   // function to set the submitted form data to the state.
   const handleSubmit = async (values) => {
     if (
@@ -126,6 +158,19 @@ const CreatePostForm = ({
         formData.append("image", imageUpload);
         setImageFormData(formData);
       }
+
+      if (englishImageUpload) {
+        const formData = new FormData();
+        formData.append("notification-image", englishImageUpload);
+        setEnglishImageFormData(formData);
+      }
+
+      if (sinhalaImageUpload) {
+        const formData = new FormData();
+        formData.append("notification-image", sinhalaImageUpload);
+        setSinhalaImageFormData(formData);
+      }
+
       const updatedObject = {
         ...values,
         secondaryTags: selectedSecondaryTags,
@@ -160,11 +205,36 @@ const CreatePostForm = ({
     if (imageFormData) {
       try {
         let imageResponse = await Axios.post("/image", imageFormData);
-        request = { ...data, imageUrl: imageResponse.data };
+        request = { ...request, imageUrl: imageResponse.data };
       } catch (err) {
         console.log(err);
       }
     }
+
+    if (englishImageFormData) {
+      try {
+        let imageResponse = await Axios.post(
+          "/notif-image/english",
+          englishImageFormData
+        );
+        request = { ...request, englishNotifImageUrl: imageResponse.data };
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    if (sinhalaImageFormData) {
+      try {
+        let imageResponse = await Axios.post(
+          "/notif-image/sinhala",
+          sinhalaImageFormData
+        );
+        request = { ...request, sinhalaNotifImageUrl: imageResponse.data };
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
     try {
       // get bearer token
       const storedUser = localStorage.getItem("user");
@@ -179,6 +249,14 @@ const CreatePostForm = ({
       setSelectedSecondaryTags([]);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
+      }
+
+      if (fileInputEnglishNotifRef.current) {
+        fileInputEnglishNotifRef.current.value = "";
+      }
+
+      if (fileInputSinhalaNotifRef.current) {
+        fileInputSinhalaNotifRef.current.value = "";
       }
       handleSubmitFunc(response);
     } catch (err) {
@@ -297,6 +375,44 @@ const CreatePostForm = ({
                 fullWidth
                 accept="imageUrl/jpeg, imageUrl/png"
                 onChange={handleFileChange}
+              />
+            </Box>
+
+            <Box sx={{ marginBottom: "2%" }}>
+              <label htmlFor="englishNotifImageUrl">
+                <Typography fontWeight="bold">
+                  Choose English Notification Image (JPG or PNG)
+                </Typography>
+              </label>
+              <Field
+                inputRef={fileInputEnglishNotifRef}
+                component={TextField}
+                id="englishNotifImageUrl"
+                name="englishNotifImageUrl"
+                type="file"
+                variant="outlined"
+                fullWidth
+                accept="imageUrl/jpeg, imageUrl/png"
+                onChange={handleEnglishNotifFileChange}
+              />
+            </Box>
+
+            <Box sx={{ marginBottom: "2%" }}>
+              <label htmlFor="sinhalaNotifImageUrl">
+                <Typography fontWeight="bold">
+                  Choose Sinhala Notification Image (JPG or PNG)
+                </Typography>
+              </label>
+              <Field
+                inputRef={fileInputSinhalaNotifRef}
+                component={TextField}
+                id="sinhalaNotifImageUrl"
+                name="sinhalaNotifImageUrl"
+                type="file"
+                variant="outlined"
+                fullWidth
+                accept="imageUrl/jpeg, imageUrl/png"
+                onChange={handleSinhalaNotifFileChange}
               />
             </Box>
 

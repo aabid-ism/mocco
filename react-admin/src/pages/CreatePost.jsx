@@ -77,14 +77,14 @@ const CreatePost = ({ open }) => {
   };
 
   // function to handle image size
-  const handleImageSize = (fileInputRef) => {
-    toast.error("Image size should be less than 1MB", {
+  const handleImageSize = (tempRef) => {
+    toast.error("Image size should be less than 2MB", {
       autoClose: 1500,
       theme: "dark",
     });
 
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+    if (tempRef.current) {
+      tempRef.current.value = "";
     }
   };
 

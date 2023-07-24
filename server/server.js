@@ -16,6 +16,7 @@ import loadposts from "./routes/loadPosts/loadPosts.js";
 import handleLoading from "./routes/handleLoading/handleLoading.js";
 import events from "./routes/eventData/eventData.js";
 import quotes from "./routes/quotes/quotes.js";
+import notifImage from "./routes/notificationImagePipeline/notificationImagePipeline.js";
 
 import swaggerUi from "swagger-ui-express";
 import * as path from "path";
@@ -27,7 +28,7 @@ const PORT = process.env.PORT || 5555;
 const allowedOrigins = [
   "https://mocco-admin.web.app",
   "https://mocco.lk",
-  "http://localhost:5173",
+  "http://127.0.0.1:5173",
 ];
 
 const corsOptions = {
@@ -68,6 +69,7 @@ app.use("/handleLoading", handleLoading);
 app.use("/events", events);
 app.use("/quotes", quotes);
 // app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(jsonObject));
+app.use("/notif-image", notifImage);
 
 // Global error handling
 app.use((err, _req, res, next) => {

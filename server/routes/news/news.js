@@ -5,6 +5,7 @@ import {
   getUnpublishedNews,
   getLocalNewsByDate,
   getAllDropDowns,
+  getNewsByPostIndex,
   pushNews,
   approveLocalNews,
   editUnpublishedNews,
@@ -87,5 +88,8 @@ router.post(
   requireAuth,
   addInternationalToLocal
 );
+
+// GET ALL PUBLISHED NEWS FROM BOTH international and local COLLECTION BASED ON THE POST INDEX.
+router.post("/get-news-by-post-index", getNewsByPostIndex);
 
 export default router;

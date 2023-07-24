@@ -69,14 +69,14 @@ const EditAndPublish = ({ open }) => {
     setLoader(true);
   };
 
-  const handleImageSize = (fileInputRef) => {
-    toast.error("Image size should be less than 1MB", {
+  const handleImageSize = (tempRef) => {
+    toast.error("Image size should be less than 2MB", {
       autoClose: 1500,
       theme: "dark",
     });
 
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+    if (tempRef.current) {
+      tempRef.current.value = "";
     }
   };
 
@@ -99,7 +99,6 @@ const EditAndPublish = ({ open }) => {
     async function getHeadlines() {
       try {
         const response = await Axios.get("/news/get-unpublished-news");
-        console.log(response);
         setNewsList(response.data);
       } catch (err) {
         console.error(err);

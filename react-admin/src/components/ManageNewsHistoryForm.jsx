@@ -70,12 +70,20 @@ const ManageNewsHistoryForm = ({
   const [data, setData] = useState([]); // state to store the data that has been submitted by form (edit or delete).
   const [dropDownList, setDropDownList] = useState(); // state to store the data return of the dropdown values from the api.
   const [imageUrlChip, setImageUrlChip] = useState(""); // state to track the image url chip.
+  const [englishNotifImageUrlChip, setEnglishImageUrlChip] = useState(""); // state to track the english notification image url chip.
+  const [sinhalaNotifImageUrlChip, setSinhalaImageUrlChip] = useState(""); // state to track the sinhala notification image url chip.
   const [isDeleteMode, setIsDeleteMode] = useState(false); // state to track the delete button.
   const [selectedSecondaryTags, setSelectedSecondaryTags] = useState([]); // state to set all the selected secondary tags.
   const [imageUpload, setImageUpload] = useState(null); // state to store uploaded image.
+  const [englishImageUpload, setEnglishImageUpload] = useState(null); // state to store uploaded image.
+  const [sinhalaImageUpload, setSinhalaImageUpload] = useState(null); // state to store uploaded image.
   const [imageFormData, setImageFormData] = useState(null); // state to store form data of the uploaded image.
+  const [sinhalaImageFormData, setSinhalaImageFormData] = useState(null); // state to store sinhala form data of the uploaded image.
+  const [englishImageFormData, setEnglishImageFormData] = useState(null); // state to store english form data of the uploaded image .
   const [extra, setExtra] = useState(false); // state to track the extra toggle.
   const fileInputRef = useRef(); // useRef to reference the image upload component and reset after submit.
+  const englishNotifInputRef = useRef(); // useRef to reference the english notification image upload component and reset after submit.
+  const sinhalaNotifInputRef = useRef(); // useRef to reference the sinhala notification image upload component and reset after submit.
 
   useEffect(() => {
     async function getDropDowns() {
@@ -103,6 +111,16 @@ const ManageNewsHistoryForm = ({
       let temp = selectedNews.secondaryTags;
       setSelectedSecondaryTags(temp);
       setImageUrlChip(selectedNews.imageUrl);
+      setEnglishImageUrlChip(
+        selectedNews.englishNotifImageUrl != undefined
+          ? selectedNews.englishNotifImageUrl
+          : ""
+      );
+      setSinhalaImageUrlChip(
+        selectedNews.sinhalaNotifImageUrl != undefined
+          ? selectedNews.sinhalaNotifImageUrl
+          : ""
+      );
       setExtra(
         selectedNews
           ? selectedNews.typeOfPost === "extra"
@@ -121,6 +139,8 @@ const ManageNewsHistoryForm = ({
     description: selectedNews ? selectedNews.description : "",
     sinhalaDescription: selectedNews ? selectedNews.sinhalaDescription : "",
     imageUrl: imageUpload ? imageUpload : null,
+    englishNotifImageUrl: englishImageUpload ? englishImageUpload : null,
+    sinhalaNotifImageUrl: sinhalaImageUpload ? sinhalaImageUpload : null,
     sourceName: selectedNews ? selectedNews.sourceName : "",
     sourceUrl: selectedNews ? selectedNews.sourceUrl : "",
     author:
@@ -159,10 +179,28 @@ const ManageNewsHistoryForm = ({
       setImageFormData(formData);
     }
 
+    if (englishImageUpload) {
+      const formData = new FormData();
+      formData.append("notification-image", englishImageUpload);
+      setEnglishImageFormData(formData);
+    }
+
+    if (sinhalaImageUpload) {
+      const formData = new FormData();
+      formData.append("notification-image", sinhalaImageUpload);
+      setSinhalaImageFormData(formData);
+    }
+
     setData({
       ...values,
       secondaryTags: selectedSecondaryTags ? selectedSecondaryTags : [],
       imageUrl: imageUrlChip ? imageUrlChip : "",
+      englishNotifImageUrl: englishNotifImageUrlChip
+        ? englishNotifImageUrlChip
+        : "",
+      sinhalaNotifImageUrl: sinhalaNotifImageUrlChip
+        ? sinhalaNotifImageUrlChip
+        : "",
       typeOfPost: extra ? "extra" : "essential",
       postIndex: selectedNews ? selectedNews.postIndex : "",
     });
@@ -181,6 +219,30 @@ const ManageNewsHistoryForm = ({
       handleImageSize(fileInputRef);
     } else {
       setImageUpload(file);
+    }
+  };
+
+  // function to add the english notification image upload to a state
+  const handleEnglishNotifFileChange = (event) => {
+    const file = event.target.files[0];
+    const maxSize = 2 * 1024 * 1024; // 2MB (in bytes)
+
+    if (file && file.size > maxSize) {
+      handleImageSize(englishNotifInputRef);
+    } else {
+      setEnglishImageUpload(file);
+    }
+  };
+
+  // function to add the sinhala notification image upload to a state
+  const handleSinhalaNotifFileChange = (event) => {
+    const file = event.target.files[0];
+    const maxSize = 2 * 1024 * 1024; // 2MB (in bytes)
+
+    if (file && file.size > maxSize) {
+      handleImageSize(sinhalaNotifInputRef);
+    } else {
+      setSinhalaImageUpload(file);
     }
   };
 
@@ -205,21 +267,114 @@ const ManageNewsHistoryForm = ({
 
         // checking to differentiate between an already existing post or a newly added post
         if (selectedNews && selectedNews.imageUrl) {
-          let imageResponse = await Axios.post("/image", imageFormData);
-          try {
-            const imgUrl = selectedNews.imageUrl;
-            let deleteResponse = await Axios.post("/image/delete-image", {
-              imgUrl,
-            });
-            handleSubmitFunc(deleteResponse);
-          } catch (err) {
-            handleSubmitFunc(err);
-            console.log(err);
+          // statement to recheck if the file input ref is not equal anything and
+          // if theres an image upload to ensure that the current image is removed and a new image has been uploaded.
+          if (fileInputRef.current.value != "" && fileInputRef) {
+            let imageResponse = await Axios.post("/image", imageFormData);
+            try {
+              const imgUrl = selectedNews.imageUrl;
+              let deleteResponse = await Axios.post("/image/delete-image", {
+                imgUrl,
+              });
+              handleSubmitFunc(deleteResponse);
+            } catch (err) {
+              handleSubmitFunc(err);
+              console.log(err);
+            }
+            request = { ...request, imageUrl: imageResponse.data };
           }
-          request = { ...data, imageUrl: imageResponse.data };
         } else {
           let imageResponse = await Axios.post("/image", imageFormData);
-          request = { ...data, imageUrl: imageResponse.data };
+          request = { ...request, imageUrl: imageResponse.data };
+        }
+      } catch (err) {
+        console.error(err);
+        err && handleLoaderClose();
+        handleSubmitFunc(err);
+      }
+    }
+
+    if (englishImageFormData) {
+      try {
+        englishImageFormData.append(
+          "englishNotifImageUrl",
+          selectedNews ? selectedNews.englishNotifImageUrl : ""
+        );
+        // checking to differentiate between an already existing post or a newly added post
+        if (selectedNews && selectedNews.englishNotifImageUrl) {
+          // statement to recheck if the file input ref is not equal anything and
+          // if theres an image upload to ensure that the current image is removed and a new image has been uploaded.
+          if (englishNotifInputRef.current.value != "" && englishImageUpload) {
+            let imageResponse = await Axios.post(
+              "/notif-image/english",
+              englishImageFormData
+            );
+            try {
+              const imgUrl = selectedNews.englishNotifImageUrl;
+              let deleteResponse = await Axios.post(
+                "/notif-image/delete-english-image",
+                {
+                  imgUrl,
+                }
+              );
+              handleSubmitFunc(deleteResponse);
+            } catch (err) {
+              handleSubmitFunc(err);
+              console.log(err);
+            }
+            request = { ...request, englishNotifImageUrl: imageResponse.data };
+          }
+        } else {
+          let imageResponse = await Axios.post(
+            "/notif-image/english",
+            englishImageFormData
+          );
+          request = { ...request, englishNotifImageUrl: imageResponse.data };
+        }
+      } catch (err) {
+        console.error(err);
+        err && handleLoaderClose();
+        handleSubmitFunc(err);
+      }
+    }
+
+    if (sinhalaImageFormData) {
+      try {
+        sinhalaImageFormData.append(
+          "sinhalaNotifImageUrl",
+          selectedNews ? selectedNews.sinhalaNotifImageUrl : ""
+        );
+
+        // checking to differentiate between an already existing post or a newly added post
+        if (selectedNews && selectedNews.sinhalaNotifImageUrl) {
+          // statement to recheck if the file input ref is not equal anything and
+          // if theres an image upload to ensure that the current image is removed and a new image has been uploaded.
+          if (sinhalaNotifInputRef.current.value != "" && sinhalaImageUpload) {
+            let imageResponse = await Axios.post(
+              "/notif-image/sinhala",
+              sinhalaImageFormData
+            );
+            try {
+              const imgUrl = selectedNews.sinhalaNotifImageUrl;
+              let deleteResponse = await Axios.post(
+                "/notif-image/delete-sinhala-image",
+                {
+                  imgUrl,
+                }
+              );
+              handleSubmitFunc(deleteResponse);
+            } catch (err) {
+              handleSubmitFunc(err);
+              console.log(err);
+            }
+            request = { ...request, sinhalaNotifImageUrl: imageResponse.data };
+          }
+        } else {
+          let imageResponse = await Axios.post(
+            "/notif-image/sinhala",
+            sinhalaImageFormData
+          );
+          request = { ...request, sinhalaNotifImageUrl: imageResponse.data };
         }
       } catch (err) {
         console.error(err);
@@ -247,10 +402,22 @@ const ManageNewsHistoryForm = ({
           if (fileInputRef.current) {
             fileInputRef.current.value = "";
           }
+
+          if (englishNotifInputRef.current) {
+            englishNotifInputRef.current.value = "";
+          }
+
+          if (sinhalaNotifInputRef.current) {
+            sinhalaNotifInputRef.current.value = "";
+          }
           setImageUpload(null);
+          setEnglishImageUpload(null);
+          setSinhalaImageUpload(null);
           setValid(false);
           handleSubmitFunc(response);
           setImageUrlChip("");
+          setEnglishImageUrlChip("");
+          setSinhalaImageUrlChip("");
           setExtra(false);
           setSelectedSecondaryTags([]);
         } else {
@@ -265,7 +432,17 @@ const ManageNewsHistoryForm = ({
           if (fileInputRef.current) {
             fileInputRef.current.value = "";
           }
+
+          if (englishNotifInputRef.current) {
+            englishNotifInputRef.current.value = "";
+          }
+
+          if (sinhalaNotifInputRef.current) {
+            sinhalaNotifInputRef.current.value = "";
+          }
           setImageUpload(null);
+          setEnglishImageUpload(null);
+          setSinhalaImageUpload(null);
           setValid(false);
           handleSubmitFunc(response);
         }
@@ -286,10 +463,22 @@ const ManageNewsHistoryForm = ({
           if (fileInputRef.current) {
             fileInputRef.current.value = "";
           }
+
+          if (englishNotifInputRef.current) {
+            englishNotifInputRef.current.value = "";
+          }
+
+          if (sinhalaNotifInputRef.current) {
+            sinhalaNotifInputRef.current.value = "";
+          }
           setImageUpload(null);
+          setEnglishImageUpload(null);
+          setSinhalaImageUpload(null);
           setValid(false);
           handleSubmitFunc(response);
           setImageUrlChip("");
+          setEnglishImageUrlChip("");
+          setSinhalaImageUrlChip("");
           setExtra(false);
           setSelectedSecondaryTags([]);
         } else {
@@ -302,7 +491,17 @@ const ManageNewsHistoryForm = ({
           if (fileInputRef.current) {
             fileInputRef.current.value = "";
           }
+
+          if (englishNotifInputRef.current) {
+            englishNotifInputRef.current.value = "";
+          }
+
+          if (sinhalaNotifInputRef.current) {
+            sinhalaNotifInputRef.current.value = "";
+          }
           setImageUpload(null);
+          setEnglishImageUpload(null);
+          setSinhalaImageUpload(null);
           setValid(false);
           handleSubmitFunc(response);
         }
@@ -344,11 +543,23 @@ const ManageNewsHistoryForm = ({
         resetForm();
         setExtra(false);
         setImageUpload(null);
+        setEnglishImageUpload(null);
+        setSinhalaImageUpload(null);
         setSelectedSecondaryTags([]);
         setValid(false);
         setImageUrlChip("");
+        setEnglishImageUrlChip("");
+        setSinhalaImageUrlChip("");
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
+        }
+
+        if (englishNotifInputRef.current) {
+          englishNotifInputRef.current.value = "";
+        }
+
+        if (sinhalaNotifInputRef.current) {
+          sinhalaNotifInputRef.current.value = "";
         }
         handleSubmitFunc(response);
       } else {
@@ -359,11 +570,23 @@ const ManageNewsHistoryForm = ({
         setSelectedNews(null);
         resetForm();
         setImageUpload(null);
+        setEnglishImageUpload(null);
+        setSinhalaImageUpload(null);
         setSelectedSecondaryTags([]);
         setValid(false);
         setImageUrlChip("");
+        setEnglishImageUrlChip("");
+        setSinhalaImageUrlChip("");
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
+        }
+
+        if (englishNotifInputRef.current) {
+          englishNotifInputRef.current.value = "";
+        }
+
+        if (sinhalaNotifInputRef.current) {
+          sinhalaNotifInputRef.current.value = "";
         }
         handleSubmitFunc(response);
       }
@@ -372,6 +595,26 @@ const ManageNewsHistoryForm = ({
         try {
           const imgUrl = data.imageUrl;
           await Axios.post("/image/delete-image", { imgUrl });
+        } catch (err) {
+          handleSubmitFunc(err);
+          console.log(err);
+        }
+      }
+
+      if (data.englishNotifImageUrl) {
+        try {
+          const imgUrl = data.englishNotifImageUrl;
+          await Axios.post("/notif-image/delete-english-image", { imgUrl });
+        } catch (err) {
+          handleSubmitFunc(err);
+          console.log(err);
+        }
+      }
+
+      if (data.sinhalaNotifImageUrl) {
+        try {
+          const imgUrl = data.sinhalaNotifImageUrl;
+          await Axios.post("/notif-image/delete-sinhala-image", { imgUrl });
         } catch (err) {
           handleSubmitFunc(err);
           console.log(err);
@@ -411,6 +654,12 @@ const ManageNewsHistoryForm = ({
     imageUrl:
       imageUrlChip.length === 0 &&
       Yup.string().required("Image URL is required"),
+    englishNotifImageUrl:
+      englishNotifImageUrlChip.length === 0 &&
+      Yup.string().required("English Notification Image URL is required"),
+    sinhalaNotifImageUrl:
+      sinhalaNotifImageUrlChip.length === 0 &&
+      Yup.string().required("Sinhala Notification Image URL is required"),
     sourceName: Yup.string().required("Source Name is required"),
     sourceUrl: Yup.string().required("Source URL is required"),
     mainTag: Yup.string().required("Main News Tags are required"),
@@ -598,6 +847,118 @@ const ManageNewsHistoryForm = ({
               />
               <ErrorMessage
                 name="imageUrl"
+                component="div"
+                style={{
+                  color: "red",
+                  fontSize: "0.8rem",
+                }}
+              />
+            </Box>
+
+            <Box sx={{ marginBottom: "2%" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                }}
+              >
+                <label htmlFor="image">
+                  <Typography fontWeight="bold">
+                    Choose English Notification Image (JPG or PNG)
+                  </Typography>
+                </label>
+                {englishNotifImageUrlChip ? (
+                  <Tooltip title={englishNotifImageUrlChip} arrow>
+                    <Chip
+                      id="image"
+                      name="image"
+                      label={englishNotifImageUrlChip}
+                      size="small"
+                      onClick={() => {
+                        window.open(englishNotifImageUrlChip, "_blank");
+                      }}
+                      onDelete={() => setEnglishImageUrlChip("")}
+                      deleteIcon={<CancelIcon />}
+                      sx={{
+                        maxWidth: "150px",
+                        marginLeft: "2%",
+                        marginBottom: "2%",
+                        backgroundColor: "orange",
+                        color: "white",
+                      }}
+                    />
+                  </Tooltip>
+                ) : null}
+              </Box>
+
+              <Field
+                inputRef={englishNotifInputRef}
+                disabled={englishNotifImageUrlChip ? true : false}
+                component={TextField}
+                name="englishNotifImageUrl"
+                type="file"
+                variant="outlined"
+                fullWidth
+                inputProps={{ accept: "image/jpeg, image/png" }}
+                onChange={(event) => handleEnglishNotifFileChange(event)}
+              />
+              <ErrorMessage
+                name="englishNotifImageUrl"
+                component="div"
+                style={{
+                  color: "red",
+                  fontSize: "0.8rem",
+                }}
+              />
+            </Box>
+
+            <Box sx={{ marginBottom: "2%" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                }}
+              >
+                <label htmlFor="image">
+                  <Typography fontWeight="bold">
+                    Choose Sinhala Notification Image (JPG or PNG)
+                  </Typography>
+                </label>
+                {sinhalaNotifImageUrlChip ? (
+                  <Tooltip title={sinhalaNotifImageUrlChip} arrow>
+                    <Chip
+                      id="image"
+                      name="image"
+                      label={sinhalaNotifImageUrlChip}
+                      size="small"
+                      onClick={() => {
+                        window.open(sinhalaNotifImageUrlChip, "_blank");
+                      }}
+                      onDelete={() => setSinhalaImageUrlChip("")}
+                      deleteIcon={<CancelIcon />}
+                      sx={{
+                        maxWidth: "150px",
+                        marginLeft: "2%",
+                        marginBottom: "2%",
+                        backgroundColor: "orange",
+                        color: "white",
+                      }}
+                    />
+                  </Tooltip>
+                ) : null}
+              </Box>
+
+              <Field
+                inputRef={sinhalaNotifInputRef}
+                disabled={sinhalaNotifImageUrlChip ? true : false}
+                component={TextField}
+                name="sinhalaNotifImageUrl"
+                type="file"
+                variant="outlined"
+                fullWidth
+                inputProps={{ accept: "image/jpeg, image/png" }}
+                onChange={(event) => handleSinhalaNotifFileChange(event)}
+              />
+              <ErrorMessage
+                name="sinhalaNotifImageUrl"
                 component="div"
                 style={{
                   color: "red",

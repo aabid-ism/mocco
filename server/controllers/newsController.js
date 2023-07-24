@@ -142,6 +142,38 @@ export const getInternationalNewsByDate = async (req, res) => {
   }
 };
 
+// <-------------------- GET ALL PUBLISHED NEWS FROM BOTH international AND local COLLECTION BASED ON THE POST INDEX -------------------->
+export const getNewsByPostIndex = async (req, res) => {
+  const { postIndex } = req.body;
+
+  try {
+    // getting references to database and collection
+    const db = conn.getDb();
+    const internationalCollection = await db.collection("international");
+    const localCollection = db.collection("local");
+
+    // finding and returning all international news posts
+    const internationalResults = await internationalCollection
+      .find({
+        postIndex: { $in: postIndex },
+      })
+      .toArray();
+
+    // finding and returning all local news posts
+    const localResults = await localCollection
+      .find({
+        postIndex: { $in: postIndex },
+      })
+      .toArray();
+
+    // Concatenate the results from both collections into a single array
+    const allResults = internationalResults.concat(localResults);
+    res.send(allResults).status(200);
+  } catch (error) {
+    res.send(error).status(500);
+  }
+};
+
 // <-------------------- GET EXACT POST FOR NOTIFICATION -------------------->
 export const exactPostNotification = async (req, res) => {
   try {

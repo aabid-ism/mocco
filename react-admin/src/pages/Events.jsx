@@ -80,7 +80,7 @@ const Events = ({ open }) => {
   };
 
   const handleImageSize = (fileInputRef) => {
-    toast.error("Image size should be less than 1MB", {
+    toast.error("Image size should be less than 2MB", {
       autoClose: 1500,
       theme: "dark",
     });

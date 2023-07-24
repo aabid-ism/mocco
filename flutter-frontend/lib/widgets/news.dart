@@ -7,6 +7,7 @@ import 'package:mocco/env.dart';
 import 'package:mocco/models/news_card.dart';
 import 'package:mocco/news_provider_state.dart';
 import 'package:mocco/services/loading_service.dart';
+import 'package:mocco/theme/theme_switcher.dart';
 import 'package:mocco/widgets/bottom_bar.dart';
 import 'package:mocco/widgets/scroll_donw.dart';
 import 'package:provider/provider.dart';
@@ -61,6 +62,7 @@ class _NewsContainerState extends State<NewsContainer> {
     //loadingService.clearSharedPrefs();
 
     return Scaffold(
+      backgroundColor: AppColors.bg,
       body: PageView.builder(
         // Build pages lazily for better performance
         scrollDirection: Axis.vertical,
@@ -82,17 +84,17 @@ class _NewsContainerState extends State<NewsContainer> {
           }
           if (newsCards.length == index + 1) {
             Get.rawSnackbar(
-                messageText: const Text(
+                messageText: Text(
                   'You have caught up with all new stories!',
-                  style: TextStyle(color: Colors.black, fontSize: 15),
+                  style: TextStyle(color: AppColors.text, fontSize: 15),
                   textAlign: TextAlign.center,
                 ),
                 isDismissible: true,
                 duration: const Duration(seconds: 10),
-                backgroundColor: const Color(0xFFD9D9D9),
-                icon: const Icon(
+                backgroundColor: AppColors.secondary,
+                icon: Icon(
                   Icons.done_all,
-                  color: Colors.black,
+                  color: AppColors.text,
                   size: 30,
                 ),
                 margin: EdgeInsets.zero,
@@ -110,9 +112,9 @@ class _NewsContainerState extends State<NewsContainer> {
                     borderRadius: BorderRadius.circular(8),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 5,
-                        blurRadius: 7,
+                        color: AppColors.text.withOpacity(0.15),
+                        spreadRadius: 4,
+                        blurRadius: 10,
                         offset: const Offset(0, 3),
                       ),
                     ],
@@ -160,10 +162,10 @@ class _NewsContainerState extends State<NewsContainer> {
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                          offset: const Offset(0, 3),
+                          color: Colors.grey.withOpacity(0.15),
+                          spreadRadius: 4,
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
                         ),
                       ],
                     ),
@@ -173,7 +175,6 @@ class _NewsContainerState extends State<NewsContainer> {
                         newsCards[index].mainTag ?? "mocco",
                         style: const TextStyle(
                           fontSize: 14.0,
-                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -200,12 +201,12 @@ class _NewsContainerState extends State<NewsContainer> {
                                 preferencesState.isEng),
                             key: Key('$index-title'),
                             style: TextStyle(
+                              color: AppColors.text,
                               fontSize: preferencesState.isEng
                                   ? 24
                                   : (newsCards[index].sinhalaTitle == ""
                                       ? 24
                                       : 22),
-                              color: Colors.black,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -220,12 +221,12 @@ class _NewsContainerState extends State<NewsContainer> {
                                 preferencesState.isEng),
                             key: Key('$index-description'),
                             style: TextStyle(
+                              color: AppColors.text,
                               fontSize: preferencesState.isEng
                                   ? 18
                                   : (newsCards[index].sinhalaTitle == ""
                                       ? 18
                                       : 17),
-                              color: Colors.black87,
                             ),
                           ),
                         ],

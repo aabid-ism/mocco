@@ -19,8 +19,8 @@ class AppPreferences extends ChangeNotifier {
   //toggle lang prefs
   Future<void> toggleLang() async {
     _isEng = !isEng;
+    notifyListeners();
     _preferences = await SharedPreferences.getInstance();
     await _preferences.setBool(_prefIsEng, _isEng);
-    notifyListeners();
   }
 }

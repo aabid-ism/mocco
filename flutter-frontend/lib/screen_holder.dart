@@ -4,6 +4,7 @@ import 'package:mocco/news_provider_state.dart';
 import 'package:mocco/screens/explore_screen.dart';
 import 'package:mocco/screens/international_screen.dart';
 import 'package:mocco/screens/news_screen.dart';
+import 'package:mocco/theme/theme_switcher.dart';
 import 'package:mocco/widgets/top_menu.dart';
 import 'package:provider/provider.dart';
 
@@ -37,38 +38,41 @@ class _ScreensHolderState extends State<ScreensHolder> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            PageView(
-              scrollDirection: Axis.horizontal,
-              controller: _pageController,
-              onPageChanged: (int index) {
-                //on page change action
-                setState(() {
-                  _currentPageIndex = index; //change current page index
-                });
-              },
-              children: const [
-                ExploreScreen(),
-                LocalScreen(),
-                InternationalScreen(),
-              ],
-            ),
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: TopMenu(
-                currentPageIndex: _currentPageIndex,
-                changeTab: changeTab,
+    return Consumer<AppTheme>(builder: (context, counter, child) {
+      return Scaffold(
+        backgroundColor: AppColors.primary,
+        body: SafeArea(
+          child: Stack(
+            children: [
+              PageView(
+                scrollDirection: Axis.horizontal,
+                controller: _pageController,
+                onPageChanged: (int index) {
+                  //on page change action
+                  setState(() {
+                    _currentPageIndex = index; //change current page index
+                  });
+                },
+                children: const [
+                  ExploreScreen(),
+                  LocalScreen(),
+                  InternationalScreen(),
+                ],
               ),
-            ),
-          ],
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: TopMenu(
+                  currentPageIndex: _currentPageIndex,
+                  changeTab: changeTab,
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   void changeTab(int tabIndex) {

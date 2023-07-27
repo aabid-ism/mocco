@@ -33,7 +33,7 @@ class BottomBar extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 5, 20, 0),
+        padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -134,12 +134,15 @@ class BottomBar extends StatelessWidget {
                     icon: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            preferencesStateWatcher.isEng ? "ENG" : "SIN",
-                            style: TextStyle(
-                              color: AppColors.text,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
+                          FittedBox(
+                            child: Text(
+                              preferencesStateWatcher.isEng ? "ENG" : "SIN",
+                              maxLines: 1,
+                              style: TextStyle(
+                                color: AppColors.text,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                           const SizedBox(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mocco/theme/theme_switcher.dart';
 
 class ScrollDown extends StatefulWidget {
   const ScrollDown({super.key});
@@ -18,7 +19,7 @@ class _ScrollDownState extends State<ScrollDown>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(seconds: 2),
     );
 
     _animation = TweenSequence<double>([
@@ -48,18 +49,32 @@ class _ScrollDownState extends State<ScrollDown>
           ),
         );
       },
-      child: Column(
-        children: [
-          const Text(
-            "Scroll Down",
-            style: TextStyle(fontSize: 13),
-          ),
-          SvgPicture.asset(
-            "assets/icons/scroll.svg",
-            height: 24,
-            width: 24,
-          ),
-        ],
+      child: FutureBuilder(
+        future:
+            Future.delayed(const Duration(seconds: 8), () => true),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const SizedBox();
+          } else {
+            return Column(
+              children: [
+                Text(
+                  "Scroll Down",
+                  style: TextStyle(fontSize: 13, color: AppColors.text),
+                ),
+                ColorFiltered(
+                  colorFilter:
+                      ColorFilter.mode(AppColors.text, BlendMode.srcIn),
+                  child: SvgPicture.asset(
+                    "assets/icons/scroll.svg",
+                    height: 24,
+                    width: 24,
+                  ),
+                ),
+              ],
+            );
+          }
+        },
       ),
     );
   }

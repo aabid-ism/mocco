@@ -47,10 +47,13 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return const GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Mocco',
-      home: ScreensHolder(),
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(textScaleFactor: 1.00),
+      child: const GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Mocco',
+        home: ScreensHolder(),
+      ),
     );
   }
 

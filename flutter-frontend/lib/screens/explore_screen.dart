@@ -5,7 +5,6 @@ import 'package:mocco/news_provider_state.dart';
 import 'package:mocco/theme/theme_switcher.dart';
 import 'package:mocco/widgets/news.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});

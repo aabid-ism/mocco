@@ -56,6 +56,34 @@ export async function loadMorePosts(post_type, ref_postIndex, tag = null) {
   }
 }
 
+// load quotes
+export async function fetchAllQuotes() {
+  try {
+    const today = new Date();
+    const formattedDate = today.toISOString().split("T")[0];
+    const response = await baseAxios.post("quotes/get-quotes", {
+      date: formattedDate,
+    });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// load events
+export async function fetchAllEvents() {
+  try {
+    const today = new Date();
+    const formattedDate = today.toISOString().split("T")[0];
+    const response = await baseAxios.post("events/get-event-data", {
+      date: formattedDate,
+    });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 // ------UNIT TESTS ---------
 
 // const posts = await fetchDefaultFeed();

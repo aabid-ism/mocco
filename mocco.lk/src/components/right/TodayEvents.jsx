@@ -5,6 +5,8 @@ import {
   useMoccoNewsFeedContext,
 } from "../../providers/NewsProvider";
 import DateString from "./DateString";
+import LoadingSpinner from "../loadspinner";
+import EventButton from "./EventButton";
 
 function TodayEvents() {
   const dispatch = useMoccoNewsFeedDispatchContext();
@@ -22,31 +24,25 @@ function TodayEvents() {
     <div>
       <DateString />
       <hr></hr>
-      <div>
-        {appState.events.length > 0 ? (
-          appState.events.map((event) => (
-            <div
-              style={{
-                display: "flex",
-                textAlign: "left",
-                cursor: "pointer",
-                color: "black",
-              }}
-              onClick={() => {
-                window.open(event.srcUrl, "_blank");
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = "blue"; // Change the text color on hover
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = "black"; // Revert text color
-              }}
-            >
-              <p>{event.name}</p>
-            </div>
-          ))
+      <div
+        style={{
+          maxHeight: "300px",
+          overflowY: "auto",
+          overflowX: "hidden",
+        }}
+      >
+        {!appState.is_loading ? (
+          appState.events.length > 0 ? (
+            appState.events.map((event) => (
+              <div>
+                <EventButton event={event} lang={appState.language} />
+              </div>
+            ))
+          ) : (
+            <p>No events available today</p>
+          )
         ) : (
-          <p>No events available today</p>
+          <LoadingSpinner />
         )}
       </div>
     </div>

@@ -2,7 +2,7 @@ import "./App.css";
 import NavigatorBar from "./components/Navigator/NavigatorBar";
 import { Container, Row, Col } from "react-bootstrap";
 import LeftSidebar from "./components/Left/LeftSidebar";
-import RightSidebar from "./components/Right/RightSidebar";
+import RightSidebar from "./components/right/RightSidebar";
 import FeedContainer from "./components/FeedContainer";
 import { MoccoNewsFeedProvider } from "./providers/NewsProvider";
 

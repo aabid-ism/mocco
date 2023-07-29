@@ -8,7 +8,7 @@ function RightSidebar() {
       <div style={{ marginTop: "30px" }}>
         <TodayQuote />
       </div>
-      <div style={{ marginTop: "70px" }}>
+      <div style={{ marginTop: "30px" }}>
         <TodayEvents />
       </div>
     </div>

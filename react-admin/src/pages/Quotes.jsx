@@ -18,7 +18,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
-import EventIcon from "@mui/icons-material/Event";
+import FormatQuoteIcon from "@mui/icons-material/FormatQuote";
 import { useAuthContext } from "../hooks/useAuthContext.js";
 
 const drawerWidth = 240;
@@ -108,7 +108,7 @@ const Quotes = ({ open }) => {
   };
 
   useEffect(() => {
-    async function getEventData() {
+    async function getQuoteData() {
       try {
         // get bearer token
         const storedUser = localStorage.getItem("user");
@@ -137,7 +137,7 @@ const Quotes = ({ open }) => {
       }
     }
 
-    getEventData();
+    getQuoteData();
   }, [startDate, selectedQuote]);
 
   function handleChipClick(item) {
@@ -200,7 +200,7 @@ const Quotes = ({ open }) => {
           <Button
             variant="outlined"
             type="submit"
-            startIcon={<EventIcon />}
+            startIcon={<FormatQuoteIcon />}
             sx={{
               borderColor: "red",
               color: "red",
@@ -214,7 +214,7 @@ const Quotes = ({ open }) => {
               setFormEnabledToAddQuote((prev) => !prev);
             }}
           >
-            Add Event
+            Add Quote
           </Button>
         </Box>
         <Box

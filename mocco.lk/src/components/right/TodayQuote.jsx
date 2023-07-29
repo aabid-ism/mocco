@@ -7,12 +7,13 @@ import {
 import "./fade.css";
 import quote from "../../assets/quote.png";
 import double_quotes from "../../assets/double-quotes.png";
+import LoadingSpinner from "../loadspinner";
+import { Carousel } from "react-bootstrap";
 
 function TodayQuote() {
-  const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
   const dispatch = useMoccoNewsFeedDispatchContext();
   const appState = useMoccoNewsFeedContext();
-  // const [fadeIn, setFadeIn] = useState(true);
+  const QUOTE_CHANGE_INTERVAL = 5000;
 
   useEffect(async () => {
     const response = await fetchAllQuotes();
@@ -22,58 +23,58 @@ function TodayQuote() {
     });
   }, []);
 
-  // Update the displayed quote every 2 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // setFadeIn(!fadeIn);
-      setCurrentQuoteIndex(
-        (prevIndex) => (prevIndex + 1) % appState.quotes.length
-      );
-    }, 5000);
-
-    return () => clearInterval(interval); // Cleanup the interval on component unmount
-  }, [appState]);
-
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <div>
         <h3>Bulletin</h3>
         <hr></hr>
       </div>
-      <div
-        style={{ display: "flex" }}
-        // className={`fade-in-out ${fadeIn ? "fade-in" : "fade-out"}`}
-      >
-        {appState.quotes.length > 0 ? (
-          <>
-            <div>
-              <img src={quote} alt="Quotes" />
-            </div>
-            <div>
-              <p>{appState.quotes[currentQuoteIndex].quote}</p>
-            </div>
-          </>
+      {!appState.is_loading ? (
+        appState.quotes.length > 0 ? (
+          <Carousel
+            controls={false}
+            indicators={false}
+            interval={QUOTE_CHANGE_INTERVAL}
+            data-bs-theme="dark"
+          >
+            {appState.quotes.map((quoteData, index) => (
+              <Carousel.Item key={index} style={{ paddingX: "25px" }}>
+                <div style={{ display: "flex" }}>
+                  <div>
+                    <img src={quote} alt="Quotes" />
+                  </div>
+                  <div>
+                    <p>
+                      {appState.language === "English"
+                        ? quoteData.quote
+                        : quoteData.s_quote}
+                    </p>
+                  </div>
+                </div>
+                <div
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <div>
+                    <p>
+                      -{" "}
+                      {appState.language === "English"
+                        ? quoteData.author
+                        : quoteData.s_author}
+                    </p>
+                  </div>
+                  <div>
+                    <img src={double_quotes} alt="Quotes" />
+                  </div>
+                </div>
+              </Carousel.Item>
+            ))}
+          </Carousel>
         ) : (
-          "Loading..."
-        )}
-      </div>
-      <div
-        style={{ display: "flex", justifyContent: "space-between" }}
-        // className={`fade-in-out ${fadeIn ? "fade-in" : "fade-out"}`}
-      >
-        {appState.quotes.length > 0 ? (
-          <>
-            <div>
-              <p>- {appState.quotes[currentQuoteIndex].author}</p>
-            </div>
-            <div>
-              <img src={double_quotes} alt="Quotes" />
-            </div>
-          </>
-        ) : (
-          "Loading..."
-        )}
-      </div>
+          <p>No quotes available today</p>
+        )
+      ) : (
+        <LoadingSpinner />
+      )}
     </div>
   );
 }

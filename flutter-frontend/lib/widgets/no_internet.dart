@@ -11,7 +11,7 @@ class NoInternet extends StatelessWidget {
         width: MediaQuery.of(context).size.width < 390
             ? MediaQuery.of(context).size.width - 40
             : 350,
-        height: 80,
+        height: 94,
         decoration: const BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(20)),
           color: Colors.transparent,

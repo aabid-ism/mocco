@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:mocco/enum.dart';
 import 'package:mocco/env.dart';
 import 'package:mocco/models/news_card.dart';
@@ -8,15 +7,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class LoadingService {
   late SharedPreferences sharedPrefs;
-  List<int?> _readPostListInt = [];
 
-  Future<void> addToReadList(int postIndex, String? currentScreenTag) async {
-    String readPostListName = (currentScreenTag == null)
-        ? "readPostIndex"
-        : "readPostIndex-$currentScreenTag";
+  Future<void> addToPostIndexList(int postIndex,
+      {String? currentScreenTag}) async {
+    String postIndexListName = _getPostIndexListName(currentScreenTag);
+
     sharedPrefs = await SharedPreferences.getInstance();
     // Check if the string list exists
-    var readPostList = sharedPrefs.getStringList(readPostListName) ?? [];
+    var readPostList = sharedPrefs.getStringList(postIndexListName) ?? [];
 
     // Convert the string list to a set for uniqueness check
     Set<int?> uniquePostIndexes =
@@ -27,19 +25,48 @@ class LoadingService {
       uniquePostIndexes.add(postIndex);
     }
 
-    _readPostListInt = uniquePostIndexes.toList()..sort();
-    readPostList = _readPostListInt.map((value) => value.toString()).toList();
-    sharedPrefs.setStringList(readPostListName, readPostList);
+    List<int?> postIndexListInt = uniquePostIndexes.toList()..sort();
+    readPostList = postIndexListInt.map((value) => value.toString()).toList();
+    sharedPrefs.setStringList(postIndexListName, readPostList);
+  }
+
+  Future<void> removeFromPostIndexList(int postIndex,
+      {String? currentScreenTag}) async {
+    String postIndexListName = _getPostIndexListName(currentScreenTag);
+
+    sharedPrefs = await SharedPreferences.getInstance();
+    // Check if the string list exists
+    var readPostList = sharedPrefs.getStringList(postIndexListName) ?? [];
+
+    // Remove the postIndex from the set if it exists
+    if (readPostList.contains(postIndex.toString())) {
+      readPostList.remove(postIndex.toString());
+    }
+
+    sharedPrefs.setStringList(postIndexListName, readPostList);
   }
 
   //Get Read Post Index
-  Future<List<int>> getReadPostList(String? currentScreenTag) async {
-    String readPostListName = (currentScreenTag == null)
-        ? "readPostIndex"
-        : "readPostIndex-$currentScreenTag";
+  Future<List<int>> getPostIndexList({String? currentScreenTag}) async {
+    String postIndexListName = _getPostIndexListName(currentScreenTag);
+
     sharedPrefs = await SharedPreferences.getInstance();
-    var readPostList = sharedPrefs.getStringList(readPostListName) ?? [];
+    var readPostList = sharedPrefs.getStringList(postIndexListName) ?? [];
     return readPostList.map((str) => int.parse(str)).toList();
+  }
+
+  //Get shared preference name for the index list
+  String _getPostIndexListName(String? currentScreenTag) {
+    bool isSave = currentScreenTag == "saved";
+    String postIndexListName;
+    if (!isSave) {
+      postIndexListName = (currentScreenTag == null)
+          ? "readPostIndex"
+          : "readPostIndex-$currentScreenTag";
+    } else {
+      postIndexListName = "savePostIndex";
+    }
+    return postIndexListName;
   }
 
   //Only use for testing uses
@@ -51,18 +78,18 @@ class LoadingService {
   // Future<List<NewsCard>> removeReadPost(List<NewsCard> newsList) async {
   //   sharedPrefs = await SharedPreferences.getInstance();
   //   _readPostList = sharedPrefs.getStringList(_readPostListName) ?? [];
-  //   _readPostListInt = _readPostList
+  //   postIndexListInt = _readPostList
   //       .map((readPostIndexSting) => int.tryParse(readPostIndexSting))
   //       .toList();
   //   return newsList
-  //       .where((newsCard) => !_readPostListInt.contains(newsCard.postIndex))
+  //       .where((newsCard) => !postIndexListInt.contains(newsCard.postIndex))
   //       .toList();
   // }
 
   Future<List<NewsCard>> loadNextPosts(NewsScreenUsers postFor,
-    List<int> postConsideredAsReadList, String? tag) async {
+      List<int> postConsideredAsReadList, String? tag) async {
     final newsService = NewsService();
-    var actualReadPostList = await getReadPostList(tag);
+    var actualReadPostList = await getPostIndexList(currentScreenTag: tag);
     var postPath = "";
     Set<int> mergedSet = {...actualReadPostList, ...postConsideredAsReadList};
     List<int> mergedAndSortedReadPost = mergedSet.toList()..sort();
@@ -70,20 +97,19 @@ class LoadingService {
         jsonEncode({'readPostIndices': mergedAndSortedReadPost});
     switch (postFor) {
       case NewsScreenUsers.localScreen:
-        postPath = "/local-news/";
+        postPath = "handleLoading/local-news/";
         break;
       case NewsScreenUsers.internationalScreen:
-        postPath = "/international-news/";
+        postPath = "handleLoading/international-news/";
         break;
       case NewsScreenUsers.explorerScreen:
         if (tag != null && tag.isNotEmpty) {
-          postPath = "/tag/?reqTag=$tag";
+          postPath = "handleLoading/tag/?reqTag=$tag";
         }
         break;
     }
 
-    var nextPostList = await newsService.fetchAllNews(
-        "$serverUrl/handleLoading$postPath",
+    var nextPostList = await newsService.fetchAllNews("$serverUrl/$postPath",
         reqBody: readPostReqBody);
     return nextPostList;
   }

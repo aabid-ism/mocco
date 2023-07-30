@@ -4,12 +4,13 @@ import 'package:http/http.dart' as http;
 import 'package:mocco/models/news_card.dart';
 
 class NewsService {
-  Future<List<NewsCard>> fetchAllNews(String reqUrl, {String? reqBody}) async {
+  Future<List<NewsCard>> fetchAllNews(String reqUrl,
+      {String? reqBody, String? method}) async {
     // get request to api
     final uri = Uri.parse(reqUrl);
     try {
       var headers = {'Content-Type': 'application/json'};
-      var request = http.Request('GET', uri);
+      var request = http.Request(method ?? "GET", uri);
       request.body = reqBody ?? "";
       request.headers.addAll(headers);
       http.StreamedResponse response = await request.send();

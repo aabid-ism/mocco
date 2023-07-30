@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:mocco/services/loading_service.dart';
 import 'package:mocco/theme/theme_switcher.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
@@ -10,154 +11,202 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 
-class BottomBar extends StatelessWidget {
+class BottomBar extends StatefulWidget {
   final NewsCard newsCard;
-  const BottomBar({super.key, required this.newsCard});
+  final LoadingService loadingService;
+  const BottomBar(
+      {super.key, required this.newsCard, required this.loadingService});
+
+  @override
+  State<BottomBar> createState() => _BottomBarState();
+}
+
+class _BottomBarState extends State<BottomBar> {
+  bool _isPostSaved = false; // Declare a variable to hold the result
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<bool> _currentSavedStatus(int postIndex) async {
+    List<int> likedPostIndex =
+        await widget.loadingService.getPostIndexList(currentScreenTag: "saved");
+    var isLiked = likedPostIndex.contains(widget.newsCard.postIndex);
+    return isLiked;
+  }
 
   @override
   Widget build(BuildContext context) {
+    const double spreadRadius = 1;
+    const double blurRadius = 5;
+    const Offset barItemContainerOffset = Offset(0, 1);
+
     var preferencesStateWatcher = context.watch<AppPreferences>();
-    return Container(
-      height: 65,
-      width: 190,
-      decoration: BoxDecoration(
-        color: AppColors.secondary,
-        borderRadius: BorderRadius.circular(35),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.text.withOpacity(0.15),
-            spreadRadius: 2,
-            blurRadius: 15,
-            offset: const Offset(0, 1),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Ink(
+          height: 70,
+          width: 250,
+          decoration: BoxDecoration(
+            color: AppColors.secondary,
+            borderRadius: BorderRadius.circular(35),
+            border: Border.all(
+              width: 1,
+              color: AppColors.text,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.text.withOpacity(0.15),
+                spreadRadius: spreadRadius,
+                blurRadius: blurRadius,
+                offset: barItemContainerOffset,
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(15, 5, 15, 0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            // Share Button
-            GestureDetector(
-              // Make whole share column clickable
-              onTap: () async {
-                final newsImgUrl = newsCard.imageUrl;
-                final url = Uri.parse(newsImgUrl ?? "");
-                final response = await http.get(url);
-                final bytes = response.bodyBytes;
-
-                final temp = await getTemporaryDirectory();
-                final shareTempFilePath = '${temp.path}/mocosharetempimg.jpg';
-                File file = File(shareTempFilePath);
-                await file.writeAsBytes(bytes);
-
-                var title = preferencesStateWatcher.isEng
-                    ? newsCard.title
-                    : newsCard.sinhalaTitle;
-                var description = preferencesStateWatcher.isEng
-                    ? newsCard.description
-                    : newsCard.sinhalaDescription;
-                await Share.shareXFiles(
-                  [XFile(shareTempFilePath)],
-                  subject: newsCard.title,
-                  text: "$title\n\n$description\n\n~Mocco",
-                );
-              },
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Source Icon Buttom
-                  IconButton(
-                    onPressed: null,
-                    icon: Column(children: [
-                      Icon(FontAwesomeIcons.share, color: AppColors.text),
-                      const SizedBox(
-                        height: 4,
-                      ),
-                    ]),
-                  ),
-                ],
-              ),
-            ),
-            // Source Button
-            GestureDetector(
-              // Make whole source column clickable
-              onTap: () async {
-                !await _launchUrl(newsCard.sourceUrl ?? "")
-                    ? ScaffoldMessenger.of(context).showSnackBar(
-                        //Show snack bar msg if failed the launch
-                        const SnackBar(
-                          content: Text('Could not open the source'),
-                        ),
-                      )
-                    : null;
-              },
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Source Icon Buttom
-                  IconButton(
-                    onPressed: null,
-                    icon: Column(children: [
-                      Icon(Icons.info_outline, color: AppColors.text),
-                    ]),
-                  ),
-                ],
-              ),
-            ),
-            // Lang Toggle Button
-            GestureDetector(
-              // Make whole source column clickable
-              onTap: () async {
-                if (preferencesStateWatcher.isEng) {
-                  if (newsCard.sinhalaTitle!.isEmpty ||
-                      newsCard.sinhalaDescription!.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      //Show snack bar msg if failed the launch
-                      const SnackBar(
-                        backgroundColor: Colors.redAccent,
-                        content: Text(
-                            'Unfortunately, this article is not available in Sinhala'),
-                      ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Share Button
+                IconButton(
+                  onPressed: () async {
+                    _share(
+                      widget.newsCard,
+                      preferencesStateWatcher.isEng,
                     );
-                    return;
-                  }
-                }
-                preferencesStateWatcher.toggleLang();
-              },
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Source Icon Buttom
-                  IconButton(
-                    onPressed: null,
-                    icon: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          FittedBox(
-                            child: Text(
-                              preferencesStateWatcher.isEng ? "ENG" : "SIN",
-                              maxLines: 1,
-                              style: TextStyle(
-                                color: AppColors.text,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                        ]),
+                  },
+                  icon: Icon(
+                    FontAwesomeIcons.share,
+                    color: AppColors.text,
+                    size: 28,
                   ),
-                ],
-              ),
+                ),
+
+                // Lang Toggle
+                IconButton(
+                  onPressed: () async {
+                    if (preferencesStateWatcher.isEng) {
+                      if (widget.newsCard.sinhalaTitle!.isEmpty ||
+                          widget.newsCard.sinhalaDescription!.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          //Show snack bar msg if failed the launch
+                          const SnackBar(
+                            backgroundColor: Colors.redAccent,
+                            content: Text(
+                                'Unfortunately, this article is not available in Sinhala'),
+                          ),
+                        );
+                        return;
+                      }
+                    }
+                    preferencesStateWatcher.toggleLang();
+                  },
+                  icon: FittedBox(
+                    child: Text(
+                      preferencesStateWatcher.isEng ? "ENG" : "SIN",
+                      maxLines: 1,
+                      style: TextStyle(
+                        color: AppColors.text,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Source Button
+                IconButton(
+                  onPressed: () async {
+                    !await _launchUrl(widget.newsCard.sourceUrl ?? "")
+                        ? ScaffoldMessenger.of(context).showSnackBar(
+                            //Show snack bar msg if failed the launch
+                            const SnackBar(
+                              content: Text('Could not open the source'),
+                            ),
+                          )
+                        : null;
+                  },
+                  icon: Icon(
+                    Icons.info_outline,
+                    color: AppColors.text,
+                    size: 32,
+                  ),
+                ),
+
+                // Save Toggle
+                IconButton(
+                  onPressed: () {
+                    if (!_isPostSaved) {
+                      widget.loadingService.addToPostIndexList(
+                          widget.newsCard.postIndex,
+                          currentScreenTag: "saved");
+                    } else {
+                      widget.loadingService.removeFromPostIndexList(
+                          widget.newsCard.postIndex,
+                          currentScreenTag: "saved");
+                    }
+                    setState(() {
+                      _isPostSaved = !_isPostSaved;
+                    });
+                  },
+                  icon: FutureBuilder<bool>(
+                    future: _currentSavedStatus(widget.newsCard.postIndex),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        // Show a loading indicator or placeholder widget while loading
+                        return const CircularProgressIndicator(); // Replace this with your preferred loading widget
+                      } else if (snapshot.hasError) {
+                        // Handle the error
+                        return Icon(
+                          Icons.bookmark_add_outlined,
+                          color: AppColors.text,
+                          size: 28,
+                        );
+                      } else {
+                        // Data is ready, update the state
+                        _isPostSaved = snapshot.data ?? false;
+                        return Icon(
+                          _isPostSaved
+                              ? Icons.bookmark_added
+                              : Icons.bookmark_add_outlined,
+                          color: AppColors.text,
+                          size: 28,
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
+}
+
+_share(NewsCard newsCard, isEng) async {
+  final newsImgUrl = newsCard.imageUrl;
+  final url = Uri.parse(newsImgUrl ?? "");
+  final response = await http.get(url);
+  final bytes = response.bodyBytes;
+
+  final temp = await getTemporaryDirectory();
+  final shareTempFilePath = '${temp.path}/mocosharetempimg.jpg';
+  File file = File(shareTempFilePath);
+  await file.writeAsBytes(bytes);
+
+  var title = isEng ? newsCard.title : newsCard.sinhalaTitle;
+  var description = isEng ? newsCard.description : newsCard.sinhalaDescription;
+  await Share.shareXFiles(
+    [XFile(shareTempFilePath)],
+    subject: newsCard.title,
+    text: "$title\n\n$description\n\n~Mocco",
+  );
 }
 
 //URL Launcher function with exception handling

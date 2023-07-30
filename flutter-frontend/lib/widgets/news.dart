@@ -162,8 +162,8 @@ class _NewsContainerState extends State<NewsContainer> {
                       11.5, // Position mainTag teblet
                   child: Container(
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 255, 209, 139),
-                      borderRadius: BorderRadius.circular(12),
+                      color: AppColors.secondary,
+                      borderRadius: BorderRadius.circular(15),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.grey.withOpacity(0.15),
@@ -177,8 +177,9 @@ class _NewsContainerState extends State<NewsContainer> {
                       padding: const EdgeInsets.fromLTRB(21, 4, 21, 5),
                       child: Text(
                         newsCards[index].mainTag ?? "mocco",
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14.0,
+                          color: AppColors.text,
                         ),
                       ),
                     ),

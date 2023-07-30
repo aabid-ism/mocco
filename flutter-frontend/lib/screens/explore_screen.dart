@@ -22,6 +22,7 @@ class ExploreScreen extends StatefulWidget {
     "Politics",
     "Sports",
     "Technology",
+    "Saved"
   ];
 
   @override
@@ -30,7 +31,7 @@ class ExploreScreen extends StatefulWidget {
 
 class _ExploreScreenState extends State<ExploreScreen> {
   bool _isDark = true;
-    @override
+  @override
   Widget build(BuildContext context) {
     _isDark = Provider.of<AppTheme>(context).isDark;
     return Scaffold(
@@ -87,22 +88,22 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     padding: const EdgeInsets.all(9),
                     child: GestureDetector(
                       onTap: () {
-                        WidgetsBinding.instance
-                            .addPostFrameCallback((timeStamp) async {
-                          await Provider.of<NewsProvider>(context,
-                                  listen: false)
-                              .fetchNewsFromService(context,
-                                  tag:
-                                      ExploreScreen.items[index].toLowerCase());
-                        });
-                        Navigator.push(
+                        const fetchReqFrom = NewsScreenUsers.explorerScreen;
+                        final tag = ExploreScreen.items[index].toLowerCase();
+
+                        Provider.of<NewsProvider>(context, listen: false)
+                            .fetchNewsFromService(tag: tag)
+                            .then((_) {
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => NewsContainer(
-                                    requestSource:
-                                        NewsScreenUsers.explorerScreen,
-                                    tag: ExploreScreen.items[index]
-                                        .toLowerCase())));
+                              builder: (context) => NewsContainer(
+                                requestSource: fetchReqFrom,
+                                tag: tag,
+                              ),
+                            ),
+                          );
+                        });
                       },
                       child: Container(
                         key: Key("${ExploreScreen.items[index]}-cntr"),

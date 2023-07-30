@@ -23,13 +23,13 @@ function NavigatorBar() {
   const [isModal, setModal] = useState(false);
 
   async function handleSelect(eventKey) {
-    if (eventKey == "Local") {
+    if (eventKey === "Local") {
       const data = await fetchDefaultFeed();
       dispatch({
         type: "DispatchDefaultFeed",
         payload: data,
       });
-    } else if (eventKey == "International") {
+    } else if (eventKey === "International") {
       const data = await fetchIntlNews();
 
       dispatch({
@@ -105,15 +105,26 @@ function NavigatorBar() {
             id="basic-navbar-nav"
             className="justify-content-center"
           >
+            <div className="d-block d-sm-none">
+              <Nav
+                variant="underline"
+                className="text-center"
+                onSelect={handleSelect}
+                defaultActiveKey="Local"
+              >
+                <NavDropdown title="Explore" id="basic-nav-dropdown">
+                  {tagDropdown}
+                </NavDropdown>
+                <Nav.Link eventKey="Local">Local</Nav.Link>
+                <Nav.Link eventKey="International">International</Nav.Link>
+              </Nav>
+            </div>
             <Nav
               variant="underline"
               className="text-center"
               onSelect={handleSelect}
               defaultActiveKey="Local"
             >
-              <NavDropdown title="Explore" id="basic-nav-dropdown">
-                {tagDropdown}
-              </NavDropdown>
               <Nav.Link eventKey="Local">Local</Nav.Link>
               <Nav.Link eventKey="International">International</Nav.Link>
             </Nav>
@@ -124,9 +135,6 @@ function NavigatorBar() {
             </Col>
           </Navbar.Brand>
         </Container>
-        {/* <div style={{ marginRight: "40px" }}>
-        <LanguageToggle />
-      </div> */}
       </Navbar>
     </>
   );

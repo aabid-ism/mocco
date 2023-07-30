@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { fetchAllQuotes } from "../../services/FetchService";
 import {
   useMoccoNewsFeedDispatchContext,
   useMoccoNewsFeedContext,
 } from "../../providers/NewsProvider";
 import "./fade.css";
-import quote from "../../assets/quote.png";
-import double_quotes from "../../assets/double-quotes.png";
 import LoadingSpinner from "../loadspinner";
 import { Carousel } from "react-bootstrap";
 
@@ -26,23 +24,26 @@ function TodayQuote() {
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <div>
-        <h3>Bulletin</h3>
+        <h3>Spotlight</h3>
         <hr></hr>
       </div>
       {!appState.is_loading ? (
         appState.quotes.length > 0 ? (
           <Carousel
-            controls={false}
             indicators={false}
             interval={QUOTE_CHANGE_INTERVAL}
             data-bs-theme="dark"
           >
             {appState.quotes.map((quoteData, index) => (
-              <Carousel.Item key={index} style={{ paddingX: "25px" }}>
+              <Carousel.Item
+                key={index}
+                style={{
+                  paddingLeft: "50px",
+                  paddingRight: "50px",
+                  fontSize: "0.9rem",
+                }}
+              >
                 <div style={{ display: "flex" }}>
-                  <div>
-                    <img src={quote} alt="Quotes" />
-                  </div>
                   <div>
                     <p>
                       {appState.language === "English"
@@ -52,18 +53,23 @@ function TodayQuote() {
                   </div>
                 </div>
                 <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    fontStyle: "italic",
+                  }}
                 >
                   <div>
-                    <p>
+                    <p
+                      onClick={() => {
+                        window.open(quoteData.url, "_blank");
+                      }}
+                    >
                       -{" "}
                       {appState.language === "English"
                         ? quoteData.author
                         : quoteData.s_author}
                     </p>
-                  </div>
-                  <div>
-                    <img src={double_quotes} alt="Quotes" />
                   </div>
                 </div>
               </Carousel.Item>

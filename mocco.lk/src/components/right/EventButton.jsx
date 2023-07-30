@@ -1,5 +1,4 @@
 import React from "react";
-import Badge from "react-bootstrap/Badge";
 import Accordion from "react-bootstrap/Accordion";
 
 const EventButton = ({ event, lang }) => {
@@ -8,27 +7,27 @@ const EventButton = ({ event, lang }) => {
       style={{
         cursor: "pointer",
         color: "black",
-        margin: "5px",
+        marginBottom: "2%",
       }}
     >
       <Accordion.Item eventKey="0">
-        <Accordion.Header>
-          <div
-            onClick={() => {
-              window.open(event.srcUrl, "_blank");
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = "blue"; // Change the text color on hover
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = "black"; // Revert text color
-            }}
-          >
-            {lang === "English" ? event.name : event.s_name}
-          </div>
-        </Accordion.Header>
-        <Accordion.Body style={{ fontSize: "0.9rem", textAlign: "left" }}>
+        <Accordion.Button
+          style={{
+            backgroundColor: "white",
+            boxShadow: "none",
+            fontSize: "0.9rem",
+          }}
+        >
+          <div>{lang === "English" ? event.name : event.s_name}</div>
+        </Accordion.Button>
+        <Accordion.Body style={{ fontSize: "0.9rem", paddingTop: 0 }}>
+          <hr></hr>
           {lang === "English" ? event.desc : event.s_desc}
+          <div style={{ paddingTop: "3px" }}>
+            <a href={event.srcUrl} target="_blank">
+              Learn more
+            </a>
+          </div>
         </Accordion.Body>
       </Accordion.Item>
     </Accordion>

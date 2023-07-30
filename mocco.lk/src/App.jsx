@@ -15,7 +15,7 @@ function App() {
           <Row style={{ paddingTop: "80px", margin: "0" }}>
             <Col
               lg={3}
-              className="d-none d-lg-block"
+              className="d-none d-lg-block custom-scrollbar"
               style={{
                 position: "sticky",
                 top: "80px",
@@ -29,7 +29,9 @@ function App() {
               <FeedContainer />
             </Col>
             <Col lg={3} className="d-none d-lg-block">
-              <div style={{ position: "sticky", top: "80px" }}>
+              <div
+                style={{ position: "sticky", top: "80px", overflow: "hidden" }}
+              >
                 <RightSidebar />
               </div>
             </Col>

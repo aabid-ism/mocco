@@ -10,6 +10,7 @@ import {
 import { useMoccoNewsFeedDispatchContext } from "../../providers/NewsProvider";
 import { NewsType } from "../../enums";
 import ModalComponent from "../Modals/ModalComponent";
+import Mocco from "../../assets/Mocco.png";
 
 function NavigatorBar() {
   const dispatch = useMoccoNewsFeedDispatchContext();
@@ -35,8 +36,6 @@ function NavigatorBar() {
         type: "LOAD_INTL_TO_FEED",
         payload: data,
       });
-    } else if (eventKey == "Mocco") {
-      setModal((value) => true);
     } else {
       const data = await loadMorePosts("TAG", 99999, eventKey);
       dispatch({
@@ -89,7 +88,16 @@ function NavigatorBar() {
         <Container fluid>
           <Navbar.Brand href="#home">
             <Col className="d-none d-sm-block">
-              <h1>Mocco</h1>
+              <div
+                onClick={() => setModal(true)}
+                style={{ width: "52px", height: "32px", marginLeft: "20px" }}
+              >
+                <img
+                  src={Mocco}
+                  alt="tag"
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              </div>
             </Col>
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -105,9 +113,6 @@ function NavigatorBar() {
             >
               <NavDropdown title="Explore" id="basic-nav-dropdown">
                 {tagDropdown}
-
-                <NavDropdown.Divider />
-                <NavDropdown.Item eventKey="Mocco">Mocco</NavDropdown.Item>
               </NavDropdown>
               <Nav.Link eventKey="Local">Local</Nav.Link>
               <Nav.Link eventKey="International">International</Nav.Link>

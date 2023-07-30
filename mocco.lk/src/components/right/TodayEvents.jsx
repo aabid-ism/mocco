@@ -7,6 +7,7 @@ import {
 import DateString from "./DateString";
 import LoadingSpinner from "../loadspinner";
 import EventButton from "./EventButton";
+import "../../App.css";
 
 function TodayEvents() {
   const dispatch = useMoccoNewsFeedDispatchContext();
@@ -25,10 +26,11 @@ function TodayEvents() {
       <DateString />
       <hr></hr>
       <div
+        className="custom-scrollbar"
         style={{
-          maxHeight: "300px",
+          height: "300px",
           overflowY: "auto",
-          overflowX: "hidden",
+          paddingBottom: "30%",
         }}
       >
         {!appState.is_loading ? (

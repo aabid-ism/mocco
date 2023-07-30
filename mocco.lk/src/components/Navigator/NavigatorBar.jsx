@@ -105,20 +105,16 @@ function NavigatorBar() {
             id="basic-navbar-nav"
             className="justify-content-center"
           >
-            <div className="d-block d-sm-none">
-              <Nav
-                variant="underline"
-                className="text-center"
-                onSelect={handleSelect}
-                defaultActiveKey="Local"
-              >
-                <NavDropdown title="Explore" id="basic-nav-dropdown">
-                  {tagDropdown}
-                </NavDropdown>
-                <Nav.Link eventKey="Local">Local</Nav.Link>
-                <Nav.Link eventKey="International">International</Nav.Link>
-              </Nav>
-            </div>
+            <Nav
+              variant="underline"
+              className="text-center d-sm-none"
+              onSelect={handleSelect}
+              defaultActiveKey="Local"
+            >
+              <NavDropdown title="Explore" id="basic-nav-dropdown">
+                {tagDropdown}
+              </NavDropdown>
+            </Nav>
             <Nav
               variant="underline"
               className="text-center"

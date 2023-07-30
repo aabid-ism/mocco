@@ -78,7 +78,7 @@ class _MyAppState extends State<MyApp> {
       var postIndex = int.tryParse(data?['postIndex']);
 
       await Provider.of<NewsProvider>(context, listen: false)
-          .fetchNewsFromService(context, postIndex: postIndex);
+          .fetchNewsFromService(postIndex: postIndex);
     });
   }
 }

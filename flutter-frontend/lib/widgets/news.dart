@@ -55,7 +55,8 @@ class _NewsContainerState extends State<NewsContainer> {
       newsCards = appState.tagResponse;
     }
     if (newsCards.isNotEmpty) {
-      loadingService.addToReadList(newsCards[0].postIndex, tag);
+      loadingService.addToPostIndexList(newsCards[0].postIndex,
+          currentScreenTag: tag);
     }
 
     //Clear application cache for testing
@@ -71,7 +72,10 @@ class _NewsContainerState extends State<NewsContainer> {
         onPageChanged: (index) async {
           if (currentPageIndex < index) {
             currentPageIndex = index;
-            loadingService.addToReadList(newsCards[index].postIndex, tag);
+            if (!(tag == "saved")) {
+              loadingService.addToPostIndexList(newsCards[index].postIndex,
+                  currentScreenTag: tag);
+            }
           }
           if (newsCards.length - loadPostBefore == index) {
             var nextPostList = await loadingService.loadNextPosts(
@@ -85,7 +89,7 @@ class _NewsContainerState extends State<NewsContainer> {
           if (newsCards.length == index + 1) {
             Get.rawSnackbar(
                 messageText: Text(
-                  'You have caught up with all new stories!',
+                  'You have caught up with all ${!(tag == "saved") ? "new" : "saved"} stories!',
                   style: TextStyle(color: AppColors.text, fontSize: 15),
                   textAlign: TextAlign.center,
                 ),
@@ -158,8 +162,8 @@ class _NewsContainerState extends State<NewsContainer> {
                       11.5, // Position mainTag teblet
                   child: Container(
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 255, 209, 139),
-                      borderRadius: BorderRadius.circular(12),
+                      color: AppColors.secondary,
+                      borderRadius: BorderRadius.circular(15),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.grey.withOpacity(0.15),
@@ -173,8 +177,9 @@ class _NewsContainerState extends State<NewsContainer> {
                       padding: const EdgeInsets.fromLTRB(21, 4, 21, 5),
                       child: Text(
                         newsCards[index].mainTag ?? "mocco",
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14.0,
+                          color: AppColors.text,
                         ),
                       ),
                     ),
@@ -298,8 +303,8 @@ class _NewsContainerState extends State<NewsContainer> {
                   right: 0,
                   child: Center(
                     child: BottomBar(
-                      newsCard: newsCards[index],
-                    ),
+                        newsCard: newsCards[index],
+                        loadingService: loadingService),
                   ),
                 ),
                 Visibility(

@@ -36,6 +36,8 @@ function NavigatorBar() {
         type: "LOAD_INTL_TO_FEED",
         payload: data,
       });
+    } else if (eventKey == "Mocco") {
+      setModal((value) => true);
     } else {
       const data = await loadMorePosts("TAG", 99999, eventKey);
       dispatch({
@@ -87,7 +89,7 @@ function NavigatorBar() {
       >
         <Container fluid>
           <Navbar.Brand href="#home">
-            <Col className="d-none d-sm-block">
+            <Col className="d-none d-lg-block">
               <div
                 onClick={() => setModal(true)}
                 style={{ width: "52px", height: "32px", marginLeft: "20px" }}
@@ -107,12 +109,15 @@ function NavigatorBar() {
           >
             <Nav
               variant="underline"
-              className="text-center d-sm-none"
+              className="text-center d-lg-none"
               onSelect={handleSelect}
               defaultActiveKey="Local"
             >
               <NavDropdown title="Explore" id="basic-nav-dropdown">
                 {tagDropdown}
+
+                <NavDropdown.Divider />
+                <NavDropdown.Item eventKey="Mocco">Mocco</NavDropdown.Item>
               </NavDropdown>
             </Nav>
             <Nav

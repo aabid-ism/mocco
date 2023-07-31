@@ -1,7 +1,7 @@
 import "./App.css";
 import NavigatorBar from "./components/Navigator/NavigatorBar";
 import { Container, Row, Col } from "react-bootstrap";
-import LeftSidebar from "./components/Left/LeftSidebar";
+import LeftSidebar from "./components/left/LeftSidebar";
 import RightSidebar from "./components/right/RightSidebar";
 import FeedContainer from "./components/FeedContainer";
 import { MoccoNewsFeedProvider } from "./providers/NewsProvider";
@@ -20,7 +20,7 @@ function App() {
                 position: "sticky",
                 top: "80px",
                 height: "calc(100vh - 80px)",
-                overflowY: "auto",
+                // overflowY: "auto",
               }}
             >
               <LeftSidebar />

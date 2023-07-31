@@ -111,7 +111,7 @@ class _TopMenuText extends StatelessWidget {
           style: TextStyle(
             color: isActive
                 ? Colors.white
-                : const Color.fromARGB(195, 139, 139, 139),
+                : const Color.fromARGB(255, 226, 226, 226),
             fontSize: 20,
             fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
           ),
@@ -125,11 +125,11 @@ class _TopMenuText extends StatelessWidget {
                 border: Border.all(
                   color: isActive
                       ? Colors.white
-                      : const Color.fromARGB(195, 139, 139, 139),
+                      : const Color.fromARGB(255, 226, 226, 226),
                 ),
                 color: isActive
                     ? Colors.white
-                    : const Color.fromARGB(195, 139, 139, 139),
+                    : const Color.fromARGB(255, 226, 226, 226),
                 borderRadius: const BorderRadius.all(Radius.circular(10))),
           ),
         )

@@ -5,7 +5,7 @@ class AppColors {
   static Color primary = Colors.white;
   static Color secondary = const Color.fromARGB(255, 217, 217, 217);
   static Color bg = Colors.white;
-  static Color text = const Color.fromARGB(255, 0, 0, 0);
+  static Color text = const Color.fromARGB(255, 58, 58, 58);
 }
 
 class AppTheme extends ChangeNotifier {
@@ -60,12 +60,12 @@ class CustomDarkColors {
   static Color primary = const Color(0xFF1D1D1D);
   static Color secondary = const Color.fromARGB(255, 82, 82, 82);
   static Color bg = const Color(0xFF1D1D1D);
-  static Color text = const Color.fromARGB(255, 255, 255, 255);
+  static Color text = Colors.white;
 }
 
 class CustomLightColors {
   static Color primary = Colors.white;
   static Color secondary = const Color.fromARGB(255, 217, 217, 217);
   static Color bg = Colors.white;
-  static Color text = const Color.fromARGB(255, 0, 0, 0);
+  static Color text = const Color.fromARGB(255, 58, 58, 58);
 }

@@ -38,11 +38,8 @@ class _BottomBarState extends State<BottomBar> {
 
   @override
   Widget build(BuildContext context) {
-    const double spreadRadius = 1;
-    const double blurRadius = 5;
-    const Offset barItemContainerOffset = Offset(0, 1);
-
     var preferencesStateWatcher = context.watch<AppPreferences>();
+    bool isDark = Provider.of<AppTheme>(context).isDark;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
@@ -53,17 +50,9 @@ class _BottomBarState extends State<BottomBar> {
             color: AppColors.secondary,
             borderRadius: BorderRadius.circular(35),
             border: Border.all(
-              width: 1,
-              color: AppColors.text,
+              width: isDark ? 1 : 0,
+              color: isDark ? AppColors.text : AppColors.secondary,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.text.withOpacity(0.15),
-                spreadRadius: spreadRadius,
-                blurRadius: blurRadius,
-                offset: barItemContainerOffset,
-              ),
-            ],
           ),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
@@ -131,7 +120,7 @@ class _BottomBarState extends State<BottomBar> {
                         : null;
                   },
                   icon: Icon(
-                    Icons.info_outline,
+                    Icons.import_contacts,
                     color: AppColors.text,
                     size: 32,
                   ),
@@ -171,8 +160,8 @@ class _BottomBarState extends State<BottomBar> {
                         _isPostSaved = snapshot.data ?? false;
                         return Icon(
                           _isPostSaved
-                              ? Icons.bookmark_added
-                              : Icons.bookmark_add_outlined,
+                              ? Icons.bookmark_rounded
+                              : Icons.bookmark_outline,
                           color: AppColors.text,
                           size: 28,
                         );

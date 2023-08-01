@@ -40,6 +40,7 @@ class _NewsContainerState extends State<NewsContainer> {
   @override
   Widget build(BuildContext context) {
     String? tag = widget.tag;
+    bool isSaved = tag == "saved";
     _containerReqFrom = widget.requestSource;
     var appState = context.watch<NewsProvider>();
     var preferencesState = context.watch<AppPreferences>();
@@ -54,7 +55,7 @@ class _NewsContainerState extends State<NewsContainer> {
     } else {
       newsCards = appState.tagResponse;
     }
-    if (newsCards.isNotEmpty) {
+    if (newsCards.isNotEmpty && !isSaved) {
       loadingService.addToPostIndexList(newsCards[0].postIndex,
           currentScreenTag: tag);
     }
@@ -72,14 +73,18 @@ class _NewsContainerState extends State<NewsContainer> {
         onPageChanged: (index) async {
           if (currentPageIndex < index) {
             currentPageIndex = index;
-            if (!(tag == "saved")) {
+            if (!(isSaved)) {
               loadingService.addToPostIndexList(newsCards[index].postIndex,
                   currentScreenTag: tag);
             }
           }
           if (newsCards.length - loadPostBefore == index) {
+            var sortedNews = List<NewsCard>.from(newsCards);
+            sortedNews.sort(
+                (card1, card2) => card1.postIndex.compareTo(card2.postIndex));
             var nextPostList = await loadingService.loadNextPosts(
-                _containerReqFrom, newsCards.getPostIndexAfter(index), tag);
+                _containerReqFrom, newsCards.getPostIndexAfter(index),
+                tag: tag, lastPostInList: sortedNews.last.postIndex);
             if (nextPostList != []) {
               setState(() {
                 newsCards.addAll(nextPostList);
@@ -150,8 +155,8 @@ class _NewsContainerState extends State<NewsContainer> {
                         ),
                       ),
                       fit: BoxFit.cover,
-                      height: MediaQuery.of(context).size.height /
-                          3, //Set image size to 1/3 of the screen
+                      height: MediaQuery.of(context).size.height / 3,
+                      //Set image size to 1/3 of the screen
                       width: double.infinity,
                     ),
                   ),
@@ -195,8 +200,8 @@ class _NewsContainerState extends State<NewsContainer> {
                     child: Padding(
                       padding: const EdgeInsets.all(21),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment
-                            .start, //Align items from left-to-right in cross axis
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        //Align items from left-to-right in cross axis
                         children: [
                           Text(
                             langProcessor(

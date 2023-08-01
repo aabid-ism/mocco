@@ -87,14 +87,25 @@ class LoadingService {
   // }
 
   Future<List<NewsCard>> loadNextPosts(NewsScreenUsers postFor,
-      List<int> postConsideredAsReadList, String? tag) async {
+      List<int> postConsideredAsReadList, {String? tag, int? lastPostInList}) async {
     final newsService = NewsService();
-    var actualReadPostList = await getPostIndexList(currentScreenTag: tag);
+    var isSaved = tag == "saved" ? true : false;
     var postPath = "";
-    Set<int> mergedSet = {...actualReadPostList, ...postConsideredAsReadList};
-    List<int> mergedAndSortedReadPost = mergedSet.toList()..sort();
-    var readPostReqBody =
-        jsonEncode({'readPostIndices': mergedAndSortedReadPost});
+    var reqBody = "";
+    var actualReadPostList = await getPostIndexList(currentScreenTag: tag);
+    if (!isSaved) {
+      Set<int> mergedSet = {...actualReadPostList, ...postConsideredAsReadList};
+      List<int> mergedAndSortedReadPost = mergedSet.toList()..sort();
+      reqBody =
+          jsonEncode({'readPostIndices': mergedAndSortedReadPost});
+    } else {
+      List<int> savedPostListSelection = actualReadPostList.where((lastIndex) => lastIndex > lastPostInList!).toList();
+      if (savedPostListSelection.isEmpty){
+        return Future.value([]);
+      }
+      reqBody = jsonEncode({"postIndex": savedPostListSelection});
+    }
+
     switch (postFor) {
       case NewsScreenUsers.localScreen:
         postPath = "handleLoading/local-news/";
@@ -103,14 +114,17 @@ class LoadingService {
         postPath = "handleLoading/international-news/";
         break;
       case NewsScreenUsers.explorerScreen:
-        if (tag != null && tag.isNotEmpty) {
+        if (isSaved) {
+          postPath = "news/get-news-by-post-index/";
+        }
+        if (tag != null && tag.isNotEmpty && !isSaved) {
           postPath = "handleLoading/tag/?reqTag=$tag";
         }
         break;
     }
 
     var nextPostList = await newsService.fetchAllNews("$serverUrl/$postPath",
-        reqBody: readPostReqBody);
+        reqBody: reqBody, method: isSaved ? "POST" : "GET");
     return nextPostList;
   }
 }

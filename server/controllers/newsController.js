@@ -168,7 +168,22 @@ export const getNewsByPostIndex = async (req, res) => {
 
     // Concatenate the results from both collections into a single array
     const allResults = internationalResults.concat(localResults);
-    res.send(allResults).status(200);
+    // Custom sorting function
+    const customSort = (a, b) => {
+      const indexA = postIndex.indexOf(a.postIndex);
+      const indexB = postIndex.indexOf(b.postIndex);
+
+      if (indexA < indexB) return -1;
+      if (indexA > indexB) return 1;
+      return 0;
+    };
+    const finalResults = allResults.sort(customSort);
+
+    if (finalResults.length == 0) {
+      return res.status(204).send();
+    }
+
+    return res.status(200).send(finalResults);
   } catch (error) {
     res.send(error).status(500);
   }

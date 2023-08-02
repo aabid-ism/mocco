@@ -40,6 +40,8 @@ class _NewsContainerState extends State<NewsContainer> {
   @override
   Widget build(BuildContext context) {
     String? tag = widget.tag;
+    bool isSaved = tag == "saved";
+    var height = MediaQuery.of(context).size.height;
     _containerReqFrom = widget.requestSource;
     var appState = context.watch<NewsProvider>();
     var preferencesState = context.watch<AppPreferences>();
@@ -54,7 +56,7 @@ class _NewsContainerState extends State<NewsContainer> {
     } else {
       newsCards = appState.tagResponse;
     }
-    if (newsCards.isNotEmpty) {
+    if (newsCards.isNotEmpty && !isSaved) {
       loadingService.addToPostIndexList(newsCards[0].postIndex,
           currentScreenTag: tag);
     }
@@ -72,14 +74,18 @@ class _NewsContainerState extends State<NewsContainer> {
         onPageChanged: (index) async {
           if (currentPageIndex < index) {
             currentPageIndex = index;
-            if (!(tag == "saved")) {
+            if (!(isSaved)) {
               loadingService.addToPostIndexList(newsCards[index].postIndex,
                   currentScreenTag: tag);
             }
           }
           if (newsCards.length - loadPostBefore == index) {
+            var sortedNews = List<NewsCard>.from(newsCards);
+            sortedNews.sort(
+                (card1, card2) => card1.postIndex.compareTo(card2.postIndex));
             var nextPostList = await loadingService.loadNextPosts(
-                _containerReqFrom, newsCards.getPostIndexAfter(index), tag);
+                _containerReqFrom, newsCards.getPostIndexAfter(index),
+                tag: tag, lastPostInList: sortedNews.last.postIndex);
             if (nextPostList != []) {
               setState(() {
                 newsCards.addAll(nextPostList);
@@ -117,8 +123,8 @@ class _NewsContainerState extends State<NewsContainer> {
                     boxShadow: [
                       BoxShadow(
                         color: AppColors.text.withOpacity(0.15),
-                        spreadRadius: 4,
-                        blurRadius: 10,
+                        spreadRadius: 2,
+                        blurRadius: 5,
                         offset: const Offset(0, 3),
                       ),
                     ],
@@ -132,7 +138,7 @@ class _NewsContainerState extends State<NewsContainer> {
                       imageUrl: newsCards[index].imageUrl ?? "",
                       errorWidget: (context, url, error) => const Center(
                         child: SizedBox(
-                          height: 90,
+                          height: 100,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
@@ -150,8 +156,8 @@ class _NewsContainerState extends State<NewsContainer> {
                         ),
                       ),
                       fit: BoxFit.cover,
-                      height: MediaQuery.of(context).size.height /
-                          3, //Set image size to 1/3 of the screen
+                      height: MediaQuery.of(context).size.height / 3,
+                      //Set image size to 1/3 of the screen
                       width: double.infinity,
                     ),
                   ),
@@ -193,11 +199,15 @@ class _NewsContainerState extends State<NewsContainer> {
                         .size
                         .width, //Set content area to max display size
                     child: Padding(
-                      padding: const EdgeInsets.all(21),
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 31, vertical: 21),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment
-                            .start, //Align items from left-to-right in cross axis
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        //Align items from left-to-right in cross axis
                         children: [
+                          const SizedBox(
+                            height: 5,
+                          ),
                           Text(
                             langProcessor(
                                 newsCards[index].title,
@@ -207,16 +217,13 @@ class _NewsContainerState extends State<NewsContainer> {
                             key: Key('$index-title'),
                             style: TextStyle(
                               color: AppColors.text,
-                              fontSize: preferencesState.isEng
-                                  ? 24
-                                  : (newsCards[index].sinhalaTitle == ""
-                                      ? 24
-                                      : 22),
+                              fontSize: fontSizeSelector(
+                                  height, 22, preferencesState.isEng),
                               fontWeight: FontWeight.w500,
                             ),
                           ),
                           const SizedBox(
-                            height: 10,
+                            height: 18,
                           ),
                           Text(
                             langProcessor(
@@ -227,11 +234,9 @@ class _NewsContainerState extends State<NewsContainer> {
                             key: Key('$index-description'),
                             style: TextStyle(
                               color: AppColors.text,
-                              fontSize: preferencesState.isEng
-                                  ? 18
-                                  : (newsCards[index].sinhalaTitle == ""
-                                      ? 18
-                                      : 17),
+                              height: preferencesState.isEng ? 1.3 : 1.4,
+                              fontSize: fontSizeSelector(
+                                  height, 16, preferencesState.isEng),
                             ),
                           ),
                         ],
@@ -344,6 +349,12 @@ String langProcessor(String eng, String sin, bool isEng) {
     return sin;
   }
   return eng;
+}
+
+double fontSizeSelector(double deviceHeight, double baseSize, bool isEng) {
+  return deviceHeight > 900
+      ? (isEng ? baseSize + 3 : baseSize + 2)
+      : (isEng ? baseSize : baseSize - 1);
 }
 
 String toPascalCase(String text) {

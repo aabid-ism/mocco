@@ -65,6 +65,34 @@ export const getUnpublishedNews = async (req, res) => {
   }
 };
 
+// <-------------------- GET ALL UNPUBLISHED NEWS FROM newsStage COLLECTION BY DATE -------------------->
+export const getUnpublishedNewsByDate = async (req, res) => {
+  let { date } = req.body;
+  const startOfDay = new Date(date);
+  const endOfDay = new Date(date);
+  endOfDay.setDate(endOfDay.getDate() + 1);
+
+  try {
+    // Getting references to the database and collection
+    const db = conn.getDb();
+    const collection = await db.collection("newsStage");
+
+    // Finding and returning all local news posts within the specified date range
+    const results = await collection
+      .find({
+        createdAt: {
+          $gte: startOfDay,
+          $lt: endOfDay,
+        },
+      })
+      .toArray();
+
+    res.send(results).status(200);
+  } catch (error) {
+    res.send(error).status(500);
+  }
+};
+
 // <-------------------- GET ALL PUBLISHED LOCAL NEWS FROM local COLLECTION BASED ON THE SELECTED DATE -------------------->
 export const getLocalNewsByDate = async (req, res) => {
   let { date } = req.body;

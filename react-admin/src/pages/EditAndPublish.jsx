@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import MuiAppBar from "@mui/material/AppBar";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import { Grid, Typography } from "@mui/material";
+import { Grid, Stack } from "@mui/material";
 import "react-datepicker/dist/react-datepicker.css";
 import Sidebar from "../components/Sidebar";
 import EditAndPublishForm from "../components/EditAndPublishForm";
@@ -17,6 +17,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useAuthContext } from "../hooks/useAuthContext.js";
+import DatePicker from "react-datepicker";
 
 const drawerWidth = 240;
 
@@ -53,6 +54,7 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 const EditAndPublish = ({ open }) => {
+  const [startDate, setStartDate] = useState(new Date());
   const [newsList, setNewsList] = useState([]);
   const [selectedNews, setSelectedNews] = useState([]);
   const [loader, setLoader] = useState(false); // state to handle page loader
@@ -98,7 +100,21 @@ const EditAndPublish = ({ open }) => {
   useEffect(() => {
     async function getHeadlines() {
       try {
-        const response = await Axios.get("/news/get-unpublished-news");
+        // get bearer token
+        const storedUser = localStorage.getItem("user");
+        const token = storedUser ? JSON.parse(storedUser).token : null;
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
+
+        const date = new Date(startDate);
+        const formattedDate = date.toISOString().split("T")[0];
+
+        const response = await Axios.post(
+          "/news/get-unpublished-news-by-date",
+          { date: formattedDate },
+          { headers }
+        );
         setNewsList(response.data);
       } catch (err) {
         console.error(err);
@@ -106,7 +122,7 @@ const EditAndPublish = ({ open }) => {
     }
 
     getHeadlines();
-  }, [selectedNews]);
+  }, [startDate, selectedNews]);
 
   useEffect(() => {
     if (handleWordLimit) {
@@ -136,35 +152,27 @@ const EditAndPublish = ({ open }) => {
     }, 2000);
   };
 
-  // JSX content for the sidebar specific to EditAndPublishForm screen.
   const sideBarContent = (
-    <Box
+    <Stack
       sx={{
-        maxHeight: "475px",
-        overflowY: "auto",
-        scrollbarWidth: "thin",
-        scrollbarColor: "gray lightgray",
-        "&::-webkit-scrollbar": {
-          width: "6px",
-        },
-        "&::-webkit-scrollbar-track": {
-          borderRadius: "8px",
-          background: "lightgray",
-        },
-        "&::-webkit-scrollbar-thumb": {
-          borderRadius: "8px",
-          background: "gray",
-        },
-        paddingLeft: "10px",
+        display: "flex",
+        flexDirection: "column",
+        gap: 2,
       }}
     >
-      <Typography component="span" variant="h5" color="black" fontWeight="bold">
-        Unpublished News
-      </Typography>
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
+        <DatePicker
+          selected={startDate}
+          onChange={(date) => setStartDate(date)}
+          inline
+        />
+      </Box>
       <Box
         sx={{
-          maxHeight: "300px",
+          maxHeight: "475px",
           overflowY: "auto",
+          scrollbarWidth: "thin",
+          scrollbarColor: "gray lightgray",
           "&::-webkit-scrollbar": {
             width: "6px",
           },
@@ -176,26 +184,39 @@ const EditAndPublish = ({ open }) => {
             borderRadius: "8px",
             background: "gray",
           },
+          paddingLeft: "10px",
         }}
       >
-        {newsList.length != 0 ? (
-          newsList.map((item) => (
+        <Box
+          sx={{
+            maxHeight: "300px",
+            overflowY: "auto",
+            "&::-webkit-scrollbar": {
+              width: "6px",
+            },
+            "&::-webkit-scrollbar-track": {
+              borderRadius: "8px",
+              background: "lightgray",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              borderRadius: "8px",
+              background: "gray",
+            },
+          }}
+        >
+          {newsList.map((item) => (
             <Chip
               key={item._id}
-              label={item.title ? item.title : item.sinhalaTitle}
+              label={item.title}
               variant="outlined"
-              title={item.title ? item.title : item.sinhalaTitle}
+              title={item.title}
               sx={{ marginBottom: "6px", width: "100%" }}
               onClick={() => handleChipClick(item)}
             />
-          ))
-        ) : (
-          <Box sx={{ margin: "4%" }}>
-            <Typography color="red">No unpublished news available !</Typography>
-          </Box>
-        )}
+          ))}
+        </Box>
       </Box>
-    </Box>
+    </Stack>
   );
 
   return (

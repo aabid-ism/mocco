@@ -19,6 +19,7 @@ import {
   addLocalToInternational,
   addInternationalToLocal,
   exactPostNotification,
+  getUnpublishedNewsByDate,
 } from "../../controllers/newsController.js";
 import requireAuth from "../../middlewares/requireAuth.js";
 
@@ -40,6 +41,9 @@ router.post("/approve-local-news", requireAuth, approveLocalNews);
 
 // GET ALL UNPUBLISHED NEWS FROM newsStage COLLECTION.
 router.get("/get-unpublished-news", getUnpublishedNews);
+
+// GET ALL UNPUBLISHED NEWS FROM newsStage COLLECTION BY DATE.
+router.post("/get-unpublished-news-by-date", getUnpublishedNewsByDate);
 
 // GET ALL PUBLISHED LOCAL NEWS FROM local COLLECTION BASED ON THE SELECTED DATE.
 router.post("/get-local-news-by-date", getLocalNewsByDate);

@@ -99,6 +99,22 @@ function moccoReducer(state, action) {
         need_to_go_up: false,
       };
     }
+
+    case "LOAD_ALL_QUOTES": {
+      return {
+        ...state,
+        quotes: [...state.quotes, ...action.payload],
+        is_loading: false,
+      };
+    }
+
+    case "LOAD_ALL_EVENTS": {
+      return {
+        ...state,
+        events: [...state.events, ...action.payload],
+        is_loading: false,
+      };
+    }
     default: {
       throw Error("Unknown action: " + action.type);
     }
@@ -113,4 +129,6 @@ const initialState = {
   postFeed: [],
   is_loading: true,
   need_to_go_up: false,
+  quotes: [],
+  events: [],
 };

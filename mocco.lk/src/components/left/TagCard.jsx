@@ -27,12 +27,11 @@ function TagCard(props) {
           justifyContent: "flex-start",
           width: "200px",
           padding: "10px",
-          // backgroundColor: "#F1F2F5",
           borderWidth: "0",
         }}
         variant="light"
         className="tag-button"
-        size="lg"
+        size="md"
         onClick={sendTagFeedRequest}
         active={props.focus}
       >

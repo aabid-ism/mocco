@@ -2,6 +2,7 @@ import React from "react";
 import TagCard from "./TagCard";
 import { NewsType } from "../../enums";
 import { useMoccoNewsFeedContext } from "../../providers/NewsProvider";
+import "../../App.css";
 
 // importing Icons
 import { AccidentsIcon } from "./TagIcons/TagIcons";
@@ -42,7 +43,17 @@ function TagCardList() {
       {tagToIconMap[`${tag}`]}
     </TagCard>
   ));
-  return <>{tagCardList}</>;
+  return (
+    <div
+      className="custom-scrollbar"
+      style={{
+        height: "400px",
+        overflowY: "auto",
+      }}
+    >
+      {tagCardList}
+    </div>
+  );
 }
 
 export default TagCardList;

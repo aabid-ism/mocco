@@ -14,9 +14,9 @@ function DateString() {
   const year = currentDate.getFullYear();
   return (
     <div>
-      <h3>
+      <h4>
         {dayName} {day} {monthName}, {year}
-      </h3>
+      </h4>
     </div>
   );
 }

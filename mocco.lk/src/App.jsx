@@ -1,8 +1,8 @@
 import "./App.css";
 import NavigatorBar from "./components/Navigator/NavigatorBar";
 import { Container, Row, Col } from "react-bootstrap";
-import LeftSidebar from "./components/Left/LeftSidebar";
-import RightSidebar from "./components/Right/RightSidebar";
+import LeftSidebar from "./components/left/LeftSidebar";
+import RightSidebar from "./components/right/RightSidebar";
 import FeedContainer from "./components/FeedContainer";
 import { MoccoNewsFeedProvider } from "./providers/NewsProvider";
 
@@ -15,12 +15,12 @@ function App() {
           <Row style={{ paddingTop: "80px", margin: "0" }}>
             <Col
               lg={3}
-              className="d-none d-lg-block"
+              className="d-none d-lg-block custom-scrollbar"
               style={{
                 position: "sticky",
                 top: "80px",
                 height: "calc(100vh - 80px)",
-                overflowY: "auto",
+                // overflowY: "auto",
               }}
             >
               <LeftSidebar />
@@ -29,7 +29,9 @@ function App() {
               <FeedContainer />
             </Col>
             <Col lg={3} className="d-none d-lg-block">
-              <div style={{ position: "sticky", top: "80px" }}>
+              <div
+                style={{ position: "sticky", top: "80px", overflow: "hidden" }}
+              >
                 <RightSidebar />
               </div>
             </Col>

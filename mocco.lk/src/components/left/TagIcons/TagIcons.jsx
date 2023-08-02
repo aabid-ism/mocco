@@ -15,7 +15,7 @@ export function AccidentsIcon() {
     <img
       src={Accidents}
       alt="Example"
-      style={{ width: "24px", marginRight: "8px", marginTop: "5px" }}
+      style={{ width: "24px", marginRight: "8px" }}
     />
   );
 }
@@ -24,7 +24,7 @@ export function CrimeIcon() {
     <img
       src={Crime}
       alt="Example"
-      style={{ width: "24px", marginRight: "8px", marginTop: "5px" }}
+      style={{ width: "24px", marginRight: "8px" }}
     />
   );
 }
@@ -34,7 +34,7 @@ export function EconomyIcon() {
     <img
       src={Economy}
       alt="Example"
-      style={{ width: "24px", marginRight: "8px", marginTop: "5px" }}
+      style={{ width: "24px", marginRight: "8px" }}
     />
   );
 }
@@ -44,7 +44,7 @@ export function EnvironmentIcon() {
     <img
       src={Environment}
       alt="Example"
-      style={{ width: "24px", marginRight: "8px", marginTop: "5px" }}
+      style={{ width: "24px", marginRight: "8px" }}
     />
   );
 }
@@ -54,7 +54,7 @@ export function EducationIcon() {
     <img
       src={Education}
       alt="Example"
-      style={{ width: "24px", marginRight: "8px", marginTop: "5px" }}
+      style={{ width: "24px", marginRight: "8px" }}
     />
   );
 }
@@ -64,7 +64,7 @@ export function EntertainmentIcon() {
     <img
       src={Entertainment}
       alt="Example"
-      style={{ width: "24px", marginRight: "8px", marginTop: "5px" }}
+      style={{ width: "24px", marginRight: "8px" }}
     />
   );
 }
@@ -74,7 +74,7 @@ export function HealthIcon() {
     <img
       src={Health}
       alt="Example"
-      style={{ width: "24px", marginRight: "8px", marginTop: "5px" }}
+      style={{ width: "24px", marginRight: "8px" }}
     />
   );
 }
@@ -83,7 +83,7 @@ export function HumanitarianIcon() {
     <img
       src={Humanitarian}
       alt="Example"
-      style={{ width: "24px", marginRight: "8px", marginTop: "5px" }}
+      style={{ width: "24px", marginRight: "8px" }}
     />
   );
 }
@@ -93,7 +93,7 @@ export function PoliticsIcon() {
     <img
       src={Politics}
       alt="Example"
-      style={{ width: "24px", marginRight: "8px", marginTop: "5px" }}
+      style={{ width: "24px", marginRight: "8px" }}
     />
   );
 }
@@ -103,7 +103,7 @@ export function SportsIcon() {
     <img
       src={Sports}
       alt="Example"
-      style={{ width: "24px", marginRight: "8px", marginTop: "5px" }}
+      style={{ width: "24px", marginRight: "8px" }}
     />
   );
 }
@@ -113,7 +113,7 @@ export function TechnologyIcon() {
     <img
       src={Technology}
       alt="Example"
-      style={{ width: "24px", marginRight: "8px", marginTop: "5px" }}
+      style={{ width: "24px", marginRight: "8px" }}
     />
   );
 }

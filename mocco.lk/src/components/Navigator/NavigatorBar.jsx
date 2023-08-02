@@ -10,6 +10,7 @@ import {
 import { useMoccoNewsFeedDispatchContext } from "../../providers/NewsProvider";
 import { NewsType } from "../../enums";
 import ModalComponent from "../Modals/ModalComponent";
+import Mocco from "../../assets/Mocco.png";
 
 function NavigatorBar() {
   const dispatch = useMoccoNewsFeedDispatchContext();
@@ -22,13 +23,13 @@ function NavigatorBar() {
   const [isModal, setModal] = useState(false);
 
   async function handleSelect(eventKey) {
-    if (eventKey == "Local") {
+    if (eventKey === "Local") {
       const data = await fetchDefaultFeed();
       dispatch({
         type: "DispatchDefaultFeed",
         payload: data,
       });
-    } else if (eventKey == "International") {
+    } else if (eventKey === "International") {
       const data = await fetchIntlNews();
 
       dispatch({
@@ -88,8 +89,17 @@ function NavigatorBar() {
       >
         <Container fluid>
           <Navbar.Brand href="#home">
-            <Col className="d-none d-sm-block">
-              <h1>Mocco</h1>
+            <Col className="d-none d-lg-block">
+              <div
+                onClick={() => setModal(true)}
+                style={{ width: "52px", height: "32px", marginLeft: "20px" }}
+              >
+                <img
+                  src={Mocco}
+                  alt="tag"
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              </div>
             </Col>
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -99,7 +109,7 @@ function NavigatorBar() {
           >
             <Nav
               variant="underline"
-              className="text-center"
+              className="text-center d-lg-none"
               onSelect={handleSelect}
               defaultActiveKey="Local"
             >
@@ -109,6 +119,13 @@ function NavigatorBar() {
                 <NavDropdown.Divider />
                 <NavDropdown.Item eventKey="Mocco">Mocco</NavDropdown.Item>
               </NavDropdown>
+            </Nav>
+            <Nav
+              variant="underline"
+              className="text-center"
+              onSelect={handleSelect}
+              defaultActiveKey="Local"
+            >
               <Nav.Link eventKey="Local">Local</Nav.Link>
               <Nav.Link eventKey="International">International</Nav.Link>
             </Nav>
@@ -119,9 +136,6 @@ function NavigatorBar() {
             </Col>
           </Navbar.Brand>
         </Container>
-        {/* <div style={{ marginRight: "40px" }}>
-        <LanguageToggle />
-      </div> */}
       </Navbar>
     </>
   );

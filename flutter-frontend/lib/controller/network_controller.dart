@@ -45,7 +45,7 @@ class NetworkController extends GetxController {
       if (Get.isSnackbarOpen) {
         Get.closeCurrentSnackbar();
       }
-      if (Get.isDialogOpen!) {
+      if (Get.isDialogOpen ?? false) {
         Get.back(closeOverlays: true);
       }
       if (disconnected) {

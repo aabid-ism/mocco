@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocco/models/news_card.dart';
+import 'package:mocco/theme/theme_switcher.dart';
 
 class NewsService {
   Future<List<NewsCard>> fetchAllNews(String reqUrl,
@@ -42,6 +45,24 @@ class NewsService {
 
         //newsModals.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
         return newsModals;
+      } else if (response.statusCode == 204) {
+        Get.rawSnackbar(
+            messageText: Text(
+              'Content isn\'t available',
+              style: TextStyle(color: AppColors.text, fontSize: 15),
+              textAlign: TextAlign.center,
+            ),
+            isDismissible: true,
+            duration: const Duration(seconds: 5),
+            backgroundColor: AppColors.secondary,
+            icon: Icon(
+              Icons.done_all,
+              color: AppColors.text,
+              size: 30,
+            ),
+            margin: EdgeInsets.zero,
+            snackStyle: SnackStyle.GROUNDED);
+        return [];
       } else {
         // internal server error(500) or 404 error
         return [];

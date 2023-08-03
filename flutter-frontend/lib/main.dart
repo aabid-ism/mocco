@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:mocco/app_preferences.dart';
 import 'package:mocco/dependency_injection.dart';
@@ -14,16 +15,19 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   DependencyInjection.init();
 
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => AppTheme()),
-        ChangeNotifierProvider(create: (context) => AppPreferences()),
-        ChangeNotifierProvider(create: (context) => NewsProvider()),
-      ],
-      child: const MyApp(),
-    ),
-  );
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((_) {
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => AppTheme()),
+          ChangeNotifierProvider(create: (context) => AppPreferences()),
+          ChangeNotifierProvider(create: (context) => NewsProvider()),
+        ],
+        child: const MyApp(),
+      ),
+    );
+  });
 }
 
 class MyApp extends StatefulWidget {
@@ -47,8 +51,11 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    double height = (MediaQuery.of(context).size.height);
     return MediaQuery(
-      data: MediaQuery.of(context).copyWith(textScaleFactor: 1.00),
+      data: MediaQuery.of(context).copyWith(
+        textScaleFactor: height < 750 ? 0.95 : 1.00,
+      ),
       child: const GetMaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Mocco',

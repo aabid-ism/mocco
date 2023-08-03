@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:mocco/enum.dart';
 import 'package:mocco/news_provider_state.dart';
 import 'package:mocco/theme/theme_switcher.dart';
+import 'package:mocco/widgets/info.dart';
 import 'package:mocco/widgets/news.dart';
 import 'package:provider/provider.dart';
 
@@ -59,15 +61,23 @@ class _ExploreScreenState extends State<ExploreScreen> {
               ),
             ),
             FloatingActionButton(
-              heroTag: "settingsFAB",
+              heroTag: "infoFab",
               backgroundColor: AppColors.secondary,
-              onPressed: () {},
+              onPressed: () {
+                Get.defaultDialog(
+                  title: "Mocco",
+                  titleStyle: TextStyle(color: AppColors.text),
+                  content: const Info(),
+                  barrierDismissible: true,
+                  backgroundColor: AppColors.bg,
+                );
+              },
               child: ColorFiltered(
                 colorFilter: ColorFilter.mode(AppColors.text, BlendMode.srcIn),
                 child: SvgPicture.asset(
-                  'assets/icons/settings.svg',
-                  height: 35,
-                  width: 35,
+                  'assets/icons/info.svg',
+                  height: 45,
+                  width: 45,
                 ),
               ),
             ),

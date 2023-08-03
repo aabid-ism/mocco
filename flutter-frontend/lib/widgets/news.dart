@@ -117,7 +117,7 @@ class _NewsContainerState extends State<NewsContainer> {
             child: Stack(
               children: [
                 Container(
-                  height: MediaQuery.of(context).size.height / 3,
+                  height: height / 3,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                     boxShadow: [
@@ -156,7 +156,7 @@ class _NewsContainerState extends State<NewsContainer> {
                         ),
                       ),
                       fit: BoxFit.cover,
-                      height: MediaQuery.of(context).size.height / 3,
+                      height: height / 3,
                       //Set image size to 1/3 of the screen
                       width: double.infinity,
                     ),
@@ -164,8 +164,7 @@ class _NewsContainerState extends State<NewsContainer> {
                 ),
                 Positioned(
                   right: 20,
-                  top: (MediaQuery.of(context).size.height / 3) -
-                      11.5, // Position mainTag teblet
+                  top: (height / 3) - 11.5, // Position mainTag teblet
                   child: Container(
                     decoration: BoxDecoration(
                       color: AppColors.secondary,
@@ -192,15 +191,14 @@ class _NewsContainerState extends State<NewsContainer> {
                   ),
                 ),
                 Positioned(
-                  top: (MediaQuery.of(context).size.height /
-                      3), //Start contet from where news image ends
+                  top: (height / 3), //Start contet from where news image ends
                   child: SizedBox(
                     width: MediaQuery.of(context)
                         .size
                         .width, //Set content area to max display size
                     child: Padding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 31, vertical: 21),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: height < 750 ? 19 : 31, vertical: 21),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         //Align items from left-to-right in cross axis
@@ -222,8 +220,8 @@ class _NewsContainerState extends State<NewsContainer> {
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          const SizedBox(
-                            height: 18,
+                          SizedBox(
+                            height: height < 750 ? 8 : 18,
                           ),
                           Text(
                             langProcessor(
@@ -254,7 +252,7 @@ class _NewsContainerState extends State<NewsContainer> {
                       child: Stack(
                         children: [
                           Container(
-                            height: MediaQuery.of(context).size.height / 8,
+                            height: height / 8,
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 begin: Alignment.topCenter,

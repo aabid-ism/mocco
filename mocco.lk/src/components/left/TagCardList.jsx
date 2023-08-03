@@ -46,10 +46,10 @@ function TagCardList() {
   return (
     <div
       className="custom-scrollbar"
-      style={{
-        height: "400px",
-        overflowY: "auto",
-      }}
+      // style={{
+      //   height: "100%",
+      //   overflowY: "auto",
+      // }}
     >
       {tagCardList}
     </div>

@@ -153,13 +153,13 @@ class Info extends StatelessWidget {
     uri = isEmail
         ? (Uri(scheme: 'mailto', path: urlString))
         : Uri.parse(urlString);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(
-        uri,
-        mode: LaunchMode.externalApplication,
-      );
-    } else {
-      throw 'Could not launch email';
-    }
+    // if (await canLaunchUrl(uri)) {
+    await launchUrl(
+      uri,
+      mode: LaunchMode.platformDefault,
+    );
+    // } else {
+    //   throw 'Could not launch email';
+    // }
   }
 }

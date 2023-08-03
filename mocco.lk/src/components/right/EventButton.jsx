@@ -20,7 +20,13 @@ const EventButton = ({ event, lang }) => {
         >
           <div>{lang === "English" ? event.name : event.s_name}</div>
         </Accordion.Button>
-        <Accordion.Body style={{ fontSize: "0.9rem", paddingTop: 0 }}>
+        <Accordion.Body
+          style={{
+            fontSize: "0.9rem",
+            paddingTop: 0,
+            overflowWrap: "break-word",
+          }}
+        >
           <hr></hr>
           {lang === "English" ? event.desc : event.s_desc}
           <div style={{ paddingTop: "3px" }}>

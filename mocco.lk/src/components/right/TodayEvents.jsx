@@ -31,6 +31,7 @@ function TodayEvents() {
           height: "300px",
           overflowY: "auto",
           paddingBottom: "30%",
+          overflowX: "hidden",
         }}
       >
         {!appState.is_loading ? (

@@ -151,7 +151,7 @@ class _BottomBarState extends State<BottomBar> {
                       } else if (snapshot.hasError) {
                         // Handle the error
                         return Icon(
-                          Icons.bookmark_add_outlined,
+                          Icons.bookmark_outline,
                           color: AppColors.text,
                           size: 28,
                         );

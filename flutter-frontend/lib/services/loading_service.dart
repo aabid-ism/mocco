@@ -10,6 +10,7 @@ class LoadingService {
 
   Future<void> addToPostIndexList(int postIndex,
       {String? currentScreenTag}) async {
+    bool isSaved = currentScreenTag == "saved";
     String postIndexListName = _getPostIndexListName(currentScreenTag);
 
     sharedPrefs = await SharedPreferences.getInstance();
@@ -25,7 +26,9 @@ class LoadingService {
       uniquePostIndexes.add(postIndex);
     }
 
-    List<int?> postIndexListInt = uniquePostIndexes.toList()..sort();
+    List<int?> postIndexListInt = isSaved
+        ? uniquePostIndexes.toList()
+        : (uniquePostIndexes.toList()..sort());
     readPostList = postIndexListInt.map((value) => value.toString()).toList();
     sharedPrefs.setStringList(postIndexListName, readPostList);
   }
@@ -52,6 +55,9 @@ class LoadingService {
 
     sharedPrefs = await SharedPreferences.getInstance();
     var readPostList = sharedPrefs.getStringList(postIndexListName) ?? [];
+    if (currentScreenTag == "saved") {
+      return readPostList.reversed.map((str) => int.parse(str)).toList();
+    }
     return readPostList.map((str) => int.parse(str)).toList();
   }
 
@@ -86,8 +92,9 @@ class LoadingService {
   //       .toList();
   // }
 
-  Future<List<NewsCard>> loadNextPosts(NewsScreenUsers postFor,
-      List<int> postConsideredAsReadList, {String? tag, int? lastPostInList}) async {
+  Future<List<NewsCard>> loadNextPosts(
+      NewsScreenUsers postFor, List<int> postConsideredAsReadList,
+      {String? tag, int? lastPostInList}) async {
     final newsService = NewsService();
     var isSaved = tag == "saved" ? true : false;
     var postPath = "";
@@ -96,11 +103,12 @@ class LoadingService {
     if (!isSaved) {
       Set<int> mergedSet = {...actualReadPostList, ...postConsideredAsReadList};
       List<int> mergedAndSortedReadPost = mergedSet.toList()..sort();
-      reqBody =
-          jsonEncode({'readPostIndices': mergedAndSortedReadPost});
+      reqBody = jsonEncode({'readPostIndices': mergedAndSortedReadPost});
     } else {
-      List<int> savedPostListSelection = actualReadPostList.where((lastIndex) => lastIndex > lastPostInList!).toList();
-      if (savedPostListSelection.isEmpty){
+      List<int> savedPostListSelection = actualReadPostList
+          .where((lastIndex) => lastIndex > lastPostInList!)
+          .toList();
+      if (savedPostListSelection.isEmpty) {
         return Future.value([]);
       }
       reqBody = jsonEncode({"postIndex": savedPostListSelection});

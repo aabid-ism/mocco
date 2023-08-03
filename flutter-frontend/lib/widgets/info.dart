@@ -122,6 +122,27 @@ class Info extends StatelessWidget {
               ),
             ]),
           ),
+          const SizedBox(
+            height: 8,
+          ),
+          RichText(
+            text: TextSpan(children: [
+              TextSpan(
+                text: 'You can view our ',
+                style: defaultTextStyle,
+              ),
+              TextSpan(
+                text: 'Privacy Policy',
+                style: defaultLinkStyle,
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    _launchEmail(
+                        "https://aabid-ism.github.io/mocco-privacy-policy/",
+                        false);
+                  },
+              ),
+            ]),
+          ),
         ],
       ),
     );

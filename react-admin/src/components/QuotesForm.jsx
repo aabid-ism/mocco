@@ -81,7 +81,7 @@ const QuotesForm = ({
     s_quote: selectedQuote ? selectedQuote.s_quote : "",
     author: selectedQuote ? selectedQuote.author : "",
     s_author: selectedQuote ? selectedQuote.s_author : "",
-    url: selectedQuote ? selectedQuote.s_author : "",
+    url: selectedQuote ? selectedQuote.url : "",
   };
 
   // function to set the submitted form data to the state.

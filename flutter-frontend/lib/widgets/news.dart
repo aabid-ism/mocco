@@ -24,7 +24,9 @@ class NewsContainer extends StatefulWidget {
   State<NewsContainer> createState() => _NewsContainerState();
 }
 
-class _NewsContainerState extends State<NewsContainer> {
+class _NewsContainerState extends State<NewsContainer>
+    with AutomaticKeepAliveClientMixin<NewsContainer> {
+      
   final PageController _controller = PageController();
   late NewsScreenUsers _containerReqFrom;
   List<NewsCard> newsList = [];
@@ -38,7 +40,12 @@ class _NewsContainerState extends State<NewsContainer> {
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     String? tag = widget.tag;
     bool isSaved = tag == "saved";
     var height = MediaQuery.of(context).size.height;

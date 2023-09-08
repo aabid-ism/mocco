@@ -1,4 +1,4 @@
-# mocco: A bilingual short news generating web app and mobile app for Sri Lanka (ReactJs and Flutter)
+# Mocco: A bilingual short news generating web app and mobile app for Sri Lanka (ReactJs and Flutter)
 
 ## Web Application ([Mocco.lk](https://mocco.lk))
 
